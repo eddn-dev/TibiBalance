@@ -69,7 +69,7 @@ dependencies {
 
     // Google / Credential Manager
     implementation(libs.play.services.auth)
-    implementation(libs.credential)
+    implementation(libs.credentials)
 
     // Firestore (ya declarado en :data)
     implementation(libs.firebase.firestore)

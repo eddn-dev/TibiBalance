@@ -3,81 +3,93 @@
 ####################################
 [versions]
 # — Herramientas de construcción —
-kotlinxCoroutines = "1.10.2"
-ksp = "2.0.21-1.0.28" # o la más reciente que siga el patrón 2.0.21-1.0.xx
-gradleWrapper = "8.12.1"
-agp           = "8.8.2"
-kotlin        = "2.0.21"        # misma versión para todos los plugins Kotlin
-composeBom    = "2025.04.01"    # Jetpack Compose 1.8.x
-hilt          = "2.56.2"
-dokka         = "2.0.0"
+agp            = "8.8.2"
+kotlin         = "2.0.21"
+ksp            = "2.0.21-1.0.28"
+gradleWrapper  = "8.12.1"
+
+# — Librerías base —
+kotlinxCoroutines  = "1.10.2"        # :contentReference[oaicite:4]{index=4}
+kotlinxDatetime    = "0.6.2"
 kotlinxSerialization = "1.7.0"
-kotlinxDatetime = "0.6.2"
-firebase-bom = "34.2.0"
+composeBom         = "2025.04.01"
+hilt               = "2.56.2"
+dokka              = "2.0.0"
+
+# — Firebase —
+firebaseBom        = "33.13.0"       # :contentReference[oaicite:5]{index=5}
+
+
 # — AndroidX / Jetpack —
-coreKtx         = "1.16.0"
-lifecycleKtx    = "2.8.7"
-activityCompose = "1.10.1"
-appcompat       = "1.7.0"
-material        = "1.12.0"
+coreKtx            = "1.16.0"
+lifecycleKtx       = "2.8.7"
+activityCompose    = "1.10.1"
+appcompat          = "1.7.0"
+material           = "1.12.0"
+credentials        = "1.5.0"         # :contentReference[oaicite:6]{index=6}
 
 # — Testing —
-junit4        = "4.13.2"
-androidxJunit = "1.2.1"
-espressoCore  = "3.6.1"
+junit4             = "4.13.2"
+androidxJunit      = "1.2.1"
+espressoCore       = "3.6.1"
 
 # --------------------------------------------------------
-# Plugins (toman las versiones declaradas arriba)
+# Plugins
 # --------------------------------------------------------
 [plugins]
-android-application     = { id = "com.android.application",          version.ref = "agp" }
-android-library         = { id = "com.android.library",              version.ref = "agp" }
-kotlin-android          = { id = "org.jetbrains.kotlin.android",     version.ref = "kotlin" }
-kotlin-compose          = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-jvm              = { id = "org.jetbrains.kotlin.jvm",         version.ref = "kotlin" }
-kotlin-kapt             = { id = "org.jetbrains.kotlin.kapt",        version.ref = "kotlin" }
-kotlin-ksp              = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-serialization    = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-hilt-android            = { id = "com.google.dagger.hilt.android",   version.ref = "hilt" }
-dokka                   = { id = "org.jetbrains.dokka",              version.ref = "dokka" }
+android-application   = { id = "com.android.application",             version.ref = "agp" }
+android-library       = { id = "com.android.library",                 version.ref = "agp" }
+kotlin-android        = { id = "org.jetbrains.kotlin.android",        version.ref = "kotlin" }
+kotlin-compose        = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm            = { id = "org.jetbrains.kotlin.jvm",            version.ref = "kotlin" }
+kotlin-kapt           = { id = "org.jetbrains.kotlin.kapt",           version.ref = "kotlin" }
+kotlin-ksp            = { id = "com.google.devtools.ksp",             version.ref = "ksp" }
+kotlin-serialization  = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+hilt-android          = { id = "com.google.dagger.hilt.android",      version.ref = "hilt" }
+dokka                 = { id = "org.jetbrains.dokka",                 version.ref = "dokka" }
 
 # --------------------------------------------------------
 # Libraries
 # --------------------------------------------------------
 [libraries]
 # — Core —
-androidx-core-ktx        = { group = "androidx.core",              name = "core-ktx",             version.ref = "coreKtx" }
-lifecycle-runtime-ktx    = { group = "androidx.lifecycle",         name = "lifecycle-runtime-ktx", version.ref = "lifecycleKtx" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+androidx-core-ktx        = { group = "androidx.core",              name = "core-ktx",                version.ref = "coreKtx" }
+lifecycle-runtime-ktx    = { group = "androidx.lifecycle",         name = "lifecycle-runtime-ktx",    version.ref = "lifecycleKtx" }
+kotlinx-datetime         = { group = "org.jetbrains.kotlinx",      name = "kotlinx-datetime",         version.ref = "kotlinxDatetime" }
+kotlinx-coroutines-core  = { group = "org.jetbrains.kotlinx",      name = "kotlinx-coroutines-core",  version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-test  = { group = "org.jetbrains.kotlinx",      name = "kotlinx-coroutines-test",  version.ref = "kotlinxCoroutines" }
+kotlinxSerializationJson = { group = "org.jetbrains.kotlinx",      name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
-# — Compose (el BOM gestiona las demás coords) —
-compose-bom              = { group = "androidx.compose",           name = "compose-bom",          version.ref = "composeBom" }
-activity-compose         = { group = "androidx.activity",          name = "activity-compose",     version.ref = "activityCompose" }
-compose-material3        = { group = "androidx.compose.material3", name = "material3" }
-compose-ui-test-junit4   = { group = "androidx.compose.ui",        name = "ui-test-junit4" }
-compose-ui-test-manifest = { group = "androidx.compose.ui",        name = "ui-test-manifest" }
-compose-ui-tooling-preview = { group = "androidx.compose.ui",      name = "ui-tooling-preview" }
-compose-ui-tooling         = { group = "androidx.compose.ui",      name = "ui-tooling" }
+# — Compose (BOM gestiona versiones) —
+compose-bom                = { group = "androidx.compose",           name = "compose-bom",             version.ref = "composeBom" }
+activity-compose           = { group = "androidx.activity",          name = "activity-compose",        version.ref = "activityCompose" }
+compose-material3          = { group = "androidx.compose.material3", name = "material3" }
+compose-ui-test-junit4     = { group = "androidx.compose.ui",        name = "ui-test-junit4" }
+compose-ui-test-manifest   = { group = "androidx.compose.ui",        name = "ui-test-manifest" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui",        name = "ui-tooling-preview" }
+compose-ui-tooling         = { group = "androidx.compose.ui",        name = "ui-tooling" }
 
 # — Hilt / Dagger —
-hilt-android             = { group = "com.google.dagger",          name = "hilt-android",         version.ref = "hilt" }
-hilt-compiler            = { group = "com.google.dagger",          name = "hilt-android-compiler",version.ref = "hilt" }
-hilt-android-testing     = { group = "com.google.dagger",          name = "hilt-android-testing", version.ref = "hilt" }
-kotlinxSerializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+hilt-android               = { group = "com.google.dagger",          name = "hilt-android",            version.ref = "hilt" }
+hilt-compiler              = { group = "com.google.dagger",          name = "hilt-android-compiler",   version.ref = "hilt" }
+hilt-android-testing       = { group = "com.google.dagger",          name = "hilt-android-testing",    version.ref = "hilt" }
 
-# — UI de sistema —
-androidx-appcompat       = { group = "androidx.appcompat",         name = "appcompat",            version.ref = "appcompat" }
-material                 = { group = "com.google.android.material",name = "material",             version.ref = "material" }
-junit4                   = { group = "junit",                      name = "junit",                version.ref = "junit4" }
-androidx-junit           = { group = "androidx.test.ext",          name = "junit",                version.ref = "androidxJunit" }
-espresso-core            = { group = "androidx.test.espresso",     name = "espresso-core",        version.ref = "espressoCore" }
-firebase-bom        = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
-firebase-auth       = { group = "com.google.firebase", name = "firebase-auth" }
-firebase-firestore  = { group = "com.google.firebase", name = "firebase-firestore" }
-# Firebase Auth (coroutines friendly)
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
-# Google identity services (Credential Manager)
-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.1.0" }
-credential = { group = "androidx.credentials", name = "credential", version = "1.3.0" }
-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name  = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name  = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+# — Firebase —
+firebase-bom                = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-auth              = { group = "com.google.firebase",        name = "firebase-auth" }           # versión la dicta el BoM
+firebase-auth-ktx          = { group = "com.google.firebase",        name = "firebase-auth-ktx" }       # misma regla
+firebase-firestore         = { group = "com.google.firebase",        name = "firebase-firestore" }
+firebase-firestore-ktx     = { group = "com.google.firebase",        name = "firebase-firestore-ktx" }
+
+# — Google identity services —
+play-services-auth         = { group = "com.google.android.gms",     name = "play-services-auth",       version = "21.1.0" }
+credentials                 = { group = "androidx.credentials",       name = "credentials",               version.ref = "credentials" }
+
+# — UI sistema —
+androidx-appcompat         = { group = "androidx.appcompat",         name = "appcompat",                version.ref = "appcompat" }
+material                   = { group = "com.google.android.material",name = "material",                 version.ref = "material" }
+
+# — Testing —
+junit4                     = { group = "junit",                      name = "junit",                    version.ref = "junit4" }
+androidx-junit             = { group = "androidx.test.ext",          name = "junit",                    version.ref = "androidxJunit" }
+espresso-core              = { group = "androidx.test.espresso",     name = "espresso-core",            version.ref = "espressoCore" }
