@@ -32,7 +32,8 @@ credentials        = "1.5.0"         # :contentReference[oaicite:6]{index=6}
 junit4             = "4.13.2"
 androidxJunit      = "1.2.1"
 espressoCore       = "3.6.1"
-
+firebaseKtX   = "23.2.0"      # 06-Feb-2025
+playAuth      = "24.4.0"
 # --------------------------------------------------------
 # Plugins
 # --------------------------------------------------------
