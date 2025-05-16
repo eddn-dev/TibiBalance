@@ -1,11 +1,13 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.kotlin.jvm)   // org.jetbrains.kotlin.jvm 2.0.21
+    id("java-library")
+    alias(libs.plugins.kotlin.jvm)
 }
-
-kotlin { jvmToolchain(17) }          // genera byte-code y std-lib para Java 17
-
-dependencies {
-    // solo utilidades de prueba – la librería es JVM pura
-    testImplementation(libs.junit4)
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
 }

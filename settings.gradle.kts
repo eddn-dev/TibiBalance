@@ -13,6 +13,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "TibiBalance"
 include(":app")
-include(":core")
 include(":data")
 include(":domain")
+include(":core")

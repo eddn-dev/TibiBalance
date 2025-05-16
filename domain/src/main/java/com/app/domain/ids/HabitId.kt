@@ -11,6 +11,12 @@ import kotlinx.serialization.Serializable
 @JvmInline
 @Serializable
 value class HabitId(val raw: String) {
+
+    /** Alias para compatibilidad con repos / mappers anteriores. */
+    val value: String
+        get() = raw
+
     init { require(raw.isNotBlank()) { "HabitId no puede ser vacío" } }
+
     override fun toString(): String = raw
 }
