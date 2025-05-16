@@ -66,4 +66,7 @@ dependencies {
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
+    // data/build.gradle.kts
+    implementation("androidx.security:security-crypto:1.1.0-alpha06") // EncryptedSharedPreferences :contentReference[oaicite:0]{index=0}
+
 }

@@ -1,0 +1,43 @@
+package com.app.data.local.db
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.app.data.local.converters.DateTimeConverters
+import com.app.data.local.converters.EnumConverters
+import com.app.data.local.converters.IdConverters
+import com.app.data.local.converters.RepeatConverters
+import com.app.data.local.dao.DailyMetricsDao
+import com.app.data.local.dao.EmotionEntryDao
+import com.app.data.local.dao.HabitActivityDao
+import com.app.data.local.dao.HabitDao
+import com.app.data.local.dao.OnboardingStatusDao
+import com.app.data.local.dao.UserDao
+import com.app.data.local.entities.DailyMetricsEntity
+import com.app.data.local.entities.EmotionEntryEntity
+import com.app.data.local.entities.HabitActivityEntity
+import com.app.data.local.entities.HabitEntity
+import com.app.data.local.entities.OnboardingStatusEntity
+import com.app.data.local.entities.UserEntity
+
+@Database(
+    entities = [
+        HabitEntity::class, HabitActivityEntity::class,
+        UserEntity::class, EmotionEntryEntity::class,
+        DailyMetricsEntity::class, OnboardingStatusEntity::class
+    ],
+    version = 1,
+    exportSchema = true
+)
+@TypeConverters(
+    DateTimeConverters::class, EnumConverters::class,
+    IdConverters::class, RepeatConverters::class
+)
+abstract class AppDb : RoomDatabase() {
+    abstract val habitDao         : HabitDao
+    abstract val activityDao      : HabitActivityDao
+    abstract val userDao          : UserDao
+    abstract val emotionDao       : EmotionEntryDao
+    abstract val metricsDao       : DailyMetricsDao
+    abstract val onboardingDao    : OnboardingStatusDao
+}
