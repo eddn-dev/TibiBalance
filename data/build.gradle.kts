@@ -56,6 +56,11 @@ dependencies {
     /* ─── Firestore remoto ─────────────────────────────────────────────── */
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
 
+    /* ─── Autenticación Firebase ───────────────────────────────────────── */
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
+
     /* ─── KotlinX Date & Time (Instant, LocalDate…) ────────────────────── */
     implementation(libs.kotlinx.datetime)                 // <─ nuevo
 
