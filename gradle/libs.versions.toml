@@ -3,7 +3,7 @@
 ####################################
 [versions]
 # — Herramientas de construcción —
-ksp = "2.0.21-1.0.26"
+ksp = "2.0.21-1.0.28" # o la más reciente que siga el patrón 2.0.21-1.0.xx
 gradleWrapper = "8.12.1"
 agp           = "8.8.2"
 kotlin        = "2.0.21"        # misma versión para todos los plugins Kotlin

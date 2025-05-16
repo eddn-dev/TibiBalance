@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
-    // ▸ Sólo hace falta si, en el futuro, añades clases con @Serializable dentro de :data
     alias(libs.plugins.kotlin.serialization)   // <─ nuevo
     alias(libs.plugins.kotlin.ksp)
 }
