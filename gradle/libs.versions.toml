@@ -1,0 +1,70 @@
+####################################
+# Version catalog • TibiBalance 2025
+####################################
+[versions]
+# — Herramientas de construcción —
+gradleWrapper = "8.12.1"
+agp           = "8.8.2"
+kotlin        = "2.0.21"        # misma versión para todos los plugins Kotlin
+composeBom    = "2025.04.01"    # Jetpack Compose 1.8.x
+hilt          = "2.56.2"
+dokka         = "2.0.0"
+kotlinxSerialization = "1.7.0"
+kotlinxDatetime = "0.6.2"
+
+# — AndroidX / Jetpack —
+coreKtx         = "1.16.0"
+lifecycleKtx    = "2.8.7"
+activityCompose = "1.10.1"
+appcompat       = "1.7.0"
+material        = "1.12.0"
+
+# — Testing —
+junit4        = "4.13.2"
+androidxJunit = "1.2.1"
+espressoCore  = "3.6.1"
+
+# --------------------------------------------------------
+# Plugins (toman las versiones declaradas arriba)
+# --------------------------------------------------------
+[plugins]
+android-application = { id = "com.android.application",          version.ref = "agp" }
+android-library     = { id = "com.android.library",              version.ref = "agp" }
+kotlin-android      = { id = "org.jetbrains.kotlin.android",     version.ref = "kotlin" }
+kotlin-compose      = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm          = { id = "org.jetbrains.kotlin.jvm",         version.ref = "kotlin" }
+kotlin-kapt         = { id = "org.jetbrains.kotlin.kapt",        version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+hilt-android        = { id = "com.google.dagger.hilt.android",   version.ref = "hilt" }
+dokka               = { id = "org.jetbrains.dokka",              version.ref = "dokka" }
+
+# --------------------------------------------------------
+# Libraries
+# --------------------------------------------------------
+[libraries]
+# — Core —
+androidx-core-ktx        = { group = "androidx.core",              name = "core-ktx",             version.ref = "coreKtx" }
+lifecycle-runtime-ktx    = { group = "androidx.lifecycle",         name = "lifecycle-runtime-ktx", version.ref = "lifecycleKtx" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
+# — Compose (el BOM gestiona las demás coords) —
+compose-bom              = { group = "androidx.compose",           name = "compose-bom",          version.ref = "composeBom" }
+activity-compose         = { group = "androidx.activity",          name = "activity-compose",     version.ref = "activityCompose" }
+compose-material3        = { group = "androidx.compose.material3", name = "material3" }
+compose-ui-test-junit4   = { group = "androidx.compose.ui",        name = "ui-test-junit4" }
+compose-ui-test-manifest = { group = "androidx.compose.ui",        name = "ui-test-manifest" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui",      name = "ui-tooling-preview" }
+compose-ui-tooling         = { group = "androidx.compose.ui",      name = "ui-tooling" }
+
+# — Hilt / Dagger —
+hilt-android             = { group = "com.google.dagger",          name = "hilt-android",         version.ref = "hilt" }
+hilt-compiler            = { group = "com.google.dagger",          name = "hilt-android-compiler",version.ref = "hilt" }
+hilt-android-testing     = { group = "com.google.dagger",          name = "hilt-android-testing", version.ref = "hilt" }
+kotlinxSerializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+# — UI de sistema —
+androidx-appcompat       = { group = "androidx.appcompat",         name = "appcompat",            version.ref = "appcompat" }
+material                 = { group = "com.google.android.material",name = "material",             version.ref = "material" }
+junit4                   = { group = "junit",                      name = "junit",                version.ref = "junit4" }
+androidx-junit           = { group = "androidx.test.ext",          name = "junit",                version.ref = "androidxJunit" }
+espresso-core            = { group = "androidx.test.espresso",     name = "espresso-core",        version.ref = "espressoCore" }

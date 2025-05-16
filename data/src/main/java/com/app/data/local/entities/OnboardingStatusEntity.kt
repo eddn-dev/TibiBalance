@@ -1,0 +1,39 @@
+package com.app.data.local.entities
+
+import androidx.room.*
+import com.app.data.local.converters.DateTimeConverters
+import com.app.domain.common.SyncMeta
+import kotlinx.datetime.Instant
+
+/**
+ * Nota: clave primaria = uid para mantener 1-a-1 con usuario.
+ */
+@Entity(tableName = "onboarding_status")
+@TypeConverters(DateTimeConverters::class)
+data class OnboardingStatusEntity(
+    @PrimaryKey                      val uid: String,
+    val tutorialCompleted            : Boolean,
+    val legalAccepted                : Boolean,
+    val permissionsAsked             : Boolean,
+    val completedAt                  : Instant?,
+    @Embedded(prefix = "meta_")      val meta: SyncMeta
+) {
+    companion object {
+        fun fromDomain(o: com.app.domain.entities.OnboardingStatus, uid: String) =
+            OnboardingStatusEntity(
+                uid               = uid,
+                tutorialCompleted = o.tutorialCompleted,
+                legalAccepted     = o.legalAccepted,
+                permissionsAsked  = o.permissionsAsked,
+                completedAt       = o.completedAt,
+                meta              = o.meta
+            )
+    }
+    fun toDomain() = com.app.domain.entities.OnboardingStatus(
+        tutorialCompleted = tutorialCompleted,
+        legalAccepted     = legalAccepted,
+        permissionsAsked  = permissionsAsked,
+        completedAt       = completedAt,
+        meta              = meta
+    )
+}

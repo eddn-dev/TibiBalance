@@ -1,0 +1,69 @@
+@Suppress("DSL_SCOPE_VIOLATION")
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
+    // ▸ Sólo hace falta si, en el futuro, añades clases con @Serializable dentro de :data
+    alias(libs.plugins.kotlin.serialization)   // <─ nuevo
+    alias(libs.plugins.kotlin.kapt)            // siempre al final por KAPT
+}
+
+android {
+    namespace  = "com.app.data"
+    compileSdk = 35
+
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    kotlin { jvmToolchain(17) }
+}
+
+kapt { correctErrorTypes = true }
+
+dependencies {
+    /* ─── Flecha Clean Arch ─────────────────────────────────────────────── */
+    implementation(project(":domain"))
+    implementation(project(":core"))
+
+    /* ─── Inyección de dependencias ────────────────────────────────────── */
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
+
+    /* ─── Room + SQLCipher (caché local cifrada) ───────────────────────── */
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+
+    /* ─── Firestore remoto ─────────────────────────────────────────────── */
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
+
+    /* ─── KotlinX Date & Time (Instant, LocalDate…) ────────────────────── */
+    implementation(libs.kotlinx.datetime)                 // <─ nuevo
+
+    /* ─── KotlinX Serialization JSON runtime ───────────────────────────── */
+    implementation(libs.kotlinxSerializationJson)         // <─ nuevo
+
+    /* ─── Utilidades AndroidX mínimas ──────────────────────────────────── */
+    implementation(libs.androidx.core.ktx)
+
+    /* ─── Tests ────────────────────────────────────────────────────────── */
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.espresso.core)
+}
