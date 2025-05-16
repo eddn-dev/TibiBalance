@@ -34,10 +34,11 @@ import com.app.data.local.entities.UserEntity
     IdConverters::class, RepeatConverters::class
 )
 abstract class AppDb : RoomDatabase() {
-    abstract val habitDao         : HabitDao
-    abstract val activityDao      : HabitActivityDao
-    abstract val userDao          : UserDao
-    abstract val emotionDao       : EmotionEntryDao
-    abstract val metricsDao       : DailyMetricsDao
-    abstract val onboardingDao    : OnboardingStatusDao
+    abstract fun habitDao()         : HabitDao
+    abstract fun activityDao()      : HabitActivityDao
+    abstract fun userDao()          : UserDao
+    abstract fun emotionDao()       : EmotionEntryDao
+    abstract fun metricsDao()       : DailyMetricsDao
+    abstract fun onboardingDao()    : OnboardingStatusDao
 }
+

@@ -23,34 +23,4 @@ data class UserEntity(
     @ColumnInfo(name = "settings_tts")      val settingsTTS    : Boolean,
     /* ── SyncMeta ── */
     @Embedded(prefix = "meta_")             val meta: SyncMeta
-) {
-    companion object {
-        fun fromDomain(u: com.app.domain.entities.User) = UserEntity(
-            uid             = u.uid,
-            email           = u.email,
-            displayName     = u.displayName,
-            photoUrl        = u.photoUrl,
-            birthDate       = u.birthDate,
-            settingsTheme   = u.settings.theme,
-            settingsNotif   = u.settings.notifGlobal,
-            settingsLang    = u.settings.language,
-            settingsTTS     = u.settings.accessibilityTTS,
-            meta            = u.meta
-        )
-    }
-
-    fun toDomain() = com.app.domain.entities.User(
-        uid         = uid,
-        email       = email,
-        displayName = displayName,
-        photoUrl    = photoUrl,
-        birthDate   = birthDate,
-        settings    = UserSettings(
-            theme            = settingsTheme,
-            notifGlobal      = settingsNotif,
-            language         = settingsLang,
-            accessibilityTTS = settingsTTS
-        ),
-        meta        = meta
-    )
-}
+)

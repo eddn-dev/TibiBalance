@@ -25,15 +25,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    /* ── Clave SQLCipher ────────────────────────────────────────────────── */
-    @Provides
-    @Singleton
-    fun provideSqlCipherFactory(): SupportFactory {
-        // TODO: obtén la contraseña del Keystore; aquí usamos placeholder “passphrase”.
-        val passphrase: ByteArray = SQLiteDatabase.getBytes("passphrase".toCharArray())
-        return SupportFactory(passphrase)
-    }
-
     /* ── AppDb (Room) ───────────────────────────────────────────────────── */
     @Provides
     @Singleton
@@ -54,10 +45,10 @@ object DatabaseModule {
 
 
     /* ── DAOs ───────────────────────────────────────────────────────────── */
-    @Provides fun provideHabitDao(db: AppDb): HabitDao                 = db.habitDao
-    @Provides fun provideActivityDao(db: AppDb): HabitActivityDao      = db.activityDao
-    @Provides fun provideUserDao(db: AppDb): UserDao                   = db.userDao
-    @Provides fun provideEmotionDao(db: AppDb): EmotionEntryDao        = db.emotionDao
-    @Provides fun provideMetricsDao(db: AppDb): DailyMetricsDao        = db.metricsDao
-    @Provides fun provideOnboardingDao(db: AppDb): OnboardingStatusDao = db.onboardingDao
+    @Provides fun provideHabitDao(db: AppDb): HabitDao                 = db.habitDao()
+    @Provides fun provideActivityDao(db: AppDb): HabitActivityDao      = db.activityDao()
+    @Provides fun provideUserDao(db: AppDb): UserDao                   = db.userDao()
+    @Provides fun provideEmotionDao(db: AppDb): EmotionEntryDao        = db.emotionDao()
+    @Provides fun provideMetricsDao(db: AppDb): DailyMetricsDao        = db.metricsDao()
+    @Provides fun provideOnboardingDao(db: AppDb): OnboardingStatusDao = db.onboardingDao()
 }

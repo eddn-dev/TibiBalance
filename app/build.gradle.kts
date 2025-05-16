@@ -63,4 +63,14 @@ dependencies {
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+
+    // Google / Credential Manager
+    implementation(libs.play.services.auth)
+    implementation(libs.credential)
+
+    // Firestore (ya declarado en :data)
+    implementation(libs.firebase.firestore)
 }

@@ -32,7 +32,9 @@ android {
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.generateKotlin", "true")   // ← habilita value-classes
 }
+
 
 dependencies {
     /* ─── Flecha Clean Arch ─────────────────────────────────────────────── */
@@ -70,4 +72,10 @@ dependencies {
     // data/build.gradle.kts
     implementation("androidx.security:security-crypto:1.1.0-alpha06") // EncryptedSharedPreferences :contentReference[oaicite:0]{index=0}
 
+    /* ─── Coroutines ─────────────────────────────── */
+    implementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    /* ─── WorkManager (para SyncWorker) ───────────── */
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

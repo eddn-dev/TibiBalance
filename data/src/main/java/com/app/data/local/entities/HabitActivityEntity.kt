@@ -18,7 +18,6 @@ import kotlinx.serialization.builtins.serializer
  */
 @Entity(
     tableName = "activities",
-    indices = [Index("habitId")],
     foreignKeys = [
         ForeignKey(
             entity = HabitEntity::class,
@@ -41,37 +40,4 @@ data class HabitActivityEntity(
     val deviceId                : String,
     val payloadJson             : String,
     @Embedded(prefix = "meta_") val meta: SyncMeta
-) {
-    companion object {
-        private val json = Json { encodeDefaults = true }
-
-        private val mapSer = MapSerializer(String.serializer(), String.serializer())
-
-        fun fromDomain(a: com.app.domain.entities.HabitActivity): HabitActivityEntity =
-            HabitActivityEntity(
-                id          = a.id,
-                habitId     = a.habitId,
-                type        = a.type,
-                timestamp   = a.timestamp,
-                deviceId    = a.deviceId,
-                /* 🔽 serializer explícito */
-                payloadJson = json.encodeToString(mapSer, a.payload),
-                meta        = a.meta
-            )
-    }
-
-    fun toDomain(): com.app.domain.entities.HabitActivity {
-        val jsonF = Json { ignoreUnknownKeys = true }
-        return com.app.domain.entities.HabitActivity(
-            id        = id,
-            habitId   = habitId,
-            type      = type,
-            timestamp = timestamp,
-            deviceId  = deviceId,
-            /* 🔽 mismo serializer para deserializar */
-            payload   = jsonF.decodeFromString(mapSer, payloadJson),
-            meta      = meta
-        )
-    }
-
-}
+)

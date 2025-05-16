@@ -3,6 +3,7 @@
 ####################################
 [versions]
 # — Herramientas de construcción —
+kotlinxCoroutines = "1.10.2"
 ksp = "2.0.21-1.0.28" # o la más reciente que siga el patrón 2.0.21-1.0.xx
 gradleWrapper = "8.12.1"
 agp           = "8.8.2"
@@ -12,7 +13,7 @@ hilt          = "2.56.2"
 dokka         = "2.0.0"
 kotlinxSerialization = "1.7.0"
 kotlinxDatetime = "0.6.2"
-
+firebase-bom = "34.3.0"
 # — AndroidX / Jetpack —
 coreKtx         = "1.16.0"
 lifecycleKtx    = "2.8.7"
@@ -70,3 +71,13 @@ material                 = { group = "com.google.android.material",name = "mater
 junit4                   = { group = "junit",                      name = "junit",                version.ref = "junit4" }
 androidx-junit           = { group = "androidx.test.ext",          name = "junit",                version.ref = "androidxJunit" }
 espresso-core            = { group = "androidx.test.espresso",     name = "espresso-core",        version.ref = "espressoCore" }
+firebase-bom        = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-auth       = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore  = { group = "com.google.firebase", name = "firebase-firestore" }
+# Firebase Auth (coroutines friendly)
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+# Google identity services (Credential Manager)
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.1.0" }
+credential = { group = "androidx.credentials", name = "credential", version = "1.4.0" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name  = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name  = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }

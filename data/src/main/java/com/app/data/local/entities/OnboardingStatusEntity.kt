@@ -17,23 +17,4 @@ data class OnboardingStatusEntity(
     val permissionsAsked             : Boolean,
     val completedAt                  : Instant?,
     @Embedded(prefix = "meta_")      val meta: SyncMeta
-) {
-    companion object {
-        fun fromDomain(o: com.app.domain.entities.OnboardingStatus, uid: String) =
-            OnboardingStatusEntity(
-                uid               = uid,
-                tutorialCompleted = o.tutorialCompleted,
-                legalAccepted     = o.legalAccepted,
-                permissionsAsked  = o.permissionsAsked,
-                completedAt       = o.completedAt,
-                meta              = o.meta
-            )
-    }
-    fun toDomain() = com.app.domain.entities.OnboardingStatus(
-        tutorialCompleted = tutorialCompleted,
-        legalAccepted     = legalAccepted,
-        permissionsAsked  = permissionsAsked,
-        completedAt       = completedAt,
-        meta              = meta
-    )
-}
+)

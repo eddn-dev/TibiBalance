@@ -16,25 +16,4 @@ data class DailyMetricsEntity(
     val source                      : String,
     val importedAt                  : Instant,
     @Embedded(prefix = "meta_")     val meta: SyncMeta
-) {
-    companion object {
-        fun fromDomain(m: com.app.domain.entities.DailyMetrics) = DailyMetricsEntity(
-            date        = m.date,
-            steps       = m.steps,
-            avgHeart    = m.avgHeart,
-            calories    = m.calories,
-            source      = m.source,
-            importedAt  = m.importedAt,
-            meta        = m.meta
-        )
-    }
-    fun toDomain() = com.app.domain.entities.DailyMetrics(
-        date        = date,
-        steps       = steps,
-        avgHeart    = avgHeart,
-        calories    = calories,
-        source      = source,
-        importedAt  = importedAt,
-        meta        = meta
-    )
-}
+)
