@@ -3,7 +3,7 @@
  * @ingroup data_mapper
  * @brief   Conversión HabitEntity ↔ Habit (dominio).
  */
-package com.app.data.mapper
+package com.app.data.mappers
 
 import com.app.data.local.entities.HabitEntity
 import com.app.data.mappers.JsonConfig
