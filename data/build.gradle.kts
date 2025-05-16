@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     // ▸ Sólo hace falta si, en el futuro, añades clases con @Serializable dentro de :data
     alias(libs.plugins.kotlin.serialization)   // <─ nuevo
-    alias(libs.plugins.kotlin.kapt)            // siempre al final por KAPT
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -31,7 +31,9 @@ android {
     kotlin { jvmToolchain(17) }
 }
 
-kapt { correctErrorTypes = true }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
 
 dependencies {
     /* ─── Flecha Clean Arch ─────────────────────────────────────────────── */
@@ -40,13 +42,13 @@ dependencies {
 
     /* ─── Inyección de dependencias ────────────────────────────────────── */
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
 
     /* ─── Room + SQLCipher (caché local cifrada) ───────────────────────── */
     implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("net.zetetic:android-database-sqlcipher:4.5.4")
 

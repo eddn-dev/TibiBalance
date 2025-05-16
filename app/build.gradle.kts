@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)     // ← luego Hilt
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -30,8 +30,6 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
     }
 
-    kapt { correctErrorTypes = true }
-
     kotlin { jvmToolchain(17) }
 }
 
@@ -53,7 +51,7 @@ dependencies {
 
     // ── Hilt DI ────────────────────────────────────────────
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)                     // usa ksp(...) si cambias a KSP
+    ksp(libs.hilt.compiler)                     // usa ksp(...) si cambias a KSP
 
     // ── Unit tests ────────────────────────────────────────
     testImplementation(libs.junit4)
@@ -64,5 +62,5 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
 }

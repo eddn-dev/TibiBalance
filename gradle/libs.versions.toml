@@ -3,6 +3,7 @@
 ####################################
 [versions]
 # — Herramientas de construcción —
+ksp = "2.0.21-1.0.26"
 gradleWrapper = "8.12.1"
 agp           = "8.8.2"
 kotlin        = "2.0.21"        # misma versión para todos los plugins Kotlin
@@ -28,15 +29,16 @@ espressoCore  = "3.6.1"
 # Plugins (toman las versiones declaradas arriba)
 # --------------------------------------------------------
 [plugins]
-android-application = { id = "com.android.application",          version.ref = "agp" }
-android-library     = { id = "com.android.library",              version.ref = "agp" }
-kotlin-android      = { id = "org.jetbrains.kotlin.android",     version.ref = "kotlin" }
-kotlin-compose      = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-jvm          = { id = "org.jetbrains.kotlin.jvm",         version.ref = "kotlin" }
-kotlin-kapt         = { id = "org.jetbrains.kotlin.kapt",        version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-hilt-android        = { id = "com.google.dagger.hilt.android",   version.ref = "hilt" }
-dokka               = { id = "org.jetbrains.dokka",              version.ref = "dokka" }
+android-application     = { id = "com.android.application",          version.ref = "agp" }
+android-library         = { id = "com.android.library",              version.ref = "agp" }
+kotlin-android          = { id = "org.jetbrains.kotlin.android",     version.ref = "kotlin" }
+kotlin-compose          = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm              = { id = "org.jetbrains.kotlin.jvm",         version.ref = "kotlin" }
+kotlin-kapt             = { id = "org.jetbrains.kotlin.kapt",        version.ref = "kotlin" }
+kotlin-ksp              = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization    = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+hilt-android            = { id = "com.google.dagger.hilt.android",   version.ref = "hilt" }
+dokka                   = { id = "org.jetbrains.dokka",              version.ref = "dokka" }
 
 # --------------------------------------------------------
 # Libraries
