@@ -85,7 +85,7 @@ Sync policy = **Last‑Write‑Wins** via `updatedAt` (`SyncMeta`). Tombstones (
 
 ```bash
 # Clone & sync sub‑modules (if any)
-git clone https://github.com/your‑org/TibiBalanceApp.git
+git clone https://github.com/eddn-dev/TibiBalanceApp.git
 cd TibiBalanceApp
 
 # Run the first build – gradle will fetch everything
