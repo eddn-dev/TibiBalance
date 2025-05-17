@@ -1,67 +1,61 @@
+// com/app/data/alert/HabitAlertManager.kt
 package com.app.data.alert
 
 import android.app.AlarmManager
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
 import com.app.domain.entities.Habit
 import com.app.domain.ids.HabitId
 import com.app.domain.service.AlertManager
+import kotlinx.datetime.*
 
-/**
- * Implementación de [AlertManager] basada en [AlarmManager].
- */
 class HabitAlertManager(
     private val ctx: Context,
     private val alarm: AlarmManager
 ) : AlertManager {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun schedule(habit: Habit) {
         if (!habit.notifConfig.enabled) return
-        habit.notifConfig.times.forEachIndexed { index, time ->
+
+        habit.notifConfig.times.take(MAX_SLOTS).forEachIndexed { idx, time ->
             val triggerAt = nextTriggerMillis(time)
             val pi = HabitAlertReceiver.pendingIntent(
                 ctx,
-                requestCode(habit.id, index),
+                requestCode(habit.id, idx),
                 habit.name,
                 habit.notifConfig.message
             )
-            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi)
+            alarm.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerAt,
+                pi
+            )
         }
     }
 
     override fun cancel(id: HabitId) {
-        // Cancelamos todas las notificaciones usando el mismo esquema de requestCode
-        (0 until MAX_SLOTS).forEach { index ->
-            val pi = HabitAlertReceiver.pendingIntent(
-                ctx,
-                requestCode(id, index),
-                "",
-                ""
-            )
+        (0 until MAX_SLOTS).forEach { idx ->
+            val pi = HabitAlertReceiver.pendingIntent(ctx, requestCode(id, idx), "", "")
             alarm.cancel(pi)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    /** Devuelve el próximo disparo para la hora [time] en **epochMillis**. */
     private fun nextTriggerMillis(time: LocalTime): Long {
-        val zone = ZoneId.systemDefault()
-        val now = LocalDateTime.now(zone)
-        var target = LocalDate.now(zone).atTime(time)
-        if (target.isBefore(now)) {
-            target = target.plusDays(1)
+        val tz          = TimeZone.currentSystemDefault()                      // :contentReference[oaicite:3]{index=3}
+        val nowInstant  = Clock.System.now()                                   // :contentReference[oaicite:4]{index=4}
+        val nowDateTime = nowInstant.toLocalDateTime(tz)                       // :contentReference[oaicite:5]{index=5}
+
+        // Calculamos “hoy” a la hora indicada
+        var targetDate  = nowDateTime.date
+        if (nowDateTime.time >= time) {                                        // ya pasó → mañana
+            targetDate = targetDate.plus(1, DateTimeUnit.DAY)                  // :contentReference[oaicite:6]{index=6}
         }
-        return target.atZone(zone).toInstant().toEpochMilli()
+
+        val targetDateTime = LocalDateTime(targetDate, time)
+        return targetDateTime.toInstant(tz).toEpochMilliseconds()              // :contentReference[oaicite:7]{index=7}
     }
 
-    private fun requestCode(id: HabitId, index: Int): Int = id.value.hashCode() + index
+    private fun requestCode(id: HabitId, idx: Int) = id.value.hashCode() + idx
 
-    companion object {
-        private const val MAX_SLOTS = 5
-    }
+    companion object { private const val MAX_SLOTS = 5 }
 }
