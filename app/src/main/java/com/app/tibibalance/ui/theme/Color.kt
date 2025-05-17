@@ -2,10 +2,18 @@ package com.app.tibibalance.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val BluePrimaryLight = Color(0xFF3EA8FE)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
+/** Darker variant of [BluePrimaryLight] used in containers */
+val BluePrimaryDark = Color(0xFF0A66D9)
+
+/** Neutral surface color for cards and light backgrounds */
+val SurfaceLight = Color(0xFFECECEC)
+
+/** Base white used across the UI */
+val White = Color(0xFFFFFFFF)
+
+/** Surface color for dark theme elements */
+val SurfaceDark = Color(0xFF121212)
+
 val Pink40 = Color(0xFF7D5260)

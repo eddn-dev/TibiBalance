@@ -44,7 +44,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * @brief Un [Composable] que representa el botón de acción principal estándar de la aplicación.
@@ -89,9 +88,9 @@ fun PrimaryButton(
         modifier = modifier.height(48.dp), // Altura fija (ajustada a 48dp)
         shape = RoundedCornerShape(12.dp), // Bordes redondeados
         colors = ButtonDefaults.buttonColors( // Colores del botón
-            containerColor         = Color(0xFF3EA8FE), // Fondo normal
+            containerColor         = container, // Fondo normal
             contentColor           = contentColor, // Contenido normal
-            disabledContainerColor = Color(0xFF3EA8FE).copy(alpha = 0.5f), // Fondo deshabilitado (más transparente)
+            disabledContainerColor = container.copy(alpha = 0.5f), // Fondo deshabilitado (más transparente)
             disabledContentColor   = contentColor.copy(alpha = 0.5f) // Contenido deshabilitado
         ),
         contentPadding = PaddingValues(horizontal = 24.dp) // Padding interno
