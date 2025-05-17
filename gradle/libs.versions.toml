@@ -27,6 +27,7 @@ room                  = "2.7.1"
 firebaseBom           = "33.13.0"
 credentials           = "1.5.0"
 playAuth              = "21.3.0"
+navigationCompose     = "2.7.7"
 
 coil                  = "3.2.0"
 lottie                = "6.6.6"
@@ -67,6 +68,7 @@ compose-material3          = { group = "androidx.compose.material3",   name = "m
 material-icons-extended    = { group = "androidx.compose.material",    name = "material-icons-extended" }
 compose-ui-tooling         = { group = "androidx.compose.ui",          name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui",          name = "ui-tooling-preview" }
+navigation-compose        = { group = "androidx.navigation",       name = "navigation-compose", version.ref = "navigationCompose" }
 
 coil-compose             = { group = "io.coil-kt.coil3",           name = "coil-compose",              version.ref = "coil" }
 coil-network-okhttp      = { group = "io.coil-kt.coil3",           name = "coil-network-okhttp",       version.ref = "coil" }
