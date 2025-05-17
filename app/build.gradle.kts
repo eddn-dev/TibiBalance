@@ -3,74 +3,95 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt.android)     // ← luego Hilt
-    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)    // Firebase Gradle Plugin
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.ksp)         // Hilt & Room via KSP
+    alias(libs.plugins.room)               // Room schema/tasks
 }
 
 android {
-    namespace = "com.app.tibibalance"
-    compileSdk = 35
+    namespace   = "com.app.tibibalance"
+    compileSdk  = 35
 
     defaultConfig {
-        applicationId = "com.app.tibibalance"
-        minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        applicationId         = "com.app.tibibalance"
+        minSdk                = 24
+        targetSdk             = 35
+        versionCode           = 1
+        versionName           = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures { compose = true }
 
-    hilt {
-        enableAggregatingTask = true
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
     }
 
+    // Java 17 toolchain
     kotlin { jvmToolchain(17) }
+
+    // Room JSON schemas (for migration tests)
+    room { schemaDirectory("$projectDir/schemas") }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
 }
 
 dependencies {
-    // ── Plataforma Compose ─────────────────────────────────
+    /* ── Compose BOM ─────────────────────────────────── */
     implementation(platform(libs.compose.bom))
 
-    // ── Android Core ───────────────────────────────────────
+    /* ── Core / KotlinX ──────────────────────────────── */
     implementation(libs.androidx.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinxSerializationJson)
 
-    // ── UI / Compose ───────────────────────────────────────
-    implementation(libs.activity.compose)
-    implementation(libs.compose.material3)
-
-    // ── Previews ───────────────────────────────────────────
+    /* ── UI (Compose) ───────────────────────────────── */
+    implementation(libs.bundles.compose)
     implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.material.icons.extended)
 
-    // ── Hilt DI ────────────────────────────────────────────
+    /* ── Media / Animations ─────────────────────────── */
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.lottie.compose)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.spinwheel.compose)
+
+    /* ── Room (local DB) ────────────────────────────── */
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    /* ── Hilt DI ────────────────────────────────────── */
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)                     // usa ksp(...) si cambias a KSP
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation)
 
-    // ── Unit tests ────────────────────────────────────────
+    /* ── Firebase (plataforma BoM) ──────────────────── */
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.analytics.ktx)
+
+    /* ── Google Identity / Credential Manager ───────── */
+    implementation(libs.bundles.auth)
+
+    /* ── Coroutines Play Svc helpers ────────────────── */
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+
+    /* ── Tests ──────────────────────────────────────── */
     testImplementation(libs.junit4)
-
-    // ── Instrumented tests ────────────────────────────────
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx)
-
-    // Google / Credential Manager
-    implementation(libs.play.services.auth)
-    implementation(libs.credentials)
-
-    // Firestore (ya declarado en :data)
-    implementation(libs.firebase.firestore)
 }

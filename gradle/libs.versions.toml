@@ -2,95 +2,115 @@
 # Version catalog • TibiBalance 2025
 ####################################
 [versions]
-# — Herramientas de construcción —
-agp            = "8.8.2"
-kotlin         = "2.0.21"
-ksp            = "2.0.21-1.0.28"
-gradleWrapper  = "8.12.1"
+agp                   = "8.8.2"
+androidDatabaseSqlcipher = "4.5.4"
+kotlin                = "2.0.21"
+ksp                   = "2.0.21-1.0.28"
+gradleWrapper         = "8.12.1"
 
-# — Librerías base —
-kotlinxCoroutines  = "1.10.2"        # :contentReference[oaicite:4]{index=4}
-kotlinxDatetime    = "0.6.2"
-kotlinxSerialization = "1.7.0"
-composeBom         = "2025.04.01"
-hilt               = "2.56.2"
-dokka              = "2.0.0"
+kotlinxCoroutines     = "1.10.2"
+kotlinxDatetime       = "0.6.2"
+kotlinxSerialization  = "1.7.0"
 
-# — Firebase —
-firebaseBom        = "33.13.0"       # :contentReference[oaicite:5]{index=5}
+composeBom            = "2025.04.01"
+activityCompose       = "1.10.1"
+coreKtx               = "1.16.0"
+lifecycleKtx          = "2.8.7"
 
+appcompat             = "1.7.0"
+material              = "1.12.0"
 
-# — AndroidX / Jetpack —
-coreKtx            = "1.16.0"
-lifecycleKtx       = "2.8.7"
-activityCompose    = "1.10.1"
-appcompat          = "1.7.0"
-material           = "1.12.0"
-credentials        = "1.5.0"         # :contentReference[oaicite:6]{index=6}
+hilt                  = "2.56.2"
+dokka                 = "2.0.0"
+room                  = "2.7.1"
 
-# — Testing —
-junit4             = "4.13.2"
-androidxJunit      = "1.2.1"
-espressoCore       = "3.6.1"
-firebaseKtX   = "23.2.0"      # 06-Feb-2025
-playAuth      = "24.4.0"
+firebaseBom           = "33.13.0"
+credentials           = "1.5.0"
+playAuth              = "21.3.0"
+
+coil                  = "3.2.0"
+lottie                = "6.6.6"
+accompanist           = "0.37.3"
+spinwheel             = "1.1.1"
+
 # --------------------------------------------------------
-# Plugins
+# Plugins (👈 añadidos los que faltaban)
 # --------------------------------------------------------
 [plugins]
 android-application   = { id = "com.android.application",             version.ref = "agp" }
 android-library       = { id = "com.android.library",                 version.ref = "agp" }
 kotlin-android        = { id = "org.jetbrains.kotlin.android",        version.ref = "kotlin" }
 kotlin-compose        = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization  = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm            = { id = "org.jetbrains.kotlin.jvm",            version.ref = "kotlin" }
 kotlin-kapt           = { id = "org.jetbrains.kotlin.kapt",           version.ref = "kotlin" }
 kotlin-ksp            = { id = "com.google.devtools.ksp",             version.ref = "ksp" }
-kotlin-serialization  = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt-android          = { id = "com.google.dagger.hilt.android",      version.ref = "hilt" }
+google-services       = { id = "com.google.gms.google-services",      version = "4.4.2" }
+room                  = { id = "androidx.room",                       version.ref = "room" }
 dokka                 = { id = "org.jetbrains.dokka",                 version.ref = "dokka" }
 
 # --------------------------------------------------------
-# Libraries
+# Libraries (sin cambios salvo las que ya habías añadido)
 # --------------------------------------------------------
 [libraries]
-# — Core —
-androidx-core-ktx        = { group = "androidx.core",              name = "core-ktx",                version.ref = "coreKtx" }
+android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "androidDatabaseSqlcipher" }
+androidx-core-ktx        = { group = "androidx.core",              name = "core-ktx",                 version.ref = "coreKtx" }
 lifecycle-runtime-ktx    = { group = "androidx.lifecycle",         name = "lifecycle-runtime-ktx",    version.ref = "lifecycleKtx" }
 kotlinx-datetime         = { group = "org.jetbrains.kotlinx",      name = "kotlinx-datetime",         version.ref = "kotlinxDatetime" }
 kotlinx-coroutines-core  = { group = "org.jetbrains.kotlinx",      name = "kotlinx-coroutines-core",  version.ref = "kotlinxCoroutines" }
-kotlinx-coroutines-test  = { group = "org.jetbrains.kotlinx",      name = "kotlinx-coroutines-test",  version.ref = "kotlinxCoroutines" }
 kotlinxSerializationJson = { group = "org.jetbrains.kotlinx",      name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
-# — Compose (BOM gestiona versiones) —
-compose-bom                = { group = "androidx.compose",           name = "compose-bom",             version.ref = "composeBom" }
-activity-compose           = { group = "androidx.activity",          name = "activity-compose",        version.ref = "activityCompose" }
-compose-material3          = { group = "androidx.compose.material3", name = "material3" }
-compose-ui-test-junit4     = { group = "androidx.compose.ui",        name = "ui-test-junit4" }
-compose-ui-test-manifest   = { group = "androidx.compose.ui",        name = "ui-test-manifest" }
-compose-ui-tooling-preview = { group = "androidx.compose.ui",        name = "ui-tooling-preview" }
-compose-ui-tooling         = { group = "androidx.compose.ui",        name = "ui-tooling" }
+compose-bom                = { group = "androidx.compose",             name = "compose-bom",             version.ref = "composeBom" }
+activity-compose           = { group = "androidx.activity",            name = "activity-compose",        version.ref = "activityCompose" }
+compose-material3          = { group = "androidx.compose.material3",   name = "material3" }
+material-icons-extended    = { group = "androidx.compose.material",    name = "material-icons-extended" }
+compose-ui-tooling         = { group = "androidx.compose.ui",          name = "ui-tooling" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui",          name = "ui-tooling-preview" }
 
-# — Hilt / Dagger —
-hilt-android               = { group = "com.google.dagger",          name = "hilt-android",            version.ref = "hilt" }
-hilt-compiler              = { group = "com.google.dagger",          name = "hilt-android-compiler",   version.ref = "hilt" }
-hilt-android-testing       = { group = "com.google.dagger",          name = "hilt-android-testing",    version.ref = "hilt" }
+coil-compose             = { group = "io.coil-kt.coil3",           name = "coil-compose",              version.ref = "coil" }
+coil-network-okhttp      = { group = "io.coil-kt.coil3",           name = "coil-network-okhttp",       version.ref = "coil" }
+lottie-compose           = { group = "com.airbnb.android",         name = "lottie-compose",            version.ref = "lottie" }
+accompanist-permissions  = { group = "com.google.accompanist",     name = "accompanist-permissions",   version.ref = "accompanist" }
+spinwheel-compose        = { group = "com.github.commandiron",     name = "SpinWheelCompose",          version.ref = "spinwheel" }
 
-# — Firebase —
-firebase-bom                = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-auth              = { group = "com.google.firebase",        name = "firebase-auth" }           # versión la dicta el BoM
-firebase-auth-ktx          = { group = "com.google.firebase",        name = "firebase-auth-ktx" }       # misma regla
-firebase-firestore         = { group = "com.google.firebase",        name = "firebase-firestore" }
-firebase-firestore-ktx     = { group = "com.google.firebase",        name = "firebase-firestore-ktx" }
+room-runtime             = { group = "androidx.room",             name = "room-runtime",              version.ref = "room" }
+room-ktx                 = { group = "androidx.room",             name = "room-ktx",                  version.ref = "room" }
+room-compiler            = { group = "androidx.room",             name = "room-compiler",             version.ref = "room" }
 
-# — Google identity services —
-play-services-auth         = { group = "com.google.android.gms",     name = "play-services-auth",       version = "21.1.0" }
-credentials                 = { group = "androidx.credentials",       name = "credentials",               version.ref = "credentials" }
+hilt-android             = { group = "com.google.dagger",         name = "hilt-android",              version.ref = "hilt" }
+hilt-compiler            = { group = "com.google.dagger",         name = "hilt-compiler",             version.ref = "hilt" }
+hilt-navigation          = { group = "androidx.hilt",             name = "hilt-navigation-compose",   version = "1.2.0" }
 
-# — UI sistema —
-androidx-appcompat         = { group = "androidx.appcompat",         name = "appcompat",                version.ref = "appcompat" }
-material                   = { group = "com.google.android.material",name = "material",                 version.ref = "material" }
+firebase-bom               = { group = "com.google.firebase",      name = "firebase-bom",              version.ref = "firebaseBom" }
+firebase-auth-ktx          = { group = "com.google.firebase",      name = "firebase-auth-ktx" }
+firebase-firestore-ktx     = { group = "com.google.firebase",      name = "firebase-firestore-ktx" }
+firebase-storage-ktx       = { group = "com.google.firebase",      name = "firebase-storage-ktx" }
+firebase-analytics-ktx     = { group = "com.google.firebase",      name = "firebase-analytics-ktx" }
 
-# — Testing —
-junit4                     = { group = "junit",                      name = "junit",                    version.ref = "junit4" }
-androidx-junit             = { group = "androidx.test.ext",          name = "junit",                    version.ref = "androidxJunit" }
-espresso-core              = { group = "androidx.test.espresso",     name = "espresso-core",            version.ref = "espressoCore" }
+credentials               = { group = "androidx.credentials",      name = "credentials",               version.ref = "credentials" }
+credentials-play          = { group = "androidx.credentials",      name = "credentials-play-services-auth", version.ref = "credentials" }
+play-services-auth = { group = "com.google.android.gms", name  = "play-services-auth", version.ref = "playAuth" }
+androidx-appcompat        = { group = "androidx.appcompat",        name = "appcompat",                 version.ref = "appcompat" }
+material                  = { group = "com.google.android.material", name = "material",                version.ref = "material" }
+
+junit4                    = { group = "junit",                     name = "junit",                     version = "4.13.2" }
+androidx-junit            = { group = "androidx.test.ext",         name = "junit",                     version = "1.2.1" }
+espresso-core             = { group = "androidx.test.espresso",    name = "espresso-core",             version = "3.6.1" }
+# — TESTING (Compose + Hilt) —
+compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+hilt-android-testing   = { group = "com.google.dagger",   name = "hilt-android-testing", version.ref = "hilt" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+
+[bundles]
+compose = [
+    "compose-bom",
+    "compose-material3",
+    "material-icons-extended",
+    "activity-compose"
+]
+auth = [
+    "credentials",
+    "credentials-play",
+    "play-services-auth"
+]
