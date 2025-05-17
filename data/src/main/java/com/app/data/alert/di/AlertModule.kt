@@ -34,15 +34,20 @@ object AlertModule {
 
     @Provides
     @Singleton
-    fun provideChannelInitializer(@ApplicationContext ctx: Context): () -> Unit = {
+    @JvmSuppressWildcards
+    fun provideChannelInitializer(
+        @ApplicationContext ctx: Context
+    ): ChannelInitializer = ChannelInitializer {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val mgr = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel(
+            val mgr = ctx.getSystemService(NotificationManager::class.java)
+            val ch  = NotificationChannel(
                 HabitAlertReceiver.CHANNEL_HABITS,
                 ctx.getString(R.string.channel_habits),
                 NotificationManager.IMPORTANCE_HIGH
             )
-            mgr.createNotificationChannel(channel)
+            mgr.createNotificationChannel(ch)
         }
     }
 }
+
+fun interface ChannelInitializer { operator fun invoke() }

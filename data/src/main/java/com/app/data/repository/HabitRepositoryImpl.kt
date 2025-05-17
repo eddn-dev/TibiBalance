@@ -1,8 +1,8 @@
 package com.app.data.repository
 
 import com.app.data.local.dao.HabitDao
-import com.app.data.mapper.HabitMappers.toDomain
-import com.app.data.mapper.HabitMappers.toEntity
+import com.app.data.mappers.HabitMappers.toDomain
+import com.app.data.mappers.HabitMappers.toEntity
 import com.app.domain.entities.Habit
 import com.app.domain.ids.HabitId
 import com.app.domain.repository.HabitRepository
