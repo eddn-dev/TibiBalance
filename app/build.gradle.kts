@@ -24,11 +24,6 @@ android {
 
     buildFeatures { compose = true }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
-
-
     // Java 17 toolchain
     kotlin { jvmToolchain(17) }
 
