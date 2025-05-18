@@ -4,10 +4,10 @@
 [versions]
 agp                   = "8.8.2"
 androidDatabaseSqlcipher = "4.5.4"
-kotlin                = "2.0.21"
-ksp                   = "2.0.21-1.0.17"
+kotlin                = "2.0.2"
+ksp                   = "2.0.20-1.0.32"
 gradleWrapper         = "8.12.1"
-composeCompiler         = "2.0.21"
+composeCompiler         = "2.0.0"
 
 kotlinxCoroutines     = "1.10.2"
 kotlinxDatetime       = "0.6.2"
