@@ -1,11 +1,13 @@
 package com.app.tibibalance.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.app.tibibalance.ui.screens.auth.ForgotPasswordScreen
+import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordScreen
 import com.app.tibibalance.ui.screens.auth.signin.SignInScreen
 import com.app.tibibalance.ui.screens.auth.signup.SignUpScreen
 import com.app.tibibalance.ui.screens.auth.verify.VerifyEmailScreen
@@ -16,6 +18,7 @@ import com.app.tibibalance.ui.screens.main.MainScreen
 import com.app.tibibalance.ui.screens.settings.ChangePasswordScreenPreviewOnly
 import com.app.tibibalance.ui.screens.settings.DeleteAccountScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Screen.Launch.route) {

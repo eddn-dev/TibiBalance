@@ -3,6 +3,7 @@ package com.app.tibibalance.di
 import com.app.domain.repository.AuthRepository
 import com.app.domain.usecase.auth.GoogleSignInUseCase
 import com.app.domain.usecase.auth.SignInUseCase
+import com.app.domain.usecase.auth.SignUpUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,9 @@ object AuthUseCaseModule {
 
     @Provides
     fun provideSignInUseCase(repo: AuthRepository) = SignInUseCase(repo)
+
+    @Provides
+    fun provideSignUpUseCase(repo: AuthRepository) = SignUpUseCase(repo)
 
     @Provides
     fun provideGoogleSignInUseCase(repo: AuthRepository) = GoogleSignInUseCase(repo)

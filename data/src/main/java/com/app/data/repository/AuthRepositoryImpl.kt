@@ -3,7 +3,6 @@ package com.app.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.app.data.mappers.toAuthError
-import com.app.data.mappers.toFirestoreDate
 import com.app.data.mappers.toFirestoreMap
 import com.app.domain.common.SyncMeta
 import com.app.domain.entities.User
