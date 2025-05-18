@@ -4,4 +4,6 @@
     <string name="launch_subtitle">Bienvenido a TibiBalance</string>
     <string name="btn_sign_in">Iniciar sesión</string>
     <string name="btn_sign_up">Crear cuenta</string>
+    <string name="sign_up_title">Registrate en Tibibalance</string>
+    <string name="verify_email_title">Verifica tu correo</string>
 </resources>

@@ -14,4 +14,4 @@ val SurfaceLight = Color(0xFFECECEC)
 val White = Color(0xFFFFFFFF)
 
 /** Surface color for dark theme elements */
-val SurfaceDark = Color(0xFF121212)
+val SurfaceDark = Color(0xFF000B4D)

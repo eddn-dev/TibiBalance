@@ -23,7 +23,6 @@
 // ui/components/TextButtonLink.kt
 package com.app.tibibalance.ui.components.buttons
 
-import androidx.compose.foundation.layout.Column // Para Preview
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding // Para Preview
 import androidx.compose.material3.*
