@@ -24,9 +24,6 @@ import javax.inject.Inject
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-/* ── Dispatcher qualifier ───────────────────────────── */
-@Qualifier annotation class IoDispatcher
-
 /* ── Implementación singleton ───────────────────────── */
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(DelicateCoroutinesApi::class)

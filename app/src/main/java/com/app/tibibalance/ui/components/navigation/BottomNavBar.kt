@@ -64,41 +64,26 @@ import androidx.compose.runtime.* // Para remember y mutableStateOf en preview
  */
 @Composable
 fun BottomNavBar(
-    items: List<BottomNavItem>, // Lista de elementos a mostrar
-    selectedRoute: String?, // Ruta del elemento actualmente seleccionado
-    onItemClick: (String) -> Unit, // Callback al pulsar un elemento
-    modifier: Modifier = Modifier // Modificador externo opcional
+    items: List<BottomNavItem>,
+    selectedRoute: String?,
+    onItemClick: (String) -> Unit
 ) {
-    // Contenedor principal de la barra de navegación
     Surface(
-        modifier = modifier // Aplica modificador externo
-            .fillMaxWidth() // Ocupa todo el ancho de la pantalla
-            .height(80.dp), // Altura fija de la barra
-        // Color de fondo tomado del esquema de colores del tema
+        modifier = Modifier.fillMaxWidth().height(80.dp),
         color = MaterialTheme.colorScheme.surface,
-        // Elevación para crear un efecto de sombra y separación visual
         shadowElevation = 8.dp,
-        // Forma con bordes superiores redondeados
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
-        // Fila para disponer los botones de navegación horizontalmente
         Row(
-            // Ocupa todo el tamaño disponible dentro del Surface
-            modifier = Modifier.fillMaxSize(),
-            // Distribuye el espacio sobrante uniformemente entre los elementos
+            Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly,
-            // Centra los botones verticalmente dentro de la Row
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Itera sobre cada elemento de navegación proporcionado
             items.forEach { item ->
-                // Renderiza un NavBarButton para este elemento
                 NavBarButton(
-                    item = item, // Pasa los datos del elemento (icono, texto, ruta)
-                    // Determina si este botón es el que está seleccionado actualmente
-                    selected = (item.route == selectedRoute),
-                    // Define la acción a ejecutar cuando se pulse este botón
-                    onClick = { onItemClick(item.route) } // Llama al callback con la ruta
+                    item = item,
+                    selected = item.route == selectedRoute,
+                    onClick = { onItemClick(item.route) }
                 )
             }
         }

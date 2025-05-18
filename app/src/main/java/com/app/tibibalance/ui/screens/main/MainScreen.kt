@@ -11,30 +11,48 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.app.tibibalance.ui.components.navigation.BottomNavBar
 import com.app.tibibalance.ui.components.navigation.bottomItems
 import com.app.tibibalance.ui.navigation.Screen
+import com.app.tibibalance.ui.screens.habits.HabitsScreen
 
 @Composable
 fun MainScreen(rootNav: NavHostController) {
-    val selected = remember { mutableStateOf(Screen.Home.route) }
+    /* ── controlador privado para el bottom nav ── */
+    val mainNav = rememberNavController()
+
+    /* ── estado reactivo para la pestaña activa ── */
+    val current = mainNav.currentBackStackEntryAsState()
+    val currentRoute = current.value?.destination?.route
 
     Scaffold(
         bottomBar = {
             BottomNavBar(
                 items = bottomItems,
-                selectedRoute = selected.value,
-                onItemClick = { selected.value = it }
+                selectedRoute = currentRoute,
+                onItemClick = { route ->
+                    /* evita duplicados en la pila */
+                    if (route != currentRoute) {
+                        mainNav.navigate(route) { launchSingleTop = true }
+                    }
+                }
             )
         }
     ) { padding ->
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(padding), // <-- APPLY PADDING HERE
-            contentAlignment = Alignment.Center
+        NavHost(
+            navController = mainNav,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(padding)
         ) {
-            Text(text = selected.value)
+            composable(Screen.Home.route)     { /* TODO HomeScreen() */ }
+            composable(Screen.Emotions.route) { /* TODO EmotionsScreen() */ }
+            composable(Screen.Habits.route)   { HabitsScreen() }   // 👈 ya conectada
+            composable(Screen.Profile.route)  { /* TODO ProfileScreen() */ }
+            composable(Screen.Settings.route) { /* TODO SettingsScreen() */ }
         }
     }
 }

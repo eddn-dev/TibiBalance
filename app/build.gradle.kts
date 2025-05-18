@@ -84,6 +84,7 @@ dependencies {
 
     /* ── Coroutines Play Svc helpers ────────────────── */
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
     /* ── Coroutines ─────────────────────────────────── */
     implementation(libs.kotlinx.coroutines.core)
