@@ -2,8 +2,6 @@ package com.app.data.local.converters
 
 import androidx.room.TypeConverter
 import com.app.domain.config.Repeat
-import kotlinx.serialization.encodeToString        // ⬅️ extensiones
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 object RepeatConverters {

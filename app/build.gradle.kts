@@ -85,6 +85,12 @@ dependencies {
     /* ── Coroutines Play Svc helpers ────────────────── */
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
 
+    /* ── Coroutines ─────────────────────────────────── */
+    implementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+
     /* ── Tests ──────────────────────────────────────── */
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.junit)

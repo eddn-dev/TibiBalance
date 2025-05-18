@@ -191,7 +191,7 @@ fun SignUpScreen(
 
             Spacer(Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Divider(Modifier.weight(1f)); Text("  •  "); Divider(Modifier.weight(1f))
+                HorizontalDivider(Modifier.weight(1f)); Text("  •  "); HorizontalDivider(Modifier.weight(1f))
             }
             Spacer(Modifier.height(8.dp))
             GoogleSignButton(onClick = ::launchGoogle)

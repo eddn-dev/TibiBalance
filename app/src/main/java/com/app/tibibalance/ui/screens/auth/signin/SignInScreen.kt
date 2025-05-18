@@ -152,7 +152,7 @@ fun SignInScreen(
 
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Divider(Modifier.weight(1f)); Text("  •  "); Divider(Modifier.weight(1f))
+                HorizontalDivider(Modifier.weight(1f)); Text("  •  "); HorizontalDivider(Modifier.weight(1f))
             }
             Spacer(Modifier.height(8.dp))
 

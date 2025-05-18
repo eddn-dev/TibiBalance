@@ -82,5 +82,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 
     /* ─── WorkManager (para SyncWorker) ───────────── */
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
 }

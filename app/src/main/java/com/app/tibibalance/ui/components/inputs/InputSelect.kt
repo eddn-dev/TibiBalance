@@ -75,7 +75,7 @@ fun InputSelect(
         OutlinedTextField(
             modifier = Modifier // Modificador específico para el TextField
                 .fillMaxWidth() // Ocupa el ancho disponible
-                .menuAnchor(), // ¡Importante! Vincula este TextField al menú desplegable
+                .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true), // ¡Importante! Vincula este TextField al menú desplegable
             readOnly       = true, // El usuario no puede escribir directamente
             value          = selectedOption, // Muestra la opción seleccionada
             onValueChange  = {}, // No hace nada, es readOnly

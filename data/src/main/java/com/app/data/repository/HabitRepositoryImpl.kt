@@ -1,20 +1,22 @@
 package com.app.data.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.app.data.local.dao.HabitDao
 import com.app.data.mappers.HabitMappers.toDomain
+import com.app.data.mappers.HabitMappers.toDto
 import com.app.data.mappers.HabitMappers.toEntity
+import com.app.data.remote.datasource.HabitRemoteDataSource
 import com.app.domain.entities.Habit
 import com.app.domain.ids.HabitId
 import com.app.domain.repository.HabitRepository
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -26,21 +28,18 @@ import javax.inject.Singleton
 @Qualifier annotation class IoDispatcher
 
 /* ── Implementación singleton ───────────────────────── */
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(DelicateCoroutinesApi::class)
 @Singleton                      // ✅ usa scope oficial de Hilt
 class HabitRepositoryImpl @Inject constructor(
     private val habitDao : HabitDao,
-    private val firestore: FirebaseFirestore,
+    private val remote: HabitRemoteDataSource,
     @IoDispatcher private val io: CoroutineDispatcher,
     /** Devuelve UID actual – inyectado desde AuthModule */
     private val uidProvider: () -> String
 ) : HabitRepository {
 
-    /* ───────── helpers Firestore ───────── */
-    private val habitsCol
-        get() = firestore.collection("users")
-            .document(uidProvider())
-            .collection("habits")
+    private val syncScope by lazy { CoroutineScope(io + SupervisorJob()) }
 
     /* ───────── API pública ─────────────── */
     override fun getHabitsFlow(): Flow<List<Habit>> =
@@ -88,6 +87,7 @@ class HabitRepositoryImpl @Inject constructor(
         /* insertar HabitActivityEntity ➜ TODO en fase actividades */
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun syncNow(): Result<Unit> =
         runCatchingIO {
             pushLocalPending()
@@ -98,36 +98,33 @@ class HabitRepositoryImpl @Inject constructor(
 
     private suspend fun pushLocalPending() = withContext(io) {
         habitDao.pendingSyncSnapshot().forEach { entity ->
-            habitsCol.document(entity.id.value)
-                .set(entity, SetOptions.merge())
-                .await()
+            remote.pushHabit(entity.toDto())               // extension toDto()
             habitDao.clearPending(entity.id.value)
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun pullRemoteChanges() = withContext(io) {
-        habitsCol.get().await().documents.forEach { doc ->
-            val remote =
-                doc.toObject(com.app.data.local.entities.HabitEntity::class.java)
-                    ?: return@forEach
-            val local = habitDao.findByIdSync(remote.id.value)
-            if (local == null || remote.meta.updatedAt > local.meta.updatedAt) {
-                habitDao.upsertAll(remote)
-            }
+        remote.pullHabits().forEach { dto ->
+            val remoteE = dto.toEntity()
+            val local   = habitDao.findByIdSync(remoteE.id.value)
+            if (local == null || remoteE.meta.updatedAt > local.meta.updatedAt)
+                habitDao.upsertAll(remoteE)
         }
     }
 
     init {
-        habitsCol.addSnapshotListener { snap, _ ->
-            snap?.documentChanges?.forEach { change ->
-                change.document
-                    .toObject(com.app.data.local.entities.HabitEntity::class.java)
-                    .let { entity ->
-                        GlobalScope.launch(io) { habitDao.upsertAll(entity) }
-                    }
-            }
-        }
+        subscribeToRemote()
     }
+
+    private fun subscribeToRemote() {
+        remote.listenHabits()
+            .map    { it.toEntity() }
+            .flowOn(io)
+            .onEach { entity -> habitDao.upsertAll(entity) }
+            .launchIn(syncScope)
+    }
+
 
     private suspend inline fun <T> runCatchingIO(
         crossinline block: suspend () -> T
