@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.google.services)    // Firebase Gradle Plugin
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.ksp)         // Hilt & Room via KSP
-    alias(libs.plugins.room)               // Room schema/tasks
 }
 
 android {
@@ -26,14 +25,13 @@ android {
     buildFeatures { compose = true }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
+
 
     // Java 17 toolchain
     kotlin { jvmToolchain(17) }
 
-    // Room JSON schemas (for migration tests)
-    room { schemaDirectory("$projectDir/schemas") }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {

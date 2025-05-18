@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TibiBalance</string>
     <string name="channel_habits">Hábitos</string>
+    <string name="launch_subtitle">Bienvenido a TibiBalance</string>
+    <string name="btn_sign_in">Iniciar sesión</string>
+    <string name="btn_sign_up">Crear cuenta</string>
 </resources>

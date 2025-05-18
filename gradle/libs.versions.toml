@@ -5,29 +5,31 @@
 agp                   = "8.8.2"
 androidDatabaseSqlcipher = "4.5.4"
 kotlin                = "2.0.21"
-ksp                   = "2.0.21-1.0.28"
+ksp                   = "2.0.21-1.0.17"
 gradleWrapper         = "8.12.1"
+composeCompiler         = "2.0.21"
 
 kotlinxCoroutines     = "1.10.2"
 kotlinxDatetime       = "0.6.2"
-kotlinxSerialization  = "1.7.0"
+kotlinxSerialization  = "1.7.3"
 
-composeBom            = "2025.04.01"
+composeBom            = "2025.05.00"
 activityCompose       = "1.10.1"
 coreKtx               = "1.16.0"
-lifecycleKtx          = "2.8.7"
+lifecycleKtx          = "2.9.0"
 
 appcompat             = "1.7.0"
 material              = "1.12.0"
 
-hilt                  = "2.56.2"
+hilt                  = "2.51.1"
 dokka                 = "2.0.0"
 room                  = "2.7.1"
 
 firebaseBom           = "33.13.0"
 credentials           = "1.5.0"
 playAuth              = "21.3.0"
-navigationCompose     = "2.7.7"
+navigationCompose     = "2.9.0"
+google-identity         = "1.1.1"
 
 coil                  = "3.2.0"
 lottie                = "6.6.6"
@@ -96,6 +98,7 @@ play-services-auth = { group = "com.google.android.gms", name  = "play-services-
 androidx-appcompat        = { group = "androidx.appcompat",        name = "appcompat",                 version.ref = "appcompat" }
 material                  = { group = "com.google.android.material", name = "material",                version.ref = "material" }
 
+googleid                  = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-identity" }
 junit4                    = { group = "junit",                     name = "junit",                     version = "4.13.2" }
 androidx-junit            = { group = "androidx.test.ext",         name = "junit",                     version = "1.2.1" }
 espresso-core             = { group = "androidx.test.espresso",    name = "espresso-core",             version = "3.6.1" }
@@ -103,6 +106,7 @@ espresso-core             = { group = "androidx.test.espresso",    name = "espre
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 hilt-android-testing   = { group = "com.google.dagger",   name = "hilt-android-testing", version.ref = "hilt" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 
 [bundles]
 compose = [
@@ -114,5 +118,6 @@ compose = [
 auth = [
     "credentials",
     "credentials-play",
-    "play-services-auth"
+    "play-services-auth",
+    "googleid"
 ]

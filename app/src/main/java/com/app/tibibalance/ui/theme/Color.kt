@@ -15,5 +15,3 @@ val White = Color(0xFFFFFFFF)
 
 /** Surface color for dark theme elements */
 val SurfaceDark = Color(0xFF121212)
-
-val Pink40 = Color(0xFF7D5260)

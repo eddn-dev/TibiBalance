@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.tibibalance.ui.screens.auth.ForgotPasswordScreen
-import com.app.tibibalance.ui.screens.auth.SignInScreen
+import com.app.tibibalance.ui.screens.auth.signin.SignInScreen
 import com.app.tibibalance.ui.screens.auth.SignUpScreen
 import com.app.tibibalance.ui.screens.auth.VerifyEmailScreen
 import com.app.tibibalance.ui.screens.settings.ConfigureNotificationScreen

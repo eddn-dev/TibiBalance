@@ -13,6 +13,7 @@ dependencies {
 
     // ➕ Coroutines
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.javax.inject)
 
     // Tests
     testImplementation(libs.junit4)
