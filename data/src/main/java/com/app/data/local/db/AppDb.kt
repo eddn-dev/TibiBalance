@@ -18,9 +18,9 @@ import com.app.data.local.entities.DailyMetricsEntity
 import com.app.data.local.entities.EmotionEntryEntity
 import com.app.data.local.entities.HabitActivityEntity
 import com.app.data.local.entities.HabitEntity
-import com.app.data.local.entities.HabitTemplateEntity
 import com.app.data.local.entities.OnboardingStatusEntity
 import com.app.data.local.entities.UserEntity
+import com.app.data.local.entities.HabitTemplateEntity
 
 @Database(
     entities = [
@@ -29,7 +29,7 @@ import com.app.data.local.entities.UserEntity
         DailyMetricsEntity::class, OnboardingStatusEntity::class,
         HabitTemplateEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(

@@ -5,30 +5,64 @@
  */
 package com.app.data.mappers
 
-import com.app.data.local.entities.HabitTemplateEntity
+import HabitTemplateEntity
 import com.app.domain.entities.HabitForm
 import com.app.domain.entities.HabitTemplate
 
-object TemplateMappers {
+// :data/src/main/java/com/app/data/mappers/TemplateMappers.kt
+/**
+ * @file    TemplateMappers.kt
+ * @ingroup data_mapper
+ * @brief   Conversión HabitTemplate ⇆ HabitTemplateEntity.
+ */
 
-    /** Instancia JSON común a todos los mapeadores */
-    private val json = JsonConfig.default
-
-    /* ----------- Room ➡︎ Dominio ----------- */
-    fun HabitTemplateEntity.toDomain(): HabitTemplate = HabitTemplate(
-        id         = id,
+fun HabitTemplateEntity.toDomain(): HabitTemplate = HabitTemplate(
+    id       = id,
+    name     = name,
+    icon     = icon,
+    category = category,
+    formDraft = HabitForm(
+        /* Básico */
         name       = name,
-        category   = category,
+        desc       = "",            // Las plantillas no almacenan descripción larga
         icon       = icon,
-        formDraft  = json.decodeFromString(HabitForm.serializer(), formJson)
-    )
+        category   = category,
 
-    /* ----------- Dominio ➡︎ Room ----------- */
-    fun HabitTemplate.toEntity(): HabitTemplateEntity = HabitTemplateEntity(
-        id       = id,
-        name     = name,
-        icon     = icon,
-        category = category,
-        formJson = json.encodeToString(HabitForm.serializer(), formDraft)
+        /* Sesión */
+        sessionQty = sessionQty,
+        sessionUnit= sessionUnit,
+
+        /* Repetición */
+        repeatPreset= repeatPreset,
+        weekDays    = weekDays,
+
+        /* Periodo */
+        periodQty   = periodQty,
+        periodUnit  = periodUnit,
+
+        /* Notif */
+        notify       = notify,
+        notifMessage = notifMessage,
+        notifTimes   = notifTimes
     )
-}
+)
+
+fun HabitTemplate.toEntity(): HabitTemplateEntity = HabitTemplateEntity(
+    id       = id,
+    name     = name,
+    icon     = icon,
+    category = category,
+
+    sessionQty   = formDraft.sessionQty,
+    sessionUnit  = formDraft.sessionUnit,
+
+    repeatPreset = formDraft.repeatPreset,
+    weekDays     = formDraft.weekDays,
+
+    periodQty    = formDraft.periodQty,
+    periodUnit   = formDraft.periodUnit,
+
+    notify       = formDraft.notify,
+    notifMessage = formDraft.notifMessage,
+    notifTimes   = formDraft.notifTimes
+)
