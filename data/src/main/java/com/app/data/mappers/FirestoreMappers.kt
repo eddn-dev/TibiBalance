@@ -1,5 +1,7 @@
 package com.app.data.mappers
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.app.domain.common.SyncMeta
 import com.app.domain.entities.User
 import com.app.domain.entities.UserSettings
@@ -18,6 +20,7 @@ import java.util.Date
 fun LocalDate.toFirestoreDate(): Date =
     Date(atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds())      //   OK para Firestore dates
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun Instant.toTimestamp(): Timestamp =
     Timestamp(this.toJavaInstant())
 
@@ -46,6 +49,7 @@ fun User.toFirestoreMap() = mapOf(
     "meta"        to meta.toFirestoreMap()
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun Map<String,Any?>.toUser(): User = User(
     uid         = get("uid") as String,
     email       = get("email") as String,

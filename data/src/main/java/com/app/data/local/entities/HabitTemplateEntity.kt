@@ -11,19 +11,22 @@
  */
 package com.app.data.local.entities
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import androidx.room.Index
 import com.app.data.local.converters.IntSetConverter
 import com.app.data.local.converters.StringSetConverter
-import com.app.domain.config.PeriodUnit
 import com.app.domain.config.RepeatPreset
-import com.app.domain.config.SessionUnit
 import com.app.domain.enums.HabitCategory
+import com.app.domain.enums.PeriodUnit
+import com.app.domain.enums.SessionUnit
 
 @Entity(
     tableName = "habit_templates",
     indices   = [Index("category"), Index("notify")]
 )
 data class HabitTemplateEntity(
-
     /* ── Identidad ───────────────────────────────────────── */
     @PrimaryKey val id   : String,
     val name     : String,
@@ -36,7 +39,7 @@ data class HabitTemplateEntity(
 
     /* ── Repetición ──────────────────────────────────────── */
     val repeatPreset: RepeatPreset,
-    @TypeConverters(IntSetConverter::class)
+    @field:TypeConverters(IntSetConverter::class)
     val weekDays    : Set<Int>,                //!< 1=Lun … 7=Dom cuando `PERSONALIZADO`
 
     /* ── Periodo total ───────────────────────────────────── */
@@ -46,6 +49,6 @@ data class HabitTemplateEntity(
     /* ── Notificaciones ─────────────────────────────────── */
     val notify      : Boolean,
     val notifMessage: String,
-    @TypeConverters(StringSetConverter::class)
+    @field:TypeConverters(StringSetConverter::class)
     val notifTimes  : Set<String>               //!< "HH:mm" en 24 h
 )

@@ -5,7 +5,7 @@
  */
 package com.app.data.mappers
 
-import HabitTemplateEntity
+import com.app.data.local.entities.HabitTemplateEntity
 import com.app.domain.entities.HabitForm
 import com.app.domain.entities.HabitTemplate
 

@@ -4,9 +4,9 @@
  */
 package com.app.data.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.app.data.local.dao.HabitTemplateDao
-import com.app.data.mappers.TemplateMappers.toDomain
-import com.app.data.mappers.TemplateMappers.toEntity
 import com.app.data.remote.firebase.HabitTemplateService
 import com.app.domain.entities.HabitTemplate
 import com.app.domain.repository.HabitTemplateRepository
@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import com.app.data.mappers.toDomain      // 👈 faltaban
+import com.app.data.mappers.toEntity
 
 @Qualifier annotation class IoDispatcher
 
@@ -34,6 +36,7 @@ class HabitTemplateRepositoryImpl @Inject constructor(
             .flowOn(io)
 
     /* ------------------- Descarga única --------------------- */
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun refreshOnce() = withContext(io) {
         val remote = svc.fetchOnce()                  // → List<HabitTemplate>
         dao.upsert(remote.map { it.toEntity() })
@@ -42,6 +45,7 @@ class HabitTemplateRepositoryImpl @Inject constructor(
     /* ------------------- Sincronización en vivo ------------- */
     private val syncScope = CoroutineScope(io + SupervisorJob())
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun startSync() {
         // Evita lanzar más de un listener
         if (syncScope.coroutineContext[Job]?.isActive == true) return
