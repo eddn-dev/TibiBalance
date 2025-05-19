@@ -13,6 +13,7 @@ import com.app.domain.entities.*
 import com.app.domain.enums.*
 import com.app.domain.ids.HabitId
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
 import java.time.DayOfWeek
 import java.util.*
 
@@ -76,5 +77,25 @@ object HabitFormMappers {
     private fun defaultChallenge(): ChallengeConfig {
         val start = Clock.System.now()
         return ChallengeConfig(start = start, end = start)   // se rellenará luego en servicio
+    }
+
+
+    fun HabitForm.toNotifConfig(): NotifConfig {
+        val parsedTimes = notifTimes.mapNotNull { runCatching { LocalTime.parse(it) }.getOrNull() }
+        val pattern     = when (repeatPreset) {
+            RepeatPreset.DIARIO          -> Repeat.Daily()
+            RepeatPreset.CADA_3_DIAS     -> Repeat.Daily(3)
+            RepeatPreset.CADA_15_DIAS    -> Repeat.Daily(15)
+            else                         -> Repeat.None
+        }
+
+        return NotifConfig(
+            enabled    = notify,
+            message    = notifMessage.ifBlank { "¡Es hora!" },
+            times      = parsedTimes,
+            pattern    = pattern,
+            mode       = NotifMode.SOUND,
+            vibrate    = true
+        )
     }
 }

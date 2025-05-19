@@ -49,6 +49,7 @@ fun TrackingStep(
     val periodQtyErr  = errors.any { it.contains("periodo",  true) }
     val weekDaysErr   = errors.any { it.contains("día",      true) }
     val repeatErr     = errors.any { it.contains("repetición", true) }
+    val unitOptions   = listOf("No aplica", "min", "hrs", "veces")
 
     Column(
         Modifier
@@ -78,25 +79,30 @@ fun TrackingStep(
                         supportingText = if (sessionQtyErr) "Requerido" else null
                     )
                 }
+                /* lista de opciones */
+                val unitOptions = listOf("No aplica", "veces", "min", "hrs")
+
                 InputSelect(
-                    options = listOf("No aplica", "min", "hrs"),
+                    options = unitOptions,
                     selectedOption = when (form.sessionUnit) {
+                        SessionUnit.VECES   -> "veces"
                         SessionUnit.MINUTOS -> "min"
                         SessionUnit.HORAS   -> "hrs"
                         else                -> "No aplica"
                     },
-                    onOptionSelected = { opt ->
-                        val unit = when (opt) {
-                            "min" -> SessionUnit.MINUTOS
-                            "hrs" -> SessionUnit.HORAS
-                            else  -> SessionUnit.INDEFINIDO
+                    onOptionSelected = { sel ->
+                        val unit = when (sel) {
+                            "veces" -> SessionUnit.VECES
+                            "min"   -> SessionUnit.MINUTOS
+                            "hrs"   -> SessionUnit.HORAS
+                            else    -> SessionUnit.INDEFINIDO
                         }
                         form = form.copy(
                             sessionUnit = unit,
                             sessionQty  = form.sessionQty.takeIf { unit != SessionUnit.INDEFINIDO }
                         )
                     },
-                    modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f),
                     isError  = sessionQtyErr && form.sessionUnit != SessionUnit.INDEFINIDO
                 )
             }

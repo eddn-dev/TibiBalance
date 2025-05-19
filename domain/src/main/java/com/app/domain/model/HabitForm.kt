@@ -38,5 +38,8 @@ data class HabitForm(
 
     /* ── Extras ───────────────────────────────────────────── */
     val notify     : Boolean              = false,
-    val challenge  : Boolean              = false
+    val challenge  : Boolean              = false,
+
+    val notifMessage: String = "",
+    val notifTimes  : Set<String> = emptySet()
 )

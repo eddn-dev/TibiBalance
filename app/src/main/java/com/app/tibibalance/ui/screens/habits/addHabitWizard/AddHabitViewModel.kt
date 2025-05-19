@@ -20,7 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddHabitViewModel @Inject constructor(
-    private val getTemplates  : HabitTemplateRepository,
+    private val getTemplates  : GetTemplatesFlowUseCase,
+    private val refresh       : RefreshTemplatesUseCase,
+    private val startSync     : StartTplSyncUseCase,
     private val createHabit   : CreateHabitUseCase,
     private val updateHabit   : UpdateHabitUseCase,
     private val syncHabits    : SyncHabitsUseCase,
@@ -33,9 +35,16 @@ class AddHabitViewModel @Inject constructor(
 
     /* -------------- template catalogue -------------- */
     val templates: StateFlow<List<HabitTemplate>> =
-        getTemplates.templates.stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList()
-        )
+        getTemplates().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    init {
+        viewModelScope.launch {
+            refresh()
+        }
+        viewModelScope.launch {
+            startSync()
+        }
+    }
 
     /* -------------- form state ---------------------- */
     private val _form = MutableStateFlow(HabitForm())

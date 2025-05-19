@@ -30,7 +30,9 @@ val HabitFormSaver: Saver<HabitForm, Any> = mapSaver(
             "periodQty"    to f.periodQty,
             "periodUnit"   to f.periodUnit.ordinal,
             "notify"       to f.notify,
-            "challenge"    to f.challenge
+            "challenge"    to f.challenge,
+            "notifMessage" to f.notifMessage,
+            "notifTimes"   to f.notifTimes.toList()    // List<String>
         )
     },
     restore = { m ->
@@ -46,7 +48,10 @@ val HabitFormSaver: Saver<HabitForm, Any> = mapSaver(
             periodQty    = m["periodQty"]   as Int?,
             periodUnit   = PeriodUnit.entries[(m["periodUnit"] as Int)],
             notify       = m["notify"]      as Boolean,
-            challenge    = m["challenge"]   as Boolean
+            challenge    = m["challenge"]   as Boolean,
+            notifMessage = m["notifMessage"] as String,
+            notifTimes   = (m["notifTimes"] as List<String>).toSet()
+
         )
     }
 )

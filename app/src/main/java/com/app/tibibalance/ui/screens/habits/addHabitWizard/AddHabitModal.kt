@@ -3,6 +3,8 @@
 
 package com.app.tibibalance.ui.screens.habits.addHabitWizard
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.*
@@ -32,6 +34,7 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.collectLatest
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddHabitModal(
     onDismissRequest: () -> Unit,
