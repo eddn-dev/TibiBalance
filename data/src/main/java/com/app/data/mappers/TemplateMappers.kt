@@ -16,53 +16,57 @@ import com.app.domain.entities.HabitTemplate
  * @brief   Conversión HabitTemplate ⇆ HabitTemplateEntity.
  */
 
-fun HabitTemplateEntity.toDomain(): HabitTemplate = HabitTemplate(
+// :data/mappers/TemplateMappers.kt
+fun HabitTemplateEntity.toDomain() = HabitTemplate(
     id       = id,
     name     = name,
     icon     = icon,
     category = category,
     formDraft = HabitForm(
         /* Básico */
-        name       = name,
-        desc       = "",            // Las plantillas no almacenan descripción larga
-        icon       = icon,
-        category   = category,
+        name = name,
+        desc = desc,                   //  👈  antes era ""
+        icon = icon,
+        category = category,
 
         /* Sesión */
-        sessionQty = sessionQty,
-        sessionUnit= sessionUnit,
+        sessionQty  = sessionQty,
+        sessionUnit = sessionUnit,
 
         /* Repetición */
-        repeatPreset= repeatPreset,
-        weekDays    = weekDays,
+        repeatPreset = repeatPreset,
+        weekDays     = weekDays,
 
         /* Periodo */
-        periodQty   = periodQty,
-        periodUnit  = periodUnit,
+        periodQty  = periodQty,
+        periodUnit = periodUnit,
 
         /* Notif */
-        notify       = notify,
-        notifMessage = notifMessage,
-        notifTimes   = notifTimes
+        notify          = notify,
+        notifMessage    = notifMessage,
+        notifTimes      = notifTimes,
+        notifAdvanceMin = advanceMin   //  👈  NUEVO
     )
 )
 
-fun HabitTemplate.toEntity(): HabitTemplateEntity = HabitTemplateEntity(
+fun HabitTemplate.toEntity() = HabitTemplateEntity(
     id       = id,
     name     = name,
     icon     = icon,
     category = category,
 
-    sessionQty   = formDraft.sessionQty,
-    sessionUnit  = formDraft.sessionUnit,
+    desc        = formDraft.desc,            //  👈
+    sessionQty  = formDraft.sessionQty,
+    sessionUnit = formDraft.sessionUnit,
 
     repeatPreset = formDraft.repeatPreset,
     weekDays     = formDraft.weekDays,
 
-    periodQty    = formDraft.periodQty,
-    periodUnit   = formDraft.periodUnit,
+    periodQty  = formDraft.periodQty,
+    periodUnit = formDraft.periodUnit,
 
     notify       = formDraft.notify,
     notifMessage = formDraft.notifMessage,
-    notifTimes   = formDraft.notifTimes
+    notifTimes   = formDraft.notifTimes,
+    advanceMin   = formDraft.notifAdvanceMin    //  👈
 )

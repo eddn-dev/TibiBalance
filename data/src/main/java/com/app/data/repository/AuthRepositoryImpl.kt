@@ -72,7 +72,7 @@ class AuthRepositoryImpl @Inject constructor(
         // user nunca es null tras cred exitosa
         auth.currentUser?.let { firestore.ensureUserDocument(it) }
 
-        AuthResult.Success(true)                     // Google siempre verificado
+        AuthResult.Success(true)
     } catch (t: Throwable) {
         AuthResult.Error(t.toAuthError())
     }

@@ -59,14 +59,26 @@ fun SignInScreen(
     val cm       = remember(activity) { CredentialManager.create(activity) }
 
     /* --- navegación reactivamente --- */
+    /* dentro de SignInScreen.kt – LaunchedEffect(uiState) */
+
     LaunchedEffect(uiState) {
         (uiState as? SignInUiState.Success)?.let { s ->
-            val dest = if (s.verified) Screen.Main.route else Screen.VerifyEmail.route
-            nav.navigate(dest) {
+
+            // 1) si NO está verificado → VerifyEmail  (igual que antes)
+            if (!s.verified) {
+                nav.navigate(Screen.VerifyEmail.route) {
+                    popUpTo(Screen.Launch.route) { inclusive = true }
+                }
+                return@LaunchedEffect
+            }
+
+            // 2) verificado → deja que LaunchScreen decida (onboarding vs main)
+            nav.navigate(Screen.Launch.route) {
                 popUpTo(Screen.Launch.route) { inclusive = true }
             }
         }
     }
+
 
     /* --- Google One-Tap launcher --- */
     fun launchGoogleSignIn() = scope.launch {

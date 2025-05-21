@@ -16,49 +16,57 @@ package com.app.tibibalance.ui.screens.launch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.domain.repository.AuthRepository        // <- interfaz en :domain
+import com.app.domain.usecase.onboarding.ObserveOnboardingStatus
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-/** Estado mínimo que la UI necesita para tomar decisiones. */
-data class SessionState(
-    val loggedIn: Boolean = false,
-    val verified: Boolean = false
-)
-
 @HiltViewModel
 class LaunchViewModel @Inject constructor(
-    private val repo: AuthRepository,
-    private val auth: FirebaseAuth
+    private val authRepo : AuthRepository,
+    private val observeOnb: ObserveOnboardingStatus,
+    private val auth     : FirebaseAuth
 ) : ViewModel() {
 
-    /** Flow de estado de sesión observado por LaunchScreen. */
-    val sessionState: StateFlow<SessionState> =
-        repo.authState()                   // Flow<String?>  (UID o null)
-            .map { uid ->                // Se dispara ante cualquier cambio
-                if (uid != null) refreshOnce() // recarga/verifica si hay user
-                SessionState(
-                    loggedIn = uid != null,
-                    verified = auth.currentUser?.isEmailVerified == true
-                )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val sessionState: StateFlow<SessionState?> =
+        authRepo.authState()               // Flow<String?> (uid o null)
+            .flatMapLatest { uid ->
+                when (uid) {
+                    null -> flowOf(SessionState(loggedIn = false))      // no logueado
+                    else -> {
+                        refreshOnce()                   // recarga FirebaseAuth
+                        // combinamos verificación + onboarding
+                        observeOnb(uid)
+                            .map { onb ->
+                                SessionState(
+                                    loggedIn = true,
+                                    verified = auth.currentUser?.isEmailVerified == true,
+                                    onboardingCompleted = onb.tutorialCompleted
+                                )
+                            }
+                    }
+                }
             }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = SessionState()
+                initialValue = null
             )
 
-    /** -- Helpers -------------------------------------------------------- */
-
+    /* ------------------------------------------------------------------ */
     private fun refreshOnce() = viewModelScope.launch {
-        try {
-            auth.currentUser?.reload()?.await()
-            if (auth.currentUser?.isEmailVerified == true) {
-                repo.syncVerification()   // sube flag a Firestore si cambia
-            }
-        } catch (_: Exception) { /* silencio: no rompemos UX offline */ }
+        try { auth.currentUser?.reload()?.await() } catch (_: Exception) {}
     }
 }
+
+
+data class SessionState(
+    val loggedIn           : Boolean = false,
+    val verified           : Boolean = false,
+    val onboardingCompleted: Boolean? = null   // 👈 NEW (null = “aún no sabemos”)
+)

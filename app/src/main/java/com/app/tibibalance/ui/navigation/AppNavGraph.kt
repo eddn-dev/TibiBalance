@@ -15,13 +15,30 @@ import com.app.tibibalance.ui.screens.settings.ConfigureNotificationScreen
 import com.app.tibibalance.ui.screens.launch.LaunchScreen
 import com.app.tibibalance.ui.screens.profile.EditProfileScreen
 import com.app.tibibalance.ui.screens.main.MainScreen
+import com.app.tibibalance.ui.screens.onboarding.OnboardingPage
+import com.app.tibibalance.ui.screens.onboarding.OnboardingRoute
 import com.app.tibibalance.ui.screens.settings.ChangePasswordScreenPreviewOnly
 import com.app.tibibalance.ui.screens.settings.DeleteAccountScreen
+import com.app.tibibalance.R
+import androidx.compose.runtime.remember
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Screen.Launch.route) {
+
+        composable(Screen.Onboarding.route) {
+            // lista de páginas (puedes externalizar a un `remember`)
+            val pages = remember {
+                listOf(
+                    OnboardingPage(R.string.onb_title_1, R.string.onb_desc_1, R.raw.anim_health),
+                    OnboardingPage(R.string.onb_title_2, R.string.onb_desc_2, R.raw.anim_habit),
+                    OnboardingPage(R.string.onb_title_3, R.string.onb_desc_3, R.raw.anim_stats)
+                )
+            }
+            OnboardingRoute(navController, pages)
+        }
+
         composable(Screen.Launch.route)      { LaunchScreen(navController) }
         composable(Screen.SignIn.route)      { SignInScreen(navController) }
         composable(Screen.SignUp.route)      { SignUpScreen(navController) }

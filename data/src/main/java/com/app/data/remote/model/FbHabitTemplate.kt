@@ -47,6 +47,7 @@ data class FbHabitTemplate(
         /* notificación */
         notify        = notifConfig.enabled,
         notifMessage  = notifConfig.message,
-        notifTimes    = notifConfig.times.map { it.toString() }.toSet()
+        notifTimes    = notifConfig.times.map { it.toString() }.toSet(),
+        notifAdvanceMin = notifConfig.advanceMin
     )
 }

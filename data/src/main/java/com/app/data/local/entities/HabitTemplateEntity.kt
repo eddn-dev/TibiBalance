@@ -22,33 +22,39 @@ import com.app.domain.enums.HabitCategory
 import com.app.domain.enums.PeriodUnit
 import com.app.domain.enums.SessionUnit
 
+// :data/local/entities/HabitTemplateEntity.kt
 @Entity(
     tableName = "habit_templates",
     indices   = [Index("category"), Index("notify")]
 )
+@TypeConverters(IntSetConverter::class, StringSetConverter::class)
 data class HabitTemplateEntity(
-    /* ── Identidad ───────────────────────────────────────── */
+
+    /* ── Identidad ───────────────────────── */
     @PrimaryKey val id   : String,
     val name     : String,
     val icon     : String,
     val category : HabitCategory,
 
-    /* ── Sesión ──────────────────────────────────────────── */
+    /* ── Descripción ─────────────────────── */
+    val desc     : String,            //  👈  NUEVO
+
+    /* ── Sesión ──────────────────────────── */
     val sessionQty  : Int?,
     val sessionUnit : SessionUnit,
 
-    /* ── Repetición ──────────────────────────────────────── */
+    /* ── Repetición ──────────────────────── */
     val repeatPreset: RepeatPreset,
-    @field:TypeConverters(IntSetConverter::class)
-    val weekDays    : Set<Int>,                //!< 1=Lun … 7=Dom cuando `PERSONALIZADO`
 
-    /* ── Periodo total ───────────────────────────────────── */
+    val weekDays    : Set<Int>,
+
+    /* ── Periodo ─────────────────────────── */
     val periodQty   : Int?,
     val periodUnit  : PeriodUnit,
 
-    /* ── Notificaciones ─────────────────────────────────── */
-    val notify      : Boolean,
-    val notifMessage: String,
-    @field:TypeConverters(StringSetConverter::class)
-    val notifTimes  : Set<String>               //!< "HH:mm" en 24 h
+    /* ── Notificaciones ──────────────────── */
+    val notify       : Boolean,
+    val notifMessage : String,
+    val notifTimes   : Set<String>,
+    val advanceMin   : Int            //  👈  NUEVO  (minutos de antelación)
 )

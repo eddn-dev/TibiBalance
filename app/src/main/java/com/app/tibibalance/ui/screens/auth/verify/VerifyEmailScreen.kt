@@ -128,16 +128,18 @@ fun VerifyEmailScreen(
         },
         message = success?.message ?: error?.message, // Mensaje principal.
         primaryButton = when { // Botón primario del diálogo.
-            success != null -> DialogButton("Aceptar") { // Para mensajes de éxito.
-                vm.clear() // Limpia el estado en el ViewModel.
-                if (success.goHome) { // Si el éxito implica navegar a la pantalla principal.
-                    nav.navigate(Screen.Main.route) {
+            success != null -> DialogButton("Aceptar") {
+                vm.clear()
+                if (success.goHome) {
+                    nav.navigate(Screen.Launch.route) {          // 👈 cambia Main → Launch
                         popUpTo(Screen.Launch.route) { inclusive = true }
                     }
                 }
             }
 
-            error != null -> DialogButton("Aceptar") { vm.clear() } // Para mensajes de error.
+            error != null -> DialogButton("Aceptar") {
+                vm.clear()
+            }
             else -> null
         },
         // El diálogo no se puede descartar con el botón "Atrás" o pulsando fuera si está cargando.

@@ -23,9 +23,8 @@
  * @see Text Composable para mostrar mes, días de semana y número del día.
  * @see Modifier.chunked Extensión útil para agrupar días en semanas.
  */
+package com.app.tibibalance.ui.components.utils
 
-
-import androidx.annotation.DrawableRes // Importar para anotar emotionRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -63,6 +62,7 @@ import com.app.tibibalance.ui.components.utils.EmotionDay
  * La lista debe tener un tamaño múltiplo de 7.
  * @param modifier Un [Modifier] opcional para aplicar al [Column] contenedor principal.
  */
+
 @Composable
 fun CalendarGrid(
     month: String,
@@ -197,7 +197,7 @@ private fun PreviewCalendarGrid() {
         Column(Modifier.padding(16.dp)) { // Añade padding externo
             CalendarGrid(
                 month = "Mayo 2025", // Nombre del mes
-                days  = sampleDays // Pasa la lista de días generada
+                days = sampleDays // Pasa la lista de días generada
             )
         }
     }

@@ -22,6 +22,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,18 +48,37 @@ fun LaunchScreen(
     /* ── 1 ▸ estado de sesión ─────────────────────────────────────────── */
     val session by vm.sessionState.collectAsState()
 
-    /* ── 2 ▸ side-effect de navegación ────────────────────────────────── */
+    if (session == null) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ){
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    /* side-effect de navegación */
     LaunchedEffect(session) {
-        when {
-            !session.loggedIn -> Unit                // permanece
-            session.verified -> nav.navigate(Screen.Main.route) {
-                popUpTo(Screen.Launch.route) { inclusive = true }
-            }
-            else -> nav.navigate(Screen.VerifyEmail.route) {
-                popUpTo(Screen.Launch.route) { inclusive = true }
+        session?.let { s ->
+            when {
+                !s.loggedIn -> Unit                     // sigue en Launch
+                !s.verified -> nav.navigate(Screen.VerifyEmail.route) {
+                    popUpTo(Screen.Launch.route) { inclusive = true }
+                }
+                s.onboardingCompleted == false -> nav.navigate(Screen.Onboarding.route) {
+                    popUpTo(Screen.Launch.route) { inclusive = true }
+                }
+                s.onboardingCompleted == true -> nav.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Launch.route) { inclusive = true }
+                }
             }
         }
     }
+
+    if (session!!.loggedIn) return
 
     /* ── 3 ▸ fondo degradado ──────────────────────────────────────────── */
     val bg = Brush.verticalGradient(

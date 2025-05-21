@@ -1,4 +1,4 @@
-/* ui/screens/habits/addHabitWizard/step/TrackingStep.kt */
+/* ui/screens/habits/addHabitWizard/step/TrackingStep.kt
 package com.app.tibibalance.ui.screens.habits.addHabitWizard.step
 
 import androidx.compose.animation.AnimatedVisibility
@@ -290,3 +290,4 @@ private fun infoDialog(title: String, onDismiss: () -> Unit) {
         primaryButton = DialogButton("Entendido", onDismiss)
     )
 }
+*/

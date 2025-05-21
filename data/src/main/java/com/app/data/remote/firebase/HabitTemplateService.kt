@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 import javax.inject.Inject
 
 class HabitTemplateService @Inject constructor(
@@ -39,10 +40,9 @@ class HabitTemplateService @Inject constructor(
     /* ---------- mapper central ---------- */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun DocumentSnapshot.safeToTemplate(): HabitTemplate? = runCatching {
-        val dto   = json.decodeFromJsonElement(
-            FbHabitTemplate.serializer(),
-            (data ?: return null).asJson()
-        )
+        val jsonElement = (data ?: return null).asJson()
+        val dto = json.decodeFromJsonElement<FbHabitTemplate>(jsonElement)
+
         HabitTemplate(
             id        = id,
             name      = dto.name,

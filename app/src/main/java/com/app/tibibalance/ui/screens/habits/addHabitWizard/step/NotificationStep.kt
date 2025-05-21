@@ -1,4 +1,4 @@
-/* ui/screens/habits/addHabitWizard/step/NotificationStep.kt */
+/* ui/screens/habits/addHabitWizard/step/NotificationStep.kt
 package com.app.tibibalance.ui.screens.habits.addHabitWizard.step
 
 import android.os.Build
@@ -47,7 +47,9 @@ fun NotificationStep(
     onBack      : () -> Unit = {}
 ) {
     /* -------- estado -------- */
-    var cfg by remember { mutableStateOf(initialCfg) }
+    var cfg by remember(initialCfg){
+        mutableStateOf(initialCfg)
+    }
     LaunchedEffect(cfg) { onCfgChange(cfg) }
 
     /* diálogos / pickers */
@@ -229,3 +231,4 @@ private fun infoDlg(message: String, onDismiss: () -> Unit) {
         primaryButton = DialogButton("Entendido", onDismiss)
     )
 }
+*/

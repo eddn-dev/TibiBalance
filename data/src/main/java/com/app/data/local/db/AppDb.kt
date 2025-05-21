@@ -29,7 +29,7 @@ import com.app.data.local.entities.HabitTemplateEntity
         DailyMetricsEntity::class, OnboardingStatusEntity::class,
         HabitTemplateEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(

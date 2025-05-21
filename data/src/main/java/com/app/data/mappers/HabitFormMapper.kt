@@ -94,6 +94,7 @@ object HabitFormMappers {
             message    = notifMessage.ifBlank { "¡Es hora!" },
             times      = parsedTimes,
             pattern    = pattern,
+            advanceMin = notifAdvanceMin,
             mode       = NotifMode.SOUND,
             vibrate    = true
         )

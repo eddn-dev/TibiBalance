@@ -1,14 +1,10 @@
 package com.app.tibibalance.ui.screens.main
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding // Import the padding modifier
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,8 +14,10 @@ import androidx.navigation.compose.rememberNavController
 import com.app.tibibalance.ui.components.navigation.BottomNavBar
 import com.app.tibibalance.ui.components.navigation.bottomItems
 import com.app.tibibalance.ui.navigation.Screen
+import com.app.tibibalance.ui.screens.emotional.EmotionalCalendarScreen
 import com.app.tibibalance.ui.screens.habits.HabitsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(rootNav: NavHostController) {
     /* ── controlador privado para el bottom nav ── */
@@ -49,7 +47,7 @@ fun MainScreen(rootNav: NavHostController) {
             modifier = Modifier.padding(padding)
         ) {
             composable(Screen.Home.route)     { /* TODO HomeScreen() */ }
-            composable(Screen.Emotions.route) { /* TODO EmotionsScreen() */ }
+            composable(Screen.Emotions.route) { EmotionalCalendarScreen() }
             composable(Screen.Habits.route)   { HabitsScreen() }   // 👈 ya conectada
             composable(Screen.Profile.route)  { /* TODO ProfileScreen() */ }
             composable(Screen.Settings.route) { /* TODO SettingsScreen() */ }

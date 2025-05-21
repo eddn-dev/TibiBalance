@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class EmotionEntry(
-    val date     : LocalDate,   // PK: una entrada por día
+    val date     : LocalDate,
     val emojiId  : String,
     val meta     : SyncMeta = SyncMeta()
 )

@@ -6,4 +6,10 @@
     <string name="btn_sign_up">Crear cuenta</string>
     <string name="sign_up_title">Registrate en Tibibalance</string>
     <string name="verify_email_title">Verifica tu correo</string>
+    <string name="onb_title_1">Bienvenido a TibiBalance</string>
+    <string name="onb_desc_1">Monitorea tu salud física y emocional.</string>
+    <string name="onb_title_2">Registra Hábitos</string>
+    <string name="onb_desc_2">Lleva control de tus rutinas diarias.</string>
+    <string name="onb_title_3">Visualiza tu Progreso</string>
+    <string name="onb_desc_3">Gráficas y estadísticas en tiempo real.</string>
 </resources>

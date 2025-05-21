@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "467927540157-d92niifphsqridacnk1ls31u56d2imlp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.tibibalance",
+            "certificate_hash": "34e856c231c6c7435dea831e700dfd3cebf9cf2b"
+          }
+        },
+        {
           "client_id": "467927540157-nc5gcbmt91pkij1dpjlnuhburmj3uq51.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

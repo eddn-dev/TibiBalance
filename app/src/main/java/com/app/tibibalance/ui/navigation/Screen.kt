@@ -35,6 +35,10 @@ package com.app.tibibalance.ui.navigation
  * @param route El [String] que identifica de forma única la ruta de navegación para esta pantalla.
  */
 sealed class Screen(val route: String) {
+
+    /* ─── onboarding ─────────────────────────────── */
+    /** Flujo introductorio mostrado al primer arranque. */
+    data object Onboarding : Screen("onboarding")
     /* auth flow: Pantallas relacionadas con el proceso de autenticación. */
 
     /** @brief La pantalla inicial de la aplicación, generalmente donde el usuario decide iniciar sesión o registrarse. */

@@ -1,4 +1,4 @@
-/* ui/screens/habits/addHabitWizard/step/BasicInfoStep.kt */
+/* ui/screens/habits/addHabitWizard/step/BasicInfoStep.kt
 package com.app.tibibalance.ui.screens.habits.addHabitWizard.step
 
 import androidx.compose.foundation.layout.*
@@ -91,3 +91,4 @@ fun BasicInfoStep(
         )
     }
 }
+*/
