@@ -19,9 +19,6 @@ object DateTimeConverters {
     @TypeConverter
     fun longToInstant(value: Long?): Instant? =
         value?.let { Instant.fromEpochMilliseconds(it) }
-    //            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  llamada directa
-    // si prefieres referencia:
-    // value?.let(Instant.Companion::fromEpochMilliseconds)
 
     /* LocalDate ⇄ String --------------------------------------------------- */
     @TypeConverter

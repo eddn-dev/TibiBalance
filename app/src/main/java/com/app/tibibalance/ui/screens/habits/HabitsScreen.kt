@@ -1,5 +1,7 @@
 package com.app.tibibalance.ui.screens.habits
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,7 @@ import com.app.tibibalance.ui.components.utils.EmptyState
 import com.app.tibibalance.ui.components.utils.HabitList
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.AddHabitModal
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HabitsScreen(
     vm: HabitsViewModel = hiltViewModel()
@@ -54,6 +57,6 @@ fun HabitsScreen(
     }
 
     if (showAdd) {
-        AddHabitModal(onDismissRequest = { showAdd = false })
+        AddHabitModal(onDismiss = { showAdd = false })
     }
 }

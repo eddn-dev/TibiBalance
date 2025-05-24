@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import com.app.tibibalance.R
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
@@ -52,6 +53,7 @@ class OnboardingViewModel @Inject constructor(
     private val uidFlow: Flow<String> = auth.authState().filterNotNull()
 
     /** Flow del estado de onboarding del usuario actual. */
+    @OptIn(ExperimentalCoroutinesApi::class)
     val status: StateFlow<OnboardingStatus> =
         uidFlow.flatMapLatest { uid -> observeStatus(uid) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, OnboardingStatus())

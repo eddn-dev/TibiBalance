@@ -15,10 +15,9 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module @InstallIn(ViewModelComponent::class)
 object HabitUseCaseModule {
 
-    @Provides fun provideGetHabitsFlow(repo: HabitRepository)     = GetHabitsFlowUseCase(repo)
-    @Provides fun provideCreateHabit(repo: HabitRepository)       = CreateHabitUseCase(repo)
-    @Provides fun provideUpdateHabit(repo: HabitRepository)       = UpdateHabitUseCase(repo)
-    @Provides fun provideDeleteHabit(repo: HabitRepository)       = DeleteHabitUseCase(repo)
-    @Provides fun provideMarkCompleted(repo: HabitRepository)     = MarkCompletedUseCase(repo)
-    @Provides fun provideSyncHabits(repo: HabitRepository)        = SyncHabitsUseCase(repo)
+    @Provides fun provideGetHabitsFlow(repo: HabitRepository)     = GetHabitsFlow(repo)
+    @Provides fun provideCreateHabit(repo: HabitRepository)       = CreateHabit(repo)
+    @Provides fun provideUpdateHabit(repo: HabitRepository)       = UpdateHabit(repo)
+    @Provides fun provideDeleteHabit(repo: HabitRepository)       = DeleteHabit(repo)
+    @Provides fun provideMarkCompleted(repo: HabitRepository)     = MarkCompleted(repo)
 }

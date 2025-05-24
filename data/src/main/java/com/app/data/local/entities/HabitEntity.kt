@@ -14,28 +14,26 @@ import kotlinx.serialization.json.Json
  * @ingroup data_local_entities
  * @brief   Representa la tabla `habits` en la base Room.
  */
-@Entity(
-    tableName = "habits"
-)
+@Entity(tableName = "habits")
 @TypeConverters(
     DateTimeConverters::class,
     EnumConverters::class,
     IdConverters::class,
-    RepeatConverters::class
-
+    RepeatConverters::class,
+    NotifConfigConverters::class,
+    ChallengeConfigConverters::class
 )
 data class HabitEntity(
-
-    @PrimaryKey
-    @ColumnInfo(name = "id")           val id: HabitId,
-    val name                           : String,
-    val description                    : String,
-    val category                       : HabitCategory,
-    val icon                           : String,
-    @Embedded(prefix = "session_")     val session    : Session,
-    @ColumnInfo(name = "repeat_json")  val repeat     : Repeat,
-    @Embedded(prefix = "period_")      val period     : Period,
-    @ColumnInfo(name = "notif_json")   val notifConfigJson: String,
-    @ColumnInfo(name = "challenge_json") val challengeJson: String?,
-    @Embedded(prefix = "meta_")        val meta: SyncMeta
+    @PrimaryKey           val id        : String,
+    val name              : String,
+    val description       : String,
+    val category          : HabitCategory,
+    val icon              : String,
+    @Embedded(prefix="s_")val session   : Session,
+    val repeat            : Repeat,
+    @Embedded(prefix="p_")val period    : Period,
+    val notifConfig       : NotifConfig,
+    val challenge         : ChallengeConfig?,
+    val isBuiltIn         : Boolean = false,
+    @Embedded(prefix="m_")val meta      : SyncMeta
 )

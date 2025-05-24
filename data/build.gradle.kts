@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.serialization)   // <─ nuevo
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.ksp)
 }
 
@@ -62,10 +62,10 @@ dependencies {
     implementation(libs.play.services.auth)
 
     /* ─── KotlinX Date & Time (Instant, LocalDate…) ────────────────────── */
-    implementation(libs.kotlinx.datetime)                 // <─ nuevo
+    implementation(libs.kotlinx.datetime)
 
     /* ─── KotlinX Serialization JSON runtime ───────────────────────────── */
-    implementation(libs.kotlinxSerializationJson)         // <─ nuevo
+    implementation(libs.kotlinxSerializationJson)
 
     /* ─── Utilidades AndroidX mínimas ──────────────────────────────────── */
     implementation(libs.androidx.core.ktx)

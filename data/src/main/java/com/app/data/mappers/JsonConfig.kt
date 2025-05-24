@@ -15,6 +15,7 @@ import kotlinx.serialization.json.Json
  *  * `ignoreUnknownKeys = true` → tolera claves extra al deserializar.
  *  * Discriminador de clases selladas = `_type` (compatibilidad Firestore).
  */
+
 object JsonConfig {
     val default: Json = Json {
         encodeDefaults = true

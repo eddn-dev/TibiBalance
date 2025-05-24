@@ -50,5 +50,4 @@ object DatabaseModule {
     @Provides fun provideEmotionDao(db: AppDb): EmotionEntryDao        = db.emotionDao()
     @Provides fun provideMetricsDao(db: AppDb): DailyMetricsDao        = db.metricsDao()
     @Provides fun provideOnboardingDao(db: AppDb): OnboardingStatusDao = db.onboardingDao()
-    @Provides fun provideHabitTemplateDao(db: AppDb): HabitTemplateDao = db.habitTemplateDao()
 }

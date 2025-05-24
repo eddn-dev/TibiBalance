@@ -12,9 +12,6 @@ import kotlinx.serialization.Serializable
 data class HabitActivity(
     val id        : ActivityId,
     val habitId   : HabitId,
-    val type      : ActivityType,
-    val timestamp : Instant           = Instant.DISTANT_PAST,
-    val deviceId  : String,
-    val payload   : Map<String, String> = emptyMap(),
+    val completedAt : Instant           = Instant.DISTANT_PAST,
     val meta      : SyncMeta           = SyncMeta()
 )

@@ -16,9 +16,6 @@ import com.app.domain.repository.HabitRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/** Devuelve el *hot flow* con todos los hábitos del usuario actual. */
-class GetHabitsFlowUseCase @Inject constructor(
+class GetHabitsFlow @Inject constructor(
     private val repo: HabitRepository
-) {
-    operator fun invoke(): Flow<List<Habit>> = repo.getHabitsFlow()
-}
+) { operator fun invoke() = repo.observeUserHabits() }

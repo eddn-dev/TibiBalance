@@ -22,5 +22,6 @@ data class Habit(
     val period     : Period               = Period(),
     val notifConfig: NotifConfig          = NotifConfig(),
     val challenge  : ChallengeConfig?     = null,
+    val isBuiltIn  : Boolean              = false,
     val meta       : SyncMeta             = SyncMeta()
 )

@@ -1,4 +1,3 @@
-/* ui/screens/habits/addHabitWizard/step/NotificationStep.kt
 package com.app.tibibalance.ui.screens.habits.addHabitWizard.step
 
 import android.os.Build
@@ -18,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.app.domain.config.NotifConfig
+import com.app.domain.entities.HabitForm
 import com.app.domain.enums.NotifMode
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.dialogs.DialogButton
@@ -27,40 +26,29 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputSelect
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Title
-import kotlinx.datetime.LocalTime               // ← kotlinx-datetime, no java.time
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalTime
-import kotlinx.datetime.toKotlinLocalDate
+import kotlinx.datetime.LocalTime
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-/**
- * Paso ➌ — Configuración de las notificaciones.
- */
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 fun NotificationStep(
-    title       : String,
-    initialCfg  : NotifConfig,
-    onCfgChange : (NotifConfig) -> Unit,
-    onBack      : () -> Unit = {}
+    form: HabitForm,
+    onForm: (HabitForm) -> Unit
 ) {
-    /* -------- estado -------- */
-    var cfg by remember(initialCfg){
-        mutableStateOf(initialCfg)
-    }
-    LaunchedEffect(cfg) { onCfgChange(cfg) }
+    /* ------ estado local simplificado ------ */
+    var local by remember(form) { mutableStateOf(form) }
+    LaunchedEffect(local) { onForm(local) }
 
-    /* diálogos / pickers */
-    var helperDlg by remember { mutableStateOf<String?>(null) }
+    /* diálogos */
+    var dlg       by remember { mutableStateOf<String?>(null) }
     var showTime  by remember { mutableStateOf(false) }
     var showDate  by remember { mutableStateOf(false) }
 
     val timeFmt = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val dateFmt = remember { DateTimeFormatter.ofPattern("dd/MM/yy") }
 
-    /* -------- UI principal -------- */
     Column(
         Modifier
             .fillMaxSize()
@@ -70,11 +58,10 @@ fun NotificationStep(
     ) {
         Title("Notificaciones", Modifier.align(Alignment.CenterHorizontally))
 
-        /* ---- Horas de recordatorio ---- */
-        Header("Horas de recordatorio") { helperDlg = "hora" }
+        /* ---- lista de horas ---- */
+        Header("Horas de recordatorio") { dlg = "hora" }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            cfg.times.forEach { t ->
-                val hhmm = t.toJavaLocalTime().format(timeFmt)   // ← conversión a java.time para formatear
+            local.notifTimes.sorted().forEach { hhmm ->
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -82,23 +69,23 @@ fun NotificationStep(
                 ) {
                     Text(hhmm, style = MaterialTheme.typography.bodyLarge)
                     TextButton(onClick = {
-                        cfg = cfg.copy(times = cfg.times - t)
+                        local = local.copy(notifTimes = local.notifTimes - hhmm)
                     }) { Text("Eliminar") }
                 }
             }
             OutlinedButton(onClick = { showTime = true }) { Text("Añadir hora") }
         }
 
-        /* ---- Mensaje ---- */
-        Header("Mensaje") { helperDlg = "mensaje" }
+        /* ---- mensaje ---- */
+        Header("Mensaje") { dlg = "mensaje" }
         InputText(
-            value         = cfg.message,
-            onValueChange = { cfg = cfg.copy(message = it) },
+            value         = local.notifMessage,
+            onValueChange = { local = local.copy(notifMessage = it) },
             placeholder   = "¡Hora de completar tu hábito!",
             modifier      = Modifier.fillMaxWidth()
         )
 
-        /* ---- Fecha de inicio ---- */
+        /* ---- fecha inicio ---- */
         Header("Fecha de inicio", null)
         OutlinedButton(
             onClick  = { showDate = true },
@@ -106,72 +93,65 @@ fun NotificationStep(
         ) {
             Icon(Icons.Default.Event, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text(cfg.startsAt?.toJavaLocalDate()?.format(dateFmt) ?: "Seleccionar fecha")
+            Text(local.notifStartsAt?.let {
+                LocalDate.parse(it).format(dateFmt)
+            } ?: "Seleccionar fecha")
         }
 
-        /* ---- Modo ---- */
+        /* ---- modo ---- */
         Header("Modo de notificación", null)
+        val modeOptions = listOf("Silencioso", "Sonido")
         InputSelect(
-            options        = listOf("Silencioso", "Sonido", "Vibrar"),
-            selectedOption = when (cfg.mode) {
-                NotifMode.SOUND   -> "Sonido"
-                NotifMode.VIBRATE -> "Vibrar"
-                else              -> "Silencioso"
-            },
+            options        = modeOptions,
+            selectedOption = if (local.notifMode == NotifMode.SOUND) "Sonido" else "Silencioso",
             onOptionSelected = { sel ->
-                cfg = cfg.copy(
-                    mode = when (sel) {
-                        "Sonido" -> NotifMode.SOUND
-                        "Vibrar" -> NotifMode.VIBRATE
-                        else     -> NotifMode.SILENT
-                    }
+                val mode = if (sel == "Sonido") NotifMode.SOUND else NotifMode.SILENT
+                local = local.copy(
+                    notifMode    = mode,
+                    notifVibrate = local.notifVibrate && mode == NotifMode.SOUND
                 )
             }
         )
 
-        /* ---- Vibrar (solo Sonido) ---- */
-        AnimatedVisibility(cfg.mode == NotifMode.SOUND) {
+        /* ---- vibrar ---- */
+        AnimatedVisibility(local.notifMode == NotifMode.SOUND) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clickable { cfg = cfg.copy(vibrate = !cfg.vibrate) },
+                    .clickable { local = local.copy(notifVibrate = !local.notifVibrate) },
                 verticalAlignment     = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Vibrar", style = MaterialTheme.typography.bodyMedium)
                 SwitchToggle(
-                    checked         = cfg.vibrate,
-                    onCheckedChange = { cfg = cfg.copy(vibrate = it) }
+                    checked         = local.notifVibrate,
+                    onCheckedChange = { local = local.copy(notifVibrate = it) }
                 )
             }
         }
 
-        /* ---- Antelación ---- */
-        Header("Minutos de antelación") { helperDlg = "adelanto" }
+        /* ---- antelación ---- */
+        Header("Minutos de antelación") { dlg = "adelanto" }
         InputText(
-            value           = cfg.advanceMin.takeIf { it > 0 }?.toString().orEmpty(),
-            onValueChange   = { cfg = cfg.copy(advanceMin = it.toIntOrNull() ?: 0) },
+            value           = local.notifAdvance.takeIf { it > 0 }?.toString().orEmpty(),
+            onValueChange   = { local = local.copy(notifAdvance = it.toIntOrNull() ?: 0) },
             placeholder     = "0",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier        = Modifier.width(120.dp)
         )
     }
 
-    /* -------- TimePicker -------- */
+    /* ------ TimePicker ------ */
     if (showTime) {
-        val tpState = rememberTimePickerState(is24Hour = true)
+        val tp = rememberTimePickerState(is24Hour = true)
         AlertDialog(
             onDismissRequest = { showTime = false },
-            title            = { Text("Selecciona hora") },
-            text             = { TimePicker(tpState) },
+            title = { Text("Selecciona hora") },
+            text  = { TimePicker(tp) },
             confirmButton = {
                 TextButton(onClick = {
-                    val newTime = LocalTime(tpState.hour, tpState.minute)     // kotlinx-datetime
-                    cfg = cfg.copy(
-                        times = (cfg.times + newTime)
-                            .distinct()
-                            .sortedBy { it.hour * 60 + it.minute }            // orden cronológico
-                    )
+                    val hhmm = "%02d:%02d".format(tp.hour, tp.minute)
+                    local = local.copy(notifTimes = (local.notifTimes + hhmm).sorted().toSet())
                     showTime = false
                 }) { Text("Aceptar") }
             },
@@ -181,41 +161,42 @@ fun NotificationStep(
         )
     }
 
-    /* -------- DatePicker -------- */
+    /* ------ DatePicker ------ */
     ModalDatePickerDialog(
         visible       = showDate,
-        initialDate   = cfg.startsAt?.toJavaLocalDate() ?: LocalDate.now(),
+        initialDate   = local.notifStartsAt?.let(LocalDate::parse) ?: LocalDate.now(),
         title         = "Fecha de inicio",
         selectableDates = object : SelectableDates {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun isSelectableDate(utcTimeMillis: Long) =
                 utcTimeMillis >= LocalDate.now().toEpochDay() * 86_400_000L
         },
         onConfirmDate = { picked ->
             showDate = false
-            picked?.let { cfg = cfg.copy(startsAt = it.toKotlinLocalDate()) }
+            picked?.let { local = local.copy(notifStartsAt = it.toString()) }
         }
     )
 
-    /* -------- Diálogos de ayuda -------- */
-    when (helperDlg) {
-        "hora"     -> infoDlg("Puedes añadir varias horas dentro de un mismo día.") { helperDlg = null }
-        "mensaje"  -> infoDlg("Este texto aparecerá en la notificación que recibas.") { helperDlg = null }
-        "adelanto" -> infoDlg("Si necesitas tiempo para prepararte, indica cuántos minutos antes quieres que se muestre la notificación.") { helperDlg = null }
+    /* ------ diálogos ayuda ------ */
+    when (dlg) {
+        "hora"     -> infoDlg("Añade una o más horas para recibir recordatorios.") { dlg = null }
+        "mensaje"  -> infoDlg("Este texto aparecerá en la notificación.")          { dlg = null }
+        "adelanto" -> infoDlg("Minutos antes del recordatorio para que te prepares.") { dlg = null }
     }
 }
 
-/* ---------------- helpers ---------------- */
+/* helpers ----------------------------------------------------------------- */
 
 @Composable
 private fun Header(text: String, onInfo: (() -> Unit)?) {
     Row(
-        verticalAlignment     = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(text, style = MaterialTheme.typography.bodyMedium)
         onInfo?.let {
             IconButton(onClick = it) {
-                Icon(Icons.Default.Info, contentDescription = "Información")
+                Icon(Icons.Default.Info, contentDescription = "Info")
             }
         }
     }
@@ -224,11 +205,10 @@ private fun Header(text: String, onInfo: (() -> Unit)?) {
 @Composable
 private fun infoDlg(message: String, onDismiss: () -> Unit) {
     ModalInfoDialog(
-        visible       = true,
-        icon          = Icons.Default.Info,
-        title         = "Ayuda",
-        message       = message,
+        visible = true,
+        icon = Icons.Default.Info,
+        title = "Ayuda",
+        message = message,
         primaryButton = DialogButton("Entendido", onDismiss)
     )
 }
-*/

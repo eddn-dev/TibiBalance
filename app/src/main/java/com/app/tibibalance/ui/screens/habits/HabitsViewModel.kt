@@ -6,7 +6,7 @@ package com.app.tibibalance.ui.screens.habits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.domain.usecase.habit.GetHabitsFlowUseCase
+import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.tibibalance.ui.screens.habits.mapper.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HabitsViewModel @Inject constructor(
-    getHabits: GetHabitsFlowUseCase
+    getHabits: GetHabitsFlow
 ) : ViewModel() {
 
     /* ---------- eventos one-shot ---------- */

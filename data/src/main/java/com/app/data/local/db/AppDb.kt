@@ -11,7 +11,6 @@ import com.app.data.local.dao.DailyMetricsDao
 import com.app.data.local.dao.EmotionEntryDao
 import com.app.data.local.dao.HabitActivityDao
 import com.app.data.local.dao.HabitDao
-import com.app.data.local.dao.HabitTemplateDao
 import com.app.data.local.dao.OnboardingStatusDao
 import com.app.data.local.dao.UserDao
 import com.app.data.local.entities.DailyMetricsEntity
@@ -20,16 +19,14 @@ import com.app.data.local.entities.HabitActivityEntity
 import com.app.data.local.entities.HabitEntity
 import com.app.data.local.entities.OnboardingStatusEntity
 import com.app.data.local.entities.UserEntity
-import com.app.data.local.entities.HabitTemplateEntity
 
 @Database(
     entities = [
         HabitEntity::class, HabitActivityEntity::class,
         UserEntity::class, EmotionEntryEntity::class,
-        DailyMetricsEntity::class, OnboardingStatusEntity::class,
-        HabitTemplateEntity::class
+        DailyMetricsEntity::class, OnboardingStatusEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(
@@ -43,6 +40,5 @@ abstract class AppDb : RoomDatabase() {
     abstract fun emotionDao()       : EmotionEntryDao
     abstract fun metricsDao()       : DailyMetricsDao
     abstract fun onboardingDao()    : OnboardingStatusDao
-    abstract fun habitTemplateDao() : HabitTemplateDao
 }
 

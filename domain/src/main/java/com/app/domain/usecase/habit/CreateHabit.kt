@@ -18,10 +18,6 @@ import com.app.domain.entities.Habit
 import com.app.domain.repository.HabitRepository
 import javax.inject.Inject
 
-class CreateHabitUseCase @Inject constructor(
+class CreateHabit @Inject constructor(
     private val repo: HabitRepository
-) {
-    /** @param habit Entidad de dominio lista para guardarse. */
-    suspend operator fun invoke(habit: Habit): Result<Unit> =
-        repo.createHabit(habit)
-}
+) { suspend operator fun invoke(h: Habit) = repo.create(h) }

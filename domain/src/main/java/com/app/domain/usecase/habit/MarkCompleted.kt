@@ -19,11 +19,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import javax.inject.Inject
 
-class MarkCompletedUseCase @Inject constructor(
+class MarkCompleted @Inject constructor(
     private val repo: HabitRepository
-) {
-    suspend operator fun invoke(
-        id: HabitId,
-        at: Instant = Clock.System.now()
-    ): Result<Unit> = repo.markCompleted(id, at)
-}
+) { suspend operator fun invoke(id: HabitId, at: Instant = Clock.System.now()) =
+    repo.markCompleted(id, at) }

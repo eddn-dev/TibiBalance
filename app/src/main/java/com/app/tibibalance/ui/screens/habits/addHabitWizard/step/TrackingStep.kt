@@ -1,4 +1,9 @@
-/* ui/screens/habits/addHabitWizard/step/TrackingStep.kt
+/*
+ * @file    TrackingStep.kt
+ * @ingroup ui_wizard_addHabit
+ */
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.app.tibibalance.ui.screens.habits.addHabitWizard.step
 
 import androidx.compose.animation.AnimatedVisibility
@@ -11,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,67 +28,81 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.*
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.ToggleRow
-import com.app.tibibalance.ui.screens.habits.addHabitWizard.HabitFormSaver
 import kotlinx.collections.immutable.persistentSetOf
+import kotlin.reflect.KFunction1
 
 /**
- * Paso ➋ — Parámetros de repetición y reto.
+ * Paso 2 — Seguimiento: duración, repetición, periodo y modo reto/notificaciones.
+ *
+ * @param form   Estado actual del formulario.
+ * @param onForm Callback que envía las actualizaciones al ViewModel.
  */
-@OptIn(ExperimentalFoundationApi::class) // FlowRow es experimental
 @Composable
 fun TrackingStep(
-    initial      : HabitForm,
-    errors       : List<String>,
-    onFormChange : (HabitForm) -> Unit,
-    onBack       : () -> Unit = {}
+    form: HabitForm,
+    onForm: (HabitForm) -> Unit
 ) {
-    var form by rememberSaveable(stateSaver = HabitFormSaver) { mutableStateOf(initial) }
-    LaunchedEffect(form) { onFormChange(form) }
+    /* -------- estado editable local -------- */
+    var localForm by remember(form) { mutableStateOf(form) }
+    LaunchedEffect(localForm) { onForm(localForm) }
 
-    /* Diálogos de ayuda */
+    /* -------- diálogos -------- */
     var dlg by remember { mutableStateOf<String?>(null) }
 
-    /* Flags de error rápidos */
-    val sessionQtyErr = errors.any { it.contains("duración", true) }
-    val periodQtyErr  = errors.any { it.contains("periodo",  true) }
-    val weekDaysErr   = errors.any { it.contains("día",      true) }
-    val repeatErr     = errors.any { it.contains("repetición", true) }
-    val unitOptions   = listOf("No aplica", "min", "hrs", "veces")
+    /* -------- validaciones rápidas -------- */
+    val sessionQtyErr = localForm.sessionUnit != SessionUnit.INDEFINIDO && localForm.sessionQty == null
+    val periodQtyErr  = localForm.periodUnit  != PeriodUnit.INDEFINIDO  && localForm.periodQty  == null
+    val weekDaysErr   = localForm.repeatPreset == RepeatPreset.PERSONALIZADO && localForm.weekDays.isEmpty()
+
+    /* -------- helpers lógicos -------- */
+    fun enforceRules(newForm: HabitForm): HabitForm {
+        var f = newForm
+
+        /* 1 ▸ Notificaciones solo si hay repetición */
+        if (f.repeatPreset == RepeatPreset.INDEFINIDO && f.notify)
+            f = f.copy(notify = false)
+
+        /* 2 ▸ Challenge requiere repetición y periodo */
+        if ((f.repeatPreset == RepeatPreset.INDEFINIDO ||
+                    f.periodUnit   == PeriodUnit.INDEFINIDO) && f.challenge)
+            f = f.copy(challenge = false)
+
+        return f
+    }
 
     Column(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 12.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+
         Title("Parámetros de seguimiento", Modifier.align(Alignment.CenterHorizontally))
 
-        /* -------- Duración de la sesión -------- */
-        LabeledSection(
-            label = "Duración de la actividad",
-            onInfo = { dlg = "duracion" }
-        ) {
+        /* ───── Duración de la sesión ───── */
+        LabeledSection("Duración de la actividad", onInfo = { dlg = "duracion" }) {
             Row(
                 Modifier.animateContentSize(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                AnimatedVisibility(form.sessionUnit != SessionUnit.INDEFINIDO) {
+                AnimatedVisibility(localForm.sessionUnit != SessionUnit.INDEFINIDO) {
                     InputNumber(
-                        value          = form.sessionQty?.toString().orEmpty(),
-                        onValueChange  = { form = form.copy(sessionQty = it.toIntOrNull()) },
+                        value          = localForm.sessionQty?.toString().orEmpty(),
+                        onValueChange  = { qty ->
+                            localForm = enforceRules(localForm.copy(sessionQty = qty.toIntOrNull()))
+                        },
                         placeholder    = "Cantidad",
                         modifier       = Modifier.width(120.dp),
                         isError        = sessionQtyErr,
                         supportingText = if (sessionQtyErr) "Requerido" else null
                     )
                 }
-                /* lista de opciones */
-                val unitOptions = listOf("No aplica", "veces", "min", "hrs")
 
+                val unitOptions = listOf("No aplica", "veces", "min", "hrs")
                 InputSelect(
-                    options = unitOptions,
-                    selectedOption = when (form.sessionUnit) {
+                    options        = unitOptions,
+                    selectedOption = when (localForm.sessionUnit) {
                         SessionUnit.VECES   -> "veces"
                         SessionUnit.MINUTOS -> "min"
                         SessionUnit.HORAS   -> "hrs"
@@ -97,54 +115,61 @@ fun TrackingStep(
                             "hrs"   -> SessionUnit.HORAS
                             else    -> SessionUnit.INDEFINIDO
                         }
-                        form = form.copy(
-                            sessionUnit = unit,
-                            sessionQty  = form.sessionQty.takeIf { unit != SessionUnit.INDEFINIDO }
+                        localForm = enforceRules(
+                            localForm.copy(
+                                sessionUnit = unit,
+                                sessionQty  = localForm.sessionQty.takeIf { unit != SessionUnit.INDEFINIDO }
+                            )
                         )
                     },
-                modifier = Modifier.weight(1f),
-                    isError  = sessionQtyErr && form.sessionUnit != SessionUnit.INDEFINIDO
+                    modifier = Modifier.weight(1f),
+                    isError  = sessionQtyErr && localForm.sessionUnit != SessionUnit.INDEFINIDO
                 )
             }
         }
 
-        /* -------- Repetición -------- */
+        /* ───── Repetición ───── */
         LabeledSection("Repetir hábito", onInfo = { dlg = "repeat" }) {
+            val repeatOptions = listOf(
+                "No aplica", "Diario", "Cada 3 días",
+                "Semanal", "Quincenal", "Mensual", "Personalizado"
+            )
             InputSelect(
-                options = listOf(
-                    "No aplica", "Diario", "Cada 3 días",
-                    "Semanal", "Quincenal", "Mensual", "Personalizado"
-                ),
-                selectedOption = when (form.repeatPreset) {
-                    RepeatPreset.DIARIO        -> "Diario"
-                    RepeatPreset.CADA_3_DIAS    -> "Cada 3 días"
-                    RepeatPreset.SEMANAL        -> "Semanal"
-                    RepeatPreset.QUINCENAL      -> "Quincenal"
-                    RepeatPreset.MENSUAL        -> "Mensual"
-                    RepeatPreset.PERSONALIZADO  -> "Personalizado"
-                    else                        -> "No aplica"
+                options = repeatOptions,
+                selectedOption = when (localForm.repeatPreset) {
+                    RepeatPreset.DIARIO       -> "Diario"
+                    RepeatPreset.CADA_3_DIAS   -> "Cada 3 días"
+                    RepeatPreset.SEMANAL       -> "Semanal"
+                    RepeatPreset.QUINCENAL     -> "Quincenal"
+                    RepeatPreset.MENSUAL       -> "Mensual"
+                    RepeatPreset.PERSONALIZADO -> "Personalizado"
+                    else                       -> "No aplica"
                 },
                 onOptionSelected = { sel ->
-                    form = form.copy(
-                        repeatPreset = when (sel) {
-                            "Diario"        -> RepeatPreset.DIARIO
-                            "Cada 3 días"   -> RepeatPreset.CADA_3_DIAS
-                            "Semanal"       -> RepeatPreset.SEMANAL
-                            "Quincenal"     -> RepeatPreset.QUINCENAL
-                            "Mensual"       -> RepeatPreset.MENSUAL
-                            "Personalizado" -> RepeatPreset.PERSONALIZADO
-                            else            -> RepeatPreset.INDEFINIDO
-                        },
-                        weekDays = if (sel == "Personalizado") form.weekDays else persistentSetOf()
+                    val preset = when (sel) {
+                        "Diario"        -> RepeatPreset.DIARIO
+                        "Cada 3 días"   -> RepeatPreset.CADA_3_DIAS
+                        "Semanal"       -> RepeatPreset.SEMANAL
+                        "Quincenal"     -> RepeatPreset.QUINCENAL
+                        "Mensual"       -> RepeatPreset.MENSUAL
+                        "Personalizado" -> RepeatPreset.PERSONALIZADO
+                        else            -> RepeatPreset.INDEFINIDO
+                    }
+                    localForm = enforceRules(
+                        localForm.copy(
+                            repeatPreset = preset,
+                            weekDays     = if (preset == RepeatPreset.PERSONALIZADO)
+                                localForm.weekDays
+                            else persistentSetOf()
+                        )
                     )
                 },
-                isError        = repeatErr,
-                supportingText = if (repeatErr) "Requerido para modo reto" else null
+                supportingText = if (weekDaysErr) "Elige al menos un día" else null
             )
         }
 
-        /* Días de la semana si es PERSONALIZADO */
-        AnimatedVisibility(form.repeatPreset == RepeatPreset.PERSONALIZADO) {
+        /* Días de la semana */
+        AnimatedVisibility(localForm.repeatPreset == RepeatPreset.PERSONALIZADO) {
             Column {
                 Text("Días de la semana", style = MaterialTheme.typography.bodyMedium)
                 FlowRow(
@@ -155,16 +180,18 @@ fun TrackingStep(
                     val labels = listOf("L","M","X","J","V","S","D")
                     labels.forEachIndexed { idx, l ->
                         val day = idx + 1
-                        val selected = day in form.weekDays
+                        val selected = day in localForm.weekDays
                         FilterChip(
                             selected = selected,
                             onClick  = {
-                                form = if (selected)
-                                    form.copy(weekDays = form.weekDays - day)
-                                else
-                                    form.copy(weekDays = form.weekDays + day)
+                                localForm = enforceRules(
+                                    if (selected)
+                                        localForm.copy(weekDays = localForm.weekDays - day)
+                                    else
+                                        localForm.copy(weekDays = localForm.weekDays + day)
+                                )
                             },
-                            label    = { Text(l) }
+                            label = { Text(l) }
                         )
                     }
                 }
@@ -176,16 +203,20 @@ fun TrackingStep(
             }
         }
 
-        /* -------- Periodo total -------- */
+        /* ───── Periodo total ───── */
         LabeledSection("Periodo del hábito", onInfo = { dlg = "periodo" }) {
             Row(
                 Modifier.animateContentSize(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                AnimatedVisibility(form.periodUnit != PeriodUnit.INDEFINIDO) {
+                AnimatedVisibility(localForm.periodUnit != PeriodUnit.INDEFINIDO) {
                     InputNumber(
-                        value          = form.periodQty?.toString().orEmpty(),
-                        onValueChange  = { form = form.copy(periodQty = it.toIntOrNull()) },
+                        value          = localForm.periodQty?.toString().orEmpty(),
+                        onValueChange  = { qty ->
+                            localForm = enforceRules(
+                                localForm.copy(periodQty = qty.toIntOrNull())
+                            )
+                        },
                         placeholder    = "Cantidad",
                         modifier       = Modifier.width(120.dp),
                         isError        = periodQtyErr,
@@ -194,7 +225,7 @@ fun TrackingStep(
                 }
                 InputSelect(
                     options = listOf("No aplica", "días", "semanas", "meses"),
-                    selectedOption = when (form.periodUnit) {
+                    selectedOption = when (localForm.periodUnit) {
                         PeriodUnit.DIAS    -> "días"
                         PeriodUnit.SEMANAS -> "semanas"
                         PeriodUnit.MESES   -> "meses"
@@ -207,32 +238,35 @@ fun TrackingStep(
                             "meses"   -> PeriodUnit.MESES
                             else      -> PeriodUnit.INDEFINIDO
                         }
-                        form = form.copy(
-                            periodUnit = unit,
-                            periodQty  = form.periodQty.takeIf { unit != PeriodUnit.INDEFINIDO }
+                        localForm = enforceRules(
+                            localForm.copy(
+                                periodUnit = unit,
+                                periodQty  = localForm.periodQty.takeIf { unit != PeriodUnit.INDEFINIDO }
+                            )
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    isError  = periodQtyErr && form.periodUnit != PeriodUnit.INDEFINIDO
+                    isError  = periodQtyErr && localForm.periodUnit != PeriodUnit.INDEFINIDO
                 )
             }
         }
 
-        /* -------- Toggles -------- */
-        if (form.repeatPreset != RepeatPreset.INDEFINIDO) {
+        /* ───── Toggles ───── */
+        if (localForm.repeatPreset != RepeatPreset.INDEFINIDO) {
             ToggleRow(
                 label   = "Notificarme",
-                checked = form.notify,
-                onToggle = { form = form.copy(notify = !form.notify) }
+                checked = localForm.notify,
+                onToggle = { localForm = localForm.copy(notify = !localForm.notify) }
             )
         }
+
         ToggleRow(
             label   = "Modo reto",
-            checked = form.challenge,
+            checked = localForm.challenge,
             onToggle = {
-                val ok = form.repeatPreset   != RepeatPreset.INDEFINIDO &&
-                        form.periodUnit     != PeriodUnit.INDEFINIDO
-                if (ok) form = form.copy(challenge = !form.challenge)
+                val ok = localForm.repeatPreset != RepeatPreset.INDEFINIDO &&
+                        localForm.periodUnit   != PeriodUnit.INDEFINIDO
+                if (ok) localForm = localForm.copy(challenge = !localForm.challenge)
                 else    dlg = "reto"
             },
             trailing = {
@@ -243,7 +277,7 @@ fun TrackingStep(
         )
     }
 
-    /* -------- Diálogos de ayuda -------- */
+    /* -------- diálogos de ayuda -------- */
     when (dlg) {
         "reto" -> ModalInfoDialog(
             visible       = true,
@@ -258,7 +292,7 @@ fun TrackingStep(
     }
 }
 
-/* Helpers ------------------------------------------------------------------ */
+/* ---------------- helpers ---------------- */
 
 @Composable
 private fun LabeledSection(
@@ -271,8 +305,8 @@ private fun LabeledSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(label, style = MaterialTheme.typography.bodyMedium)
-        if (onInfo != null) {
-            IconButton(onClick = onInfo) {
+        onInfo?.let {
+            IconButton(onClick = it) {
                 Icon(Icons.Default.Info, contentDescription = "Información")
             }
         }
@@ -290,4 +324,3 @@ private fun infoDialog(title: String, onDismiss: () -> Unit) {
         primaryButton = DialogButton("Entendido", onDismiss)
     )
 }
-*/

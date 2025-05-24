@@ -13,9 +13,9 @@ import com.app.domain.entities.Habit
 import com.app.domain.repository.HabitRepository
 import javax.inject.Inject
 
-class UpdateHabitUseCase @Inject constructor(
+class UpdateHabit @Inject constructor(
     private val repo: HabitRepository
-) {
-    suspend operator fun invoke(habit: Habit): Result<Unit> =
-        repo.updateHabit(habit)
-}
+) { suspend operator fun invoke(h: Habit) {
+    require(h.challenge == null) { "Hábitos en reto no se pueden editar" }
+    repo.update(h)
+} }

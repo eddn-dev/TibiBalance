@@ -8,10 +8,8 @@ package com.app.data.di
 import com.app.data.repository.EmotionRepositoryImpl
 import com.app.domain.repository.HabitRepository
 import com.app.data.repository.HabitRepositoryImpl
-import com.app.data.repository.HabitTemplateRepositoryImpl
 import com.app.data.repository.OnboardingRepositoryImpl
 import com.app.domain.repository.EmotionRepository
-import com.app.domain.repository.HabitTemplateRepository
 import com.app.domain.repository.OnboardingRepository
 import dagger.Binds
 import dagger.Module
@@ -28,11 +26,6 @@ abstract class RepositoryModule {
     abstract fun bindHabitRepository(
         impl: HabitRepositoryImpl
     ): HabitRepository
-
-    @Binds @Singleton
-    abstract fun bindHabitTemplateRepository(
-        impl: HabitTemplateRepositoryImpl
-    ): HabitTemplateRepository
 
     @Binds @Singleton
     abstract fun bindsOnboardingRepo(

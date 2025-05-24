@@ -32,6 +32,7 @@ fun UserSettings.toFirestoreMap() = mapOf(
     "accessibilityTTS" to accessibilityTTS
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun SyncMeta.toFirestoreMap() = mapOf(
     "createdAt"  to createdAt.toTimestamp(),
     "updatedAt"  to updatedAt.toTimestamp(),
@@ -39,6 +40,7 @@ fun SyncMeta.toFirestoreMap() = mapOf(
     "pendingSync" to pendingSync
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun User.toFirestoreMap() = mapOf(
     "uid"         to uid,
     "email"       to email,
@@ -57,7 +59,7 @@ fun Map<String,Any?>.toUser(): User = User(
     photoUrl    = get("photoUrl") as? String,
     birthDate   = (get("birthDate") as Timestamp).toDate()
         .toInstant().toKotlinInstant().toLocalDateTime(TimeZone.UTC).date,
-    settings    = (get("settings") as Map<String,Any?>).run {
+    settings    = (get("settings") as Map<*, *>).run {
         UserSettings(
             theme            = ThemeMode.valueOf(get("theme") as String),
             notifGlobal      = get("notifGlobal") as Boolean,

@@ -5,7 +5,7 @@
  */
 package com.app.data.di
 
-import com.app.data.remote.datasource.FirestoreHabitRemoteDataSource
+import com.app.data.remote.datasource.FirebaseHabitRemoteDataSource
 import com.app.data.remote.datasource.HabitRemoteDataSource
 import dagger.Binds
 import dagger.Module
@@ -16,9 +16,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RemoteModule {
-
     @Binds @Singleton
     abstract fun bindHabitRemoteDataSource(
-        impl: FirestoreHabitRemoteDataSource
+        impl: FirebaseHabitRemoteDataSource
     ): HabitRemoteDataSource
 }

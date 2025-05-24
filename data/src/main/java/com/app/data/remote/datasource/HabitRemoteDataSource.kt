@@ -5,20 +5,35 @@
  */
 package com.app.data.remote.datasource
 
-import com.app.data.remote.model.HabitDto
-import kotlinx.coroutines.flow.Flow
+import com.app.domain.entities.Habit
+import com.app.domain.entities.HabitActivity
+import com.app.domain.ids.HabitId
+
+/**
+ * @file    HabitRemoteDataSource.kt
+ * @brief   Operaciones remotas contra Firestore.
+ *
+ * Colecciones:
+ *   • users/{uid}/habits              (hábitos del usuario)
+ *   • habitTemplates                  (plantillas sugeridas)
+ *   • users/{uid}/habitActivities     (tracking de actividades)
+ */
+/**
+ * @file    HabitRemoteDataSource.kt
+ * @brief   Operaciones remotas contra Firestore.
+ */
 
 interface HabitRemoteDataSource {
 
-    /** Observa cambios remotos en tiempo real. */
-    fun listenHabits(): Flow<HabitDto>
+    /* ─────────── Plantillas ─────────── */
+    suspend fun fetchTemplates()            : List<Habit>   // habitTemplates (read-only)
 
-    /** Sube (merge) un hábito; sobreescribe por _doc id_. */
-    suspend fun pushHabit(dto: HabitDto)
+    /* ─────────── Hábitos de usuario ─── */
+    suspend fun fetchUserHabits(uid: String): List<Habit>   // users/{uid}/habits
+    suspend fun pushHabit(uid: String, habit: Habit)
+    suspend fun deleteHabit(uid: String, id: HabitId)
 
-    /** Devuelve dump completo de colección `habits/`. */
-    suspend fun pullHabits(): List<HabitDto>
-
-    /** Borra documento remoto (hard-delete). */
-    suspend fun deleteHabit(id: String)
+    /* ─────────── Actividades ────────── */
+    suspend fun pushActivity(uid: String, activity: HabitActivity)
 }
+

@@ -17,11 +17,6 @@ import com.app.domain.ids.HabitId
 import com.app.domain.repository.HabitRepository
 import javax.inject.Inject
 
-class DeleteHabitUseCase @Inject constructor(
+class DeleteHabit @Inject constructor(
     private val repo: HabitRepository
-) {
-    suspend operator fun invoke(
-        id: HabitId,
-        hard: Boolean = false
-    ): Result<Unit> = repo.deleteHabit(id, hard)
-}
+) { suspend operator fun invoke(id: HabitId) = repo.delete(id) }

@@ -30,42 +30,14 @@ import kotlinx.datetime.Instant
 
 interface HabitRepository {
 
-    /** Flujo en caliente (Room + Firestore) ordenado por categoría y nombre. */
-    fun getHabitsFlow(): Flow<List<Habit>>
+    /* Flujos ------------------------------ */
+    fun observeUserHabits()     : Flow<List<Habit>>   // isBuiltIn = false
+    fun observeSuggestedHabits(): Flow<List<Habit>>   // isBuiltIn = true
 
-    /** Crea un hábito nuevo con `pendingSync=true` (optimista). */
-    suspend fun createHabit(habit: Habit): Result<Unit>
-
-    /**
-     * Actualiza un hábito.
-     * 1. Escribe en Room.
-     * 2. Marca `pendingSync=true`.
-     * 3. Refresca `updatedAt = Clock.System.now()`.
-     */
-    suspend fun updateHabit(habit: Habit): Result<Unit>
-
-    /**
-     * Borra un hábito.
-     * Cuando [hard] es `false` (por defecto) se deja *tombstone* (`deletedAt`).
-     * Un hard-delete sólo procede si el documento jamás se subió a Firestore.
-     */
-    suspend fun deleteHabit(
-        id: HabitId,
-        hard: Boolean = false
-    ): Result<Unit>
-
-    /**
-     * Registra una finalización de sesión (ActivityType.COMPLETE) para [id].
-     * También puede usarse para marcar skip/reset, según lógica de UI.
-     */
-    suspend fun markCompleted(
-        id: HabitId,
-        at: Instant = Clock.System.now(),
-    ): Result<Unit>
-
-    /**
-     * Fuerza reconciliación inmediata Room ↔ Firestore.
-     * Normalmente invocado por el botón “Sincronizar ahora” o por pruebas.
-     */
+    /* Comandos ---------------------------- */
+    suspend fun create(habit: Habit)
+    suspend fun update(habit: Habit)
+    suspend fun delete(id: HabitId)
+    suspend fun markCompleted(id: HabitId, at: Instant = Clock.System.now())
     suspend fun syncNow(): Result<Unit>
 }

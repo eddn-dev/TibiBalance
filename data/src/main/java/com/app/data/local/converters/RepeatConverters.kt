@@ -1,26 +1,16 @@
+/* data/local/converters/RepeatConverters.kt */
 package com.app.data.local.converters
 
 import androidx.room.TypeConverter
 import com.app.domain.config.Repeat
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 
 object RepeatConverters {
-
-    private val json = Json {
-        encodeDefaults      = true
-        classDiscriminator  = "_type"
-        ignoreUnknownKeys   = true
-    }
-
-    /* Repeat ⇄ String ----------------------------------------------------- */
     @TypeConverter
-    fun repeatToJson(value: Repeat?): String? =
-        value?.let { json.encodeToString(Repeat.serializer(), it) }
-    //                               ^^^^^^^^^^^^^^^^^^^^^
-    // 1º arg:  serializer explícito
-    // 2º arg:  objeto a serializar (`it`)
+    fun repeatToJson(v: Repeat?): String? =
+        JsonConverters.toJson(v, Repeat.serializer())
 
     @TypeConverter
-    fun jsonToRepeat(value: String?): Repeat? =
-        value?.let { json.decodeFromString(Repeat.serializer(), it) }
+    fun jsonToRepeat(v: String?): Repeat? =
+        JsonConverters.fromJson(v, Repeat.serializer())
 }
