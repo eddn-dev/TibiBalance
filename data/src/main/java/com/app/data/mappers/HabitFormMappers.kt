@@ -13,59 +13,58 @@ import kotlinx.datetime.TimeZone
 import java.time.DayOfWeek
 import java.util.*
 
-private fun Instant.atStartOfDaySystem(): Instant =
-    toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
-        .atStartOfDayIn(TimeZone.currentSystemDefault())
-
 @RequiresApi(Build.VERSION_CODES.O)
 fun HabitForm.toHabit(
-    id: HabitId = HabitId(UUID.randomUUID().toString()),
+    id : HabitId = HabitId(UUID.randomUUID().toString()),
     now: Instant = Clock.System.now()
 ): Habit {
 
-    /* sesión */
+    /* ────── sesión / repetición / periodo ────── */
     val session = Session(sessionQty, sessionUnit)
-
-    /* repetición + periodo */
     val repeat  = repeatPreset.toRepeat(weekDays)
     val period  = Period(periodQty, periodUnit)
 
-    /* notificaciones */
-    val notif = if (!notify) {
-        NotifConfig(enabled = false)
-    } else {
-        NotifConfig(
-            enabled    = true,
-            message    = notifMessage.ifBlank { "¡Es hora!" },
-            times      = notifTimes.map(LocalTime::parse),
-            pattern    = repeat,
-            advanceMin = notifAdvanceMin
-        )
-    }
-
-    /* reto (ChallengeConfig) */
-    val challengeCfg = if (challenge) {
-        val start = now.atStartOfDaySystem()
-
-        val end = if (periodQty != null && periodUnit != PeriodUnit.INDEFINIDO) {
-            when (periodUnit) {
-                PeriodUnit.DIAS    -> start + DateTimePeriod(days   = periodQty!!)
-                PeriodUnit.SEMANAS -> start + DateTimePeriod(days   = periodQty!! * 7)
-                PeriodUnit.MESES   -> start + DateTimePeriod(months = periodQty!!)
-                PeriodUnit.INDEFINIDO -> start + DateTimePeriod(days = 21)
+    /* ────── reto ────── */
+    val startDay = now.atStartOfDaySystem()
+    val challengeCfg: ChallengeConfig? =
+        if (challenge) {
+            val end = when {
+                periodQty != null && periodUnit != PeriodUnit.INDEFINIDO ->
+                    startDay.plus(periodQty!!, periodUnit)
+                else -> startDay + DateTimePeriod(days = 21)        // ← fallback 3 semanas
             }
-        } else {
-            start + DateTimePeriod(days = 21)           // fallback 21 días
-        }
 
-        ChallengeConfig(
-            start         = start,
-            end           = end,
-            currentStreak = 0,
-            totalSessions = 0
-        )
-    } else null
+            ChallengeConfig(
+                start         = startDay,
+                end           = end,
+                currentStreak = 0,
+                totalSessions = 0
+            )
+        } else null
+
+    /* ────── notificaciones ────── */
+    val expiresAt: LocalDate? =
+        challengeCfg?.end?.toLocalDateTime(TimeZone.currentSystemDefault())?.date
+            ?: when {
+                periodQty != null && periodUnit != PeriodUnit.INDEFINIDO ->
+                    startDay.plus(periodQty!!, periodUnit)
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                else -> null
+            }
+
+    val notif = NotifConfig(
+        enabled     = notify,                               // ← sólo se conmuta el flag
+        message     = notifMessage.ifBlank { "¡Es hora!" },
+        times       = notifTimes.map(LocalTime::parse),
+        pattern     = repeat,
+        advanceMin  = notifAdvanceMin,
+        mode        = notifMode,
+        vibrate     = notifVibrate,
+        startsAt    = notifStartsAt?.let(LocalDate::parse),
+        expiresAt   = expiresAt,
+        channel     = NotifChannel.HABITS,                  // o tu valor por defecto
+        snoozeMin   = 10                                    // idem
+    )
 
     return Habit(
         id          = id,
@@ -82,9 +81,21 @@ fun HabitForm.toHabit(
     )
 }
 
-private operator fun Instant.plus(dateTimePeriod: DateTimePeriod): Instant {
-    return this.plus(dateTimePeriod, TimeZone.currentSystemDefault())
+/* helpers --------------------------------------------------- */
+private fun Instant.plus(qty: Int, unit: PeriodUnit): Instant = when (unit) {
+    PeriodUnit.DIAS      -> this + DateTimePeriod(days   = qty)
+    PeriodUnit.SEMANAS   -> this + DateTimePeriod(days   = qty * 7)
+    PeriodUnit.MESES     -> this + DateTimePeriod(months = qty)
+    PeriodUnit.INDEFINIDO-> this
 }
+
+private operator fun Instant.plus(p: DateTimePeriod): Instant =
+    this.plus(p, TimeZone.currentSystemDefault())
+
+private fun Instant.atStartOfDaySystem(): Instant =
+    toLocalDateTime(TimeZone.currentSystemDefault())
+        .date.atStartOfDayIn(TimeZone.currentSystemDefault())
+
 
 /* -------------------- Habit ➜ Form -------------------- */
 

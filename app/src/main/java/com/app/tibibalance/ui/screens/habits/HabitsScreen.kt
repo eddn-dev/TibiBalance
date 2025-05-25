@@ -16,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.domain.ids.HabitId
 import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.EmptyState
 import com.app.tibibalance.ui.components.utils.HabitList
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.AddHabitModal
+import com.app.tibibalance.ui.screens.habits.editHabitWizard.EditHabitModal
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -27,6 +29,7 @@ fun HabitsScreen(
     vm: HabitsViewModel = hiltViewModel()
 ) {
     var showAdd by remember { mutableStateOf(false) }
+    var editingId by remember { mutableStateOf<HabitId?>(null) }
 
     val ui by vm.uiState.collectAsState()
     val gradient = Brush.verticalGradient(
@@ -37,7 +40,7 @@ fun HabitsScreen(
         vm.events.collect { ev ->
             when (ev) {
                 HabitsEvent.AddClicked     -> showAdd = true
-                is HabitsEvent.ShowDetails -> { /* navegación futura */ }
+                is HabitsEvent.ShowDetails -> editingId = HabitId(ev.habitId)
             }
         }
     }
@@ -58,5 +61,9 @@ fun HabitsScreen(
 
     if (showAdd) {
         AddHabitModal(onDismiss = { showAdd = false })
+    }
+
+    editingId?.let {
+        EditHabitModal(habitId = it, onDismiss = { editingId = null })
     }
 }

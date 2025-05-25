@@ -31,6 +31,9 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE id = :id LIMIT 1")
     suspend fun findById(id: String): HabitEntity?
 
+    @Query("SELECT * FROM habits WHERE id = :id and m_deletedAt is null LIMIT 1")
+    fun observeById(id: String): Flow<HabitEntity?>
+
     /* ─────────── Actividades asociadas ─────────────────────────── */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertActivity(entity: HabitActivityEntity)

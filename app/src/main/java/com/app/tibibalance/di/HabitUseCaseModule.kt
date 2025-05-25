@@ -17,7 +17,10 @@ object HabitUseCaseModule {
 
     @Provides fun provideGetHabitsFlow(repo: HabitRepository)     = GetHabitsFlow(repo)
     @Provides fun provideCreateHabit(repo: HabitRepository)       = CreateHabit(repo)
-    @Provides fun provideUpdateHabit(repo: HabitRepository)       = UpdateHabit(repo)
+    @Provides fun provideUpdateHabit(repo: HabitRepository)       = UpdateHabit(
+        repo,
+        getHabit = GetHabitById(repo)
+    )
     @Provides fun provideDeleteHabit(repo: HabitRepository)       = DeleteHabit(repo)
     @Provides fun provideMarkCompleted(repo: HabitRepository)     = MarkCompleted(repo)
 }

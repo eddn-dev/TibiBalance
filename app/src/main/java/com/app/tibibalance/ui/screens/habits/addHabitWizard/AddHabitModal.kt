@@ -16,11 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tibibalance.ui.components.buttons.PrimaryButton
+import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
+import com.app.tibibalance.ui.components.utils.WizardNavBar
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,12 +75,10 @@ fun AddHabitModal(
 
             /* ---------- barra inferior ---------- */
             when (ui.currentStep) {
-                0 -> Button(
-                    onClick = vm::next,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) { Text("Crear hábito personalizado") }
+                0 -> PrimaryButton(
+                    text = "Crear hábito personalizado",
+                    onClick = vm::next
+                )
 
                 else -> WizardNavBar(
                     step      = ui.currentStep,
@@ -87,7 +87,8 @@ fun AddHabitModal(
                     notifyOn  = ui.form.notify,
                     onBack    = vm::back,
                     onNext    = vm::next,
-                    onSave    = vm::save
+                    onSave    = vm::save,
+                    onCancel  = vm::requestExit
                 )
             }
         }
@@ -123,49 +124,7 @@ fun AddHabitModal(
 /* ---------------- barra nav para pasos 1-3 ---------------- */
 
 @Composable
-private fun WizardNavBar(
-    step     : Int,
-    stepValid: Boolean,
-    saving   : Boolean,
-    notifyOn : Boolean,          // ← nuevo parámetro
-    onBack   : () -> Unit,
-    onNext   : () -> Unit,
-    onSave   : () -> Unit
-) {
-    Row(
-        Modifier.fillMaxWidth().padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (step > 1) TextButton(onClick = onBack) { Text("Atrás") }
-        Spacer(Modifier.weight(1f))
-
-        when {
-            /* Paso 2 SIN notificaciones → guardamos directo */
-            step == 2 && !notifyOn ->
-                Button(onClick = onSave, enabled = stepValid && !saving) {
-                    Text("Guardar")
-                }
-
-            /* Paso 2 con notificaciones o paso 1: botón Siguiente */
-            step < 3 ->
-                Button(onClick = onNext, enabled = stepValid && !saving) {
-                    Text("Siguiente")
-                }
-
-            /* Paso 3 (final) */
-            else ->
-                Button(onClick = onSave, enabled = stepValid && !saving) {
-                    Text("Guardar")
-                }
-        }
-    }
-}
-
-
-/* ---------------- diálogo confirmación genérico ---------------- */
-
-@Composable
-private fun ConfirmDialog(
+fun ConfirmDialog(
     title: String,
     msg: String,
     onYes: () -> Unit,

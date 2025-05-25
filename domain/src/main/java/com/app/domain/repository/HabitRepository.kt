@@ -33,6 +33,7 @@ interface HabitRepository {
     /* Flujos ------------------------------ */
     fun observeUserHabits()     : Flow<List<Habit>>   // isBuiltIn = false
     fun observeSuggestedHabits(): Flow<List<Habit>>   // isBuiltIn = true
+    fun observeHabit(id: HabitId) : Flow<Habit?>
 
     /* Comandos ---------------------------- */
     suspend fun create(habit: Habit)

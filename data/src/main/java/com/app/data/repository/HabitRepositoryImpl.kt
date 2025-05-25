@@ -73,6 +73,10 @@ class HabitRepositoryImpl @Inject constructor(
             .flowOn(io)
             .distinctUntilChanged()
 
+    override fun observeHabit(id: HabitId): Flow<Habit?> =
+        dao.observeById(id.raw)
+            .map { it?.toDomain() }
+            .distinctUntilChanged()
 
     /* ─────────────────────── operaciones CRUD ────────────────── */
 
