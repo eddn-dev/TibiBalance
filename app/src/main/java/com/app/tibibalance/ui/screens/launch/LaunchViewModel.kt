@@ -13,9 +13,12 @@
  */
 package com.app.tibibalance.ui.screens.launch
 
+import android.util.Log
+import android.util.Log.e
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.domain.repository.AuthRepository        // <- interfaz en :domain
+import com.app.domain.usecase.auth.SyncAccount
 import com.app.domain.usecase.onboarding.ObserveOnboardingStatus
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,26 +32,29 @@ import javax.inject.Inject
 class LaunchViewModel @Inject constructor(
     private val authRepo : AuthRepository,
     private val observeOnb: ObserveOnboardingStatus,
+    private val syncAccount: SyncAccount,
     private val auth     : FirebaseAuth
 ) : ViewModel() {
 
+    private val syncedUid = MutableStateFlow<String?>(null)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val sessionState: StateFlow<SessionState?> =
-        authRepo.authState()               // Flow<String?> (uid o null)
+        authRepo.authState()
             .flatMapLatest { uid ->
                 when (uid) {
-                    null -> flowOf(SessionState(loggedIn = false))      // no logueado
+                    null -> flowOf(SessionState(loggedIn = false))
                     else -> {
-                        refreshOnce()                   // recarga FirebaseAuth
-                        // combinamos verificación + onboarding
-                        observeOnb(uid)
-                            .map { onb ->
-                                SessionState(
-                                    loggedIn = true,
-                                    verified = auth.currentUser?.isEmailVerified == true,
-                                    onboardingCompleted = onb.tutorialCompleted
-                                )
-                            }
+                        refreshOnce()
+                        launchSyncIfNeeded(uid)      // disspara SyncAccount
+
+                        observeOnb(uid).map { onb ->
+                            SessionState(
+                                loggedIn            = true,
+                                verified            = auth.currentUser?.isEmailVerified == true,
+                                onboardingCompleted = onb.tutorialCompleted
+                            )
+                        }
                     }
                 }
             }
@@ -59,6 +65,21 @@ class LaunchViewModel @Inject constructor(
             )
 
     /* ------------------------------------------------------------------ */
+    private fun launchSyncIfNeeded(uid: String) {
+        if (syncedUid.value == uid) return            // ya intentamos ⇢ evita bucle infinito
+        viewModelScope.launch {
+            val result = syncAccount()                // 🔄 push-pull
+            if (result.isSuccess) {
+                syncedUid.value = uid                 // ✅ sólo ahora sellamos el UID
+            } else {
+                Log.e(result.exceptionOrNull().toString(), "SyncAccount failed")
+                // Si quieres reintentos automáticos:
+                // delay(5_000); launchSyncIfNeeded(uid)
+            }
+        }
+    }
+
+
     private fun refreshOnce() = viewModelScope.launch {
         try { auth.currentUser?.reload()?.await() } catch (_: Exception) {}
     }

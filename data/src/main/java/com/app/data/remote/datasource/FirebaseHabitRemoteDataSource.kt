@@ -20,10 +20,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.app.data.remote.model.HabitActivityDto
 import com.app.data.remote.model.HabitDto
+import com.app.domain.config.Session
 import com.app.domain.entities.Habit
 import com.app.domain.entities.HabitActivity
+import com.app.domain.enums.HabitCategory
 import com.app.domain.ids.HabitId
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -62,24 +66,25 @@ class FirebaseHabitRemoteDataSource @Inject constructor(
     }
 
     /** Descarga todos los hábitos creados por el usuario (users/{uid}/habits). */
-    @RequiresApi(Build.VERSION_CODES.O)         // opcional; lo dejo simétrico a fetchTemplates
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun fetchUserHabits(uid: String): List<Habit> = runCatching {
-        habitColl(uid)                           // users/{uid}/habits
-            .get()
-            .await()                             // QuerySnapshot
-            .toObjects(HabitDto::class.java)     // API sin deprecation
-            .map { it.toDomain() }               // ⇢ entidades de dominio
-    }.getOrElse { emptyList() }                  // error → lista vacía
+        val snapshot = habitColl(uid).get().await()
+        val list = snapshot
+            .toObjects(HabitDto::class.java)
+            .map { it.toDomain() }
+        list
+    }.getOrElse {
+        android.util.Log.e("fetchUserHabits", "❌ error al descargar", it)
+        emptyList()
+    }
 
-
-
-    /** Sube/actualiza un hábito del usuario (merge). */
+    /* ------------- PUSH ------------- */
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun pushHabit(uid: String, habit: Habit) {
-        runCatching {
-            habitColl(uid).document(habit.id.raw)
-                .set(HabitDto.fromDomain(habit))
-                .await()
-        }
+        habitColl(uid)
+            .document(habit.id.raw)
+            .set(HabitDto.fromDomain(habit), SetOptions.merge()) // ✅ usa DTO
+            .await()
     }
 
     override suspend fun deleteHabit(uid: String, id: HabitId) {

@@ -26,7 +26,7 @@ import com.app.data.local.entities.UserEntity
         UserEntity::class, EmotionEntryEntity::class,
         DailyMetricsEntity::class, OnboardingStatusEntity::class
     ],
-    version = 5,
+    version = 1,
     exportSchema = true
 )
 @TypeConverters(

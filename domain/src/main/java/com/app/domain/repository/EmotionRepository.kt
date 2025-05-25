@@ -15,4 +15,5 @@ interface EmotionRepository {
 
     /** Inserta o actualiza la emoción de un día (último estado sobrescribe). */
     suspend fun upsert(entry: EmotionEntry)
+    suspend fun syncNow(): Result<Unit>
 }

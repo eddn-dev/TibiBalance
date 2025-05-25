@@ -36,7 +36,7 @@ data class HabitDto(
     var repeat      : Map<String,Any> = mapOf("type" to "none"),
     var period      : Period          = Period(),
     var notifConfig : Map<String,Any> = mapOf("enabled" to false),
-    var challenge   : ChallengeConfig? = null,
+    var challenge   : Map<String,Any>? = null,
 
     /* metadatos */
     var isBuiltIn   : Boolean    = false,
@@ -59,7 +59,7 @@ data class HabitDto(
         repeat      = mapToRepeat(repeat),
         period      = period,
         notifConfig = mapToNotif(notifConfig),
-        challenge   = challenge,
+        challenge   = mapToChallenge(challenge),
         isBuiltIn   = isBuiltIn,
         meta        = SyncMeta(
             createdAt   = createdAt?.toInstant()?.toKotlinInstant() ?: Instant.DISTANT_PAST,
@@ -82,7 +82,7 @@ data class HabitDto(
             repeat      = repeatToMap(h.repeat),
             period      = h.period,
             notifConfig = notifToMap(h.notifConfig),
-            challenge   = h.challenge,
+            challenge   = challengeToMap(h.challenge),
             isBuiltIn   = h.isBuiltIn,
             createdAt   = h.meta.createdAt.toTimestamp(),
             updatedAt   = h.meta.updatedAt.toTimestamp(),
@@ -229,3 +229,31 @@ private fun notifToMap(cfg: NotifConfig): Map<String,Any> {
 @RequiresApi(Build.VERSION_CODES.O)
 private fun Instant.toTimestamp(): Timestamp =
     Timestamp(toJavaInstant())
+
+/*────────────────  ChallengeConfig ⇆ Map helpers  ───────────────*/
+/*────────────────  ChallengeConfig ⇆ Map helpers  ───────────────*/
+private fun mapToChallenge(raw: Map<String,Any>?): ChallengeConfig? {
+    if (raw == null) return null
+    return runCatching {
+        ChallengeConfig(
+            start         = Instant.parse(raw["start"]  as String),
+            end           = Instant.parse(raw["end"]    as String),
+            currentStreak = (raw["currentStreak"] as? Number ?: 0).toInt(),
+            totalSessions = (raw["totalSessions"] as? Number ?: 0).toInt(),
+            failed        = raw["failed"] as? Boolean ?: false,
+            lastFailureAt = (raw["lastFailureAt"] as? String)?.let(Instant::parse)
+        )
+    }.getOrNull()
+}
+
+private fun challengeToMap(cfg: ChallengeConfig?): Map<String, Any>? =
+    cfg?.let {
+        buildMap<String, Any> {
+            put("start",         it.start.toString())
+            put("end",           it.end.toString())
+            put("currentStreak", it.currentStreak)
+            put("totalSessions", it.totalSessions)
+            put("failed",        it.failed)
+            it.lastFailureAt?.let { ts -> put("lastFailureAt", ts.toString()) }
+        }
+    }

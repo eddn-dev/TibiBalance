@@ -16,5 +16,5 @@ data class OnboardingStatusEntity(
     val legalAccepted                : Boolean,
     val permissionsAsked             : Boolean,
     val completedAt                  : Instant?,
-    @Embedded(prefix = "meta_")      val meta: SyncMeta
+    @Embedded(prefix = "m_")      val meta: SyncMeta
 )

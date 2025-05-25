@@ -53,4 +53,38 @@ class OnboardingRepositoryImpl @Inject constructor(
                 )
             )
         }
+
+    override suspend fun syncNow(uid: String): Result<Unit> = withContext(io) {
+        return@withContext runCatching {
+            /* 1️⃣  PULL remoto primero (un solo doc) */
+            val remoteStatus = remote.fetch(uid)          // -- puede devolver null
+            val localStatus  = dao.find(uid)              // -- puede devolver null
+
+            val winner = when {
+                remoteStatus == null -> localStatus?.toDomain() ?: OnboardingStatus()
+                localStatus == null  -> remoteStatus
+                localStatus.meta.updatedAt >= remoteStatus.meta.updatedAt -> localStatus.toDomain()
+                else -> remoteStatus
+            }
+
+            dao.upsert(winner.toEntity(uid))
+
+            /* 3️⃣  PUSH si el local era el más nuevo o si quedaba pendingSync */
+            if (winner.meta.pendingSync || winner === localStatus?.toDomain()) {
+                remote.push(
+                    uid,
+                    mapOf(
+                        "tutorialCompleted" to winner.tutorialCompleted,
+                        "legalAccepted"     to winner.legalAccepted,
+                        "permissionsAsked"  to winner.permissionsAsked,
+                        "completedAt"       to winner.completedAt?.toString(),
+                        "updatedAt"         to winner.meta.updatedAt.toString()
+                    )
+                )
+                dao.upsert(
+                    winner.copy(meta = winner.meta.copy(pendingSync = false)).toEntity(uid)
+                )
+            }
+        }
+    }
 }

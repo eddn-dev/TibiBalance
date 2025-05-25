@@ -16,4 +16,8 @@ interface OnboardingStatusDao {
 
     @Upsert
     suspend fun upsert(status: OnboardingStatusEntity)
+
+    @Query("SELECT * FROM onboarding_status WHERE uid = :uid LIMIT 1")
+    suspend fun find(uid: String): OnboardingStatusEntity?
+
 }

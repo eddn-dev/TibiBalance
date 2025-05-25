@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6e9de3ec4b70c9c269eed1e0d794d5f0",
+    "identityHash": "bf2e5361a86247df52ba48567dde966e",
     "entities": [
       {
         "tableName": "habits",
@@ -280,7 +280,7 @@
       },
       {
         "tableName": "emotions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `emojiId` TEXT NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `emojiId` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
         "fields": [
           {
             "fieldPath": "date",
@@ -296,24 +296,24 @@
           },
           {
             "fieldPath": "meta.createdAt",
-            "columnName": "meta_createdAt",
+            "columnName": "m_createdAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.updatedAt",
-            "columnName": "meta_updatedAt",
+            "columnName": "m_updatedAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.deletedAt",
-            "columnName": "meta_deletedAt",
+            "columnName": "m_deletedAt",
             "affinity": "INTEGER"
           },
           {
             "fieldPath": "meta.pendingSync",
-            "columnName": "meta_pendingSync",
+            "columnName": "m_pendingSync",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -396,7 +396,7 @@
       },
       {
         "tableName": "onboarding_status",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "uid",
@@ -429,24 +429,24 @@
           },
           {
             "fieldPath": "meta.createdAt",
-            "columnName": "meta_createdAt",
+            "columnName": "m_createdAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.updatedAt",
-            "columnName": "meta_updatedAt",
+            "columnName": "m_updatedAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.deletedAt",
-            "columnName": "meta_deletedAt",
+            "columnName": "m_deletedAt",
             "affinity": "INTEGER"
           },
           {
             "fieldPath": "meta.pendingSync",
-            "columnName": "meta_pendingSync",
+            "columnName": "m_pendingSync",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -461,7 +461,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6e9de3ec4b70c9c269eed1e0d794d5f0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bf2e5361a86247df52ba48567dde966e')"
     ]
   }
 }

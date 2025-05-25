@@ -10,5 +10,5 @@ import kotlinx.datetime.LocalDate
 data class EmotionEntryEntity(
     @PrimaryKey                    val date: LocalDate,
     val emojiId                    : String,
-    @Embedded(prefix = "meta_")    val meta: SyncMeta
+    @Embedded(prefix = "m_")    val meta: SyncMeta
 )

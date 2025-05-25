@@ -23,4 +23,5 @@ interface OnboardingRepository {
      * Debe disparar la sincronización remota en la capa de datos.
      */
     suspend fun save(uid: String, status: OnboardingStatus)
+    suspend fun syncNow(uid: String): Result<Unit>
 }
