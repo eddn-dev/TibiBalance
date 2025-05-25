@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.app.tibibalance.ui.screens.habits.addHabitWizard
 
@@ -14,12 +14,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddHabitModal(
@@ -28,24 +32,32 @@ fun AddHabitModal(
 ) {
     val ui by vm.ui.collectAsState()
 
-    /* escucha evento Dismiss */
+    /* ------------- escucha de cierre programático ------------- */
     LaunchedEffect(Unit) {
         vm.events.collect { if (it is WizardEvent.Dismiss) onDismiss() }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = { vm.requestExit() },
-        dragHandle = {}
-    ) {
-        val pagerState = rememberPagerState(ui.currentStep) { 4 }
-        LaunchedEffect(ui.currentStep) { pagerState.animateScrollToPage(ui.currentStep) }
+    /* ------------- alto máximo: 85 % pantalla ------------- */
+    val maxH = LocalConfiguration.current.screenHeightDp.dp * .85f
 
-        Column(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+    /* ------------- contenedor base ------------- */
+    ModalContainer(
+        onDismissRequest = { vm.requestExit() },
+        modifier = Modifier
+            .fillMaxWidth()                                       // ancho completo en móvil
+            .heightIn(max = maxH)                                 // alto limitado
+    ) {
+
+        /* ---------- Pager ---------- */
+        val pager = rememberPagerState(ui.currentStep) { 4 }
+        LaunchedEffect(ui.currentStep) { pager.animateScrollToPage(ui.currentStep) }
+
+        Column(Modifier.fillMaxSize()) {
 
             HorizontalPager(
-                state = pagerState,
+                state             = pager,
                 userScrollEnabled = false,
-                modifier = Modifier.weight(1f)
+                modifier          = Modifier.weight(1f)
             ) { page ->
                 when (page) {
                     0 -> SuggestionStep(
@@ -53,42 +65,41 @@ fun AddHabitModal(
                         onSuggestion = vm::pickSuggestion,
                         onCustom    = vm::next
                     )
-
-                    1 -> BasicInfoStep(
-                        form   = ui.form,
-                        onForm = { f -> vm.updateForm { f } }            // ✔️
-                    )
-
-                    2 -> TrackingStep(
-                        form   = ui.form,
-                        onForm = { f -> vm.updateForm { f } }            // ✔️
-                    )
-
-                    3 -> NotificationStep(
-                        form   = ui.form,
-                        onForm = { f -> vm.updateForm { f } }            // ✔️
-                    )
+                    1 -> BasicInfoStep (ui.form) { vm.updateForm(it) }
+                    2 -> TrackingStep  (ui.form) { vm.updateForm(it) }
+                    3 -> NotificationStep(ui.form) { vm.updateForm(it) }
                 }
             }
 
+            /* ---------- barra inferior ---------- */
+            when (ui.currentStep) {
+                0 -> Button(
+                    onClick = vm::next,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) { Text("Crear hábito personalizado") }
 
-            WizardNavBar(
-                step      = ui.currentStep,
-                stepValid = vm.isStepValid(ui.currentStep, ui.form),
-                saving    = ui.saving,
-                onBack    = vm::back,
-                onNext    = vm::next,
-                onSave    = vm::save
-            )
+                else -> WizardNavBar(
+                    step      = ui.currentStep,
+                    stepValid = vm.isStepValid(ui.currentStep, ui.form),
+                    saving    = ui.saving,
+                    notifyOn  = ui.form.notify,
+                    onBack    = vm::back,
+                    onNext    = vm::next,
+                    onSave    = vm::save
+                )
+            }
         }
     }
 
-    /* ---------- diálogos ---------- */
+    /* ---------------- diálogos ---------------- */
+
     if (ui.askExit) ConfirmDialog(
         title = "¿Salir sin guardar?",
         msg   = "Perderás la información introducida.",
-        onYes = { vm.confirmExit(true) },
-        onNo  = { vm.confirmExit(false) }
+        onYes = { vm.confirmExit(true) },     // realmente cierra
+        onNo  = { vm.confirmExit(false) }     // solo oculta diálogo
     )
 
     if (ui.askReplace) ConfirmDialog(
@@ -103,39 +114,63 @@ fun AddHabitModal(
         icon = Icons.Default.Check,
         title = "¡Listo!",
         message = "Hábito guardado con éxito.",
-        primaryButton = DialogButton("Aceptar") { onDismiss() }
+        primaryButton = DialogButton("Aceptar") {
+            vm.acknowledgeSaved()       // ← limpia y cierra
+        }
     )
 }
 
-/* ---------------- barra navegación ---------------- */
+/* ---------------- barra nav para pasos 1-3 ---------------- */
 
 @Composable
 private fun WizardNavBar(
-    step: Int,
+    step     : Int,
     stepValid: Boolean,
-    saving: Boolean,
-    onBack: () -> Unit,
-    onNext: () -> Unit,
-    onSave: () -> Unit
+    saving   : Boolean,
+    notifyOn : Boolean,          // ← nuevo parámetro
+    onBack   : () -> Unit,
+    onNext   : () -> Unit,
+    onSave   : () -> Unit
 ) {
     Row(
         Modifier.fillMaxWidth().padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (step > 0) TextButton(onClick = onBack) { Text("Atrás") }
+        if (step > 1) TextButton(onClick = onBack) { Text("Atrás") }
         Spacer(Modifier.weight(1f))
-        if (step < 3)
-            Button(onClick = onNext, enabled = stepValid && !saving) { Text("Siguiente") }
-        else
-            Button(onClick = onSave, enabled = stepValid && !saving) { Text("Guardar") }
+
+        when {
+            /* Paso 2 SIN notificaciones → guardamos directo */
+            step == 2 && !notifyOn ->
+                Button(onClick = onSave, enabled = stepValid && !saving) {
+                    Text("Guardar")
+                }
+
+            /* Paso 2 con notificaciones o paso 1: botón Siguiente */
+            step < 3 ->
+                Button(onClick = onNext, enabled = stepValid && !saving) {
+                    Text("Siguiente")
+                }
+
+            /* Paso 3 (final) */
+            else ->
+                Button(onClick = onSave, enabled = stepValid && !saving) {
+                    Text("Guardar")
+                }
+        }
     }
 }
 
-/* ---------------- diálogo confirmación ---------------- */
+
+/* ---------------- diálogo confirmación genérico ---------------- */
 
 @Composable
-private fun ConfirmDialog(title: String, msg: String, onYes: () -> Unit, onNo: () -> Unit) {
+private fun ConfirmDialog(
+    title: String,
+    msg: String,
+    onYes: () -> Unit,
+    onNo: () -> Unit
+) {
     ModalInfoDialog(
         visible = true,
         icon = Icons.Default.Warning,

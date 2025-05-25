@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import com.app.domain.entities.Habit
-import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.buttons.RoundedIconButton
 import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.texts.Title
@@ -93,14 +92,5 @@ fun SuggestionStep(
                 }
             }
         }
-
-        /* ---------- Botón “Crear hábito personalizado” ---------- */
-        PrimaryButton(
-            text = "Crear hábito personalizado",
-            onClick = onCustom,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-        )
     }
 }

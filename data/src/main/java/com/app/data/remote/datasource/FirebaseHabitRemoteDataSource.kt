@@ -44,11 +44,22 @@ class FirebaseHabitRemoteDataSource @Inject constructor(
 
     /** Devuelve las plantillas como entidades de dominio. */
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun fetchTemplates(): List<Habit> = runCatching {
-        templateColl.get().await()
+    override suspend fun fetchTemplates(): List<Habit> = try {
+        val snapshot = templateColl.get().await()
+        val list = snapshot
             .toObjects(HabitDto::class.java)
             .map { it.toDomain() }
-    }.getOrElse { emptyList() }
+
+        android.util.Log.d("HabitTemplates",
+            "🔥 descargadas ${list.size} plantillas: ${
+                list.joinToString { it.name }
+            }")
+
+        list
+    } catch (ex: Exception) {
+        android.util.Log.e("HabitTemplates", "❌ error al descargar", ex)
+        emptyList()
+    }
 
     /** Descarga todos los hábitos creados por el usuario (users/{uid}/habits). */
     @RequiresApi(Build.VERSION_CODES.O)         // opcional; lo dejo simétrico a fetchTemplates

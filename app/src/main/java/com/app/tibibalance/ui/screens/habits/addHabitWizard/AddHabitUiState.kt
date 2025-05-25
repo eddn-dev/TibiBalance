@@ -1,7 +1,7 @@
 package com.app.tibibalance.ui.screens.habits.addHabitWizard
 
 import com.app.domain.entities.Habit
-import com.app.domain.entities.HabitForm
+import com.app.domain.model.HabitForm
 
 /**
  * UI-state global del wizard.

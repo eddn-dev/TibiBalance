@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.app.domain.config.RepeatPreset
-import com.app.domain.entities.HabitForm
+import com.app.domain.model.HabitForm
 import com.app.domain.enums.PeriodUnit
 import com.app.domain.enums.SessionUnit
 import com.app.tibibalance.ui.components.dialogs.DialogButton
@@ -29,7 +29,6 @@ import com.app.tibibalance.ui.components.inputs.*
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.ToggleRow
 import kotlinx.collections.immutable.persistentSetOf
-import kotlin.reflect.KFunction1
 
 /**
  * Paso 2 — Seguimiento: duración, repetición, periodo y modo reto/notificaciones.

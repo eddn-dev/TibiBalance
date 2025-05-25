@@ -3,7 +3,7 @@
  * @ingroup domain_entities
  * @brief   DTO mutable que acumula los datos del asistente de creación/edición de hábitos.
  */
-package com.app.domain.entities
+package com.app.domain.model
 
 import com.app.domain.config.RepeatPreset
 import com.app.domain.enums.*
@@ -15,36 +15,38 @@ import kotlinx.serialization.Serializable
  *
  * > *No* se persiste en Room ni en Firestore; sólo vive en memoria / saved-state.
  */
+/* domain/model/HabitForm.kt */
+
 @Serializable
 data class HabitForm(
-    /* ── Básico ───────────────────────────────────────────── */
-    val name       : String               = "",
-    val desc       : String               = "",
-    val category   : HabitCategory        = HabitCategory.SALUD,
-    val icon       : String               = "ic_favorite",
 
-    /* ── Duración de la sesión ────────────────────────────── */
-    val sessionQty : Int?                 = null,
-    val sessionUnit: SessionUnit          = SessionUnit.INDEFINIDO,
+    /* ── Básico ───────────────────────────── */
+    val name         : String        = "",
+    val desc         : String        = "",
+    val category     : HabitCategory = HabitCategory.SALUD,
+    val icon         : String        = "ic_favorite",
 
-    /* ── Repetición ───────────────────────────────────────── */
-    val repeatPreset: RepeatPreset        = RepeatPreset.INDEFINIDO,
-    /** Días de semana elegidos cuando `repeatPreset == PERSONALIZADO` (1=Lun … 7=Dom) */
-    val weekDays   : Set<Int>             = emptySet(),
+    /* ── Duración sesión ──────────────────── */
+    val sessionQty   : Int?          = null,
+    val sessionUnit  : SessionUnit   = SessionUnit.INDEFINIDO,
 
-    /* ── Periodo total ───────────────────────────────────── */
-    val periodQty  : Int?                 = null,
-    val periodUnit : PeriodUnit           = PeriodUnit.INDEFINIDO,
+    /* ── Repetición ───────────────────────── */
+    val repeatPreset : RepeatPreset  = RepeatPreset.INDEFINIDO,
+    val weekDays     : Set<Int>      = emptySet(),          // 1-7 (L-D)
 
-    /* ── Extras ───────────────────────────────────────────── */
-    val notify     : Boolean              = false,
-    val challenge  : Boolean              = false,
+    /* ── Periodo ──────────────────────────── */
+    val periodQty    : Int?          = null,
+    val periodUnit   : PeriodUnit    = PeriodUnit.INDEFINIDO,
 
-    val notifMessage: String = "",
-    val notifTimes  : Set<String> = emptySet(),
-    val notifAdvanceMin: Int = 0,
-    val notifAdvance  : Int           = 0,                // minutos
-    val notifStartsAt : String?       = null,             // "yyyy-MM-dd"
-    val notifMode     : NotifMode     = NotifMode.SILENT, // SOUND / SILENT
-    val notifVibrate  : Boolean       = false
+    /* ── Extras ───────────────────────────── */
+    val notify           : Boolean    = false,
+    val challenge        : Boolean    = false,
+
+    /* ---- Notificación ---- */
+    val notifMessage     : String     = "",
+    val notifTimes       : Set<String> = emptySet(),         // “HH:mm”
+    val notifAdvanceMin  : Int        = 0,
+    val notifMode        : NotifMode  = NotifMode.SILENT,
+    val notifVibrate     : Boolean    = false,
+    val notifStartsAt    : String?    = null                // “yyyy-MM-dd”
 )

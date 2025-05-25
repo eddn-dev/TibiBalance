@@ -7,19 +7,16 @@ import com.app.domain.config.*
 import com.app.domain.entities.*
 import com.app.domain.enums.*
 import com.app.domain.ids.HabitId
+import com.app.domain.model.HabitForm
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
 import java.time.DayOfWeek
 import java.util.*
 
-/* -------------------- helpers -------------------- */
-
 private fun Instant.atStartOfDaySystem(): Instant =
     toLocalDateTime(TimeZone.currentSystemDefault())
         .date
         .atStartOfDayIn(TimeZone.currentSystemDefault())
-
-/* -------------------- Form ➜ Habit -------------------- */
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun HabitForm.toHabit(
@@ -91,29 +88,42 @@ private operator fun Instant.plus(dateTimePeriod: DateTimePeriod): Instant {
 
 /* -------------------- Habit ➜ Form -------------------- */
 
+/* data/mappers/HabitFormMappers.kt (fragmento) */
 @RequiresApi(Build.VERSION_CODES.O)
 fun Habit.toForm(): HabitForm = HabitForm(
+
+    /* ------ Básico ------ */
     name       = name,
     desc       = description,
     category   = category,
     icon       = icon,
 
+    /* ------ Sesión ------ */
     sessionQty  = session.qty,
     sessionUnit = session.unit,
 
+    /* ------ Repetición ------ */
     repeatPreset = repeat.toPreset(),
-    weekDays     = when (val r = repeat) {           // ⚠️ smart-cast con variable local
-        is Repeat.Weekly -> r.days.map(DayOfWeek::getValue).toSet()
-        else             -> emptySet()
-    },
+    weekDays     = (repeat as? Repeat.Weekly)
+        ?.days
+        ?.map(DayOfWeek::getValue)
+        ?.toSet()
+        ?: emptySet(),
 
+    /* ------ Periodo ------ */
     periodQty  = period.qty,
     periodUnit = period.unit,
 
-    notify           = notifConfig.enabled,
-    notifMessage     = notifConfig.message,
-    notifTimes       = notifConfig.times.map { it.toString() }.toSet(),
-    notifAdvanceMin  = notifConfig.advanceMin,
+    /* ------ Notificación ------ */
+    notify          = notifConfig.enabled,
+    notifMessage    = notifConfig.message,
+    notifTimes      = notifConfig.times.map { it.toString() }.toSet(),
+    notifAdvanceMin = notifConfig.advanceMin,
+    notifMode       = notifConfig.mode,
+    notifVibrate    = notifConfig.vibrate,
+    notifStartsAt   = notifConfig.startsAt?.toString(),
 
+    /* ------ Reto ------ */
     challenge = (challenge != null)
 )
+

@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.app.domain.entities.HabitForm
+import com.app.domain.model.HabitForm
 import com.app.domain.enums.HabitCategory
 import com.app.tibibalance.ui.components.inputs.*
 import com.app.tibibalance.ui.components.texts.Title

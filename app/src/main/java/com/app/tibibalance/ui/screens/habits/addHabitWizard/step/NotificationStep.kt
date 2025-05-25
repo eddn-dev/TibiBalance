@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.app.domain.entities.HabitForm
+import com.app.domain.model.HabitForm
 import com.app.domain.enums.NotifMode
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.dialogs.DialogButton
@@ -26,7 +26,6 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputSelect
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Title
-import kotlinx.datetime.LocalTime
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -133,8 +132,8 @@ fun NotificationStep(
         /* ---- antelación ---- */
         Header("Minutos de antelación") { dlg = "adelanto" }
         InputText(
-            value           = local.notifAdvance.takeIf { it > 0 }?.toString().orEmpty(),
-            onValueChange   = { local = local.copy(notifAdvance = it.toIntOrNull() ?: 0) },
+            value           = local.notifAdvanceMin.takeIf { it > 0 }?.toString().orEmpty(),
+            onValueChange   = { local = local.copy(notifAdvanceMin = it.toIntOrNull() ?: 0) },
             placeholder     = "0",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier        = Modifier.width(120.dp)

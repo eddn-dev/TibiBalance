@@ -52,17 +52,27 @@ class HabitRepositoryImpl @Inject constructor(
 
     override fun observeSuggestedHabits(): Flow<List<Habit>> =
         flow {
-            /* 1) seed remoto → cache local */
-            val templates = try { remote.fetchTemplates() } catch (_: Exception) { emptyList() }
-            if (templates.isNotEmpty()) {
-                dao.upsert( templates.map { it.toEntity() } )
+            /* 1️⃣ descargar – pero en IO */
+            withContext(io) {
+                runCatching { remote.fetchTemplates() }
+                    .getOrElse { emptyList() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { templates ->
+                        dao.upsert(
+                            templates.map { it.copy(isBuiltIn = true).toEntity() }
+                        )
+                    }
             }
-            /* 2) emite Room */
+
+            /* 2️⃣ emitir Room */
             emitAll(
                 dao.observeByBuiltIn(true)
-                    .map { it.map { e -> e.toDomain() } }
+                    .map { list -> list.map { it.toDomain() } }
             )
-        }.distinctUntilChanged()
+        }
+            .flowOn(io)
+            .distinctUntilChanged()
+
 
     /* ─────────────────────── operaciones CRUD ────────────────── */
 
