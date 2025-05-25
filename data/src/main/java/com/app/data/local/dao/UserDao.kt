@@ -1,24 +1,31 @@
+/* data/local/dao/UserDao.kt */
 package com.app.data.local.dao
 
 import androidx.room.*
 import com.app.data.local.entities.UserEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * @file    UserDao.kt
- * @ingroup data_local_dao
- */
 @Dao
 interface UserDao {
 
-    @Query("SELECT * FROM users LIMIT 1")
-    fun observeUser(): Flow<UserEntity?>
+    /* ---- lectura reactiva ---- */
+
+    @Query("SELECT * FROM users WHERE uid = :uid LIMIT 1")
+    fun observe(uid: String): Flow<UserEntity?>
+
+    /* ---- lectura puntual ---- */
+
+    @Query("SELECT * FROM users WHERE uid = :uid LIMIT 1")
+    suspend fun find(uid: String): UserEntity?
+
+    /* ---- inserción / reemplazo ---- */
 
     @Upsert
     suspend fun upsert(user: UserEntity)
 
-    /** Sólo actualiza ajustes sin sobreescribir perfil. */
-    @Query("""
+    /* ---- settings “solo escritura” ---- */
+    @Query(
+        """
         UPDATE users
         SET settings_theme = :theme,
             settings_notif = :notif,
@@ -27,7 +34,8 @@ interface UserDao {
             meta_updatedAt = :updatedAt,
             meta_pendingSync = 1
         WHERE uid = :uid
-    """)
+        """
+    )
     suspend fun updateSettings(
         uid: String,
         theme: String,
@@ -36,4 +44,20 @@ interface UserDao {
         tts: Boolean,
         updatedAt: Long
     )
+
+    /* ---- utilidades de sincronización ---- */
+
+    /** Regresa los registros con `pendingSync = 1` para el usuario. */
+    @Query("SELECT * FROM users WHERE meta_pendingSync = 1 AND uid = :uid")
+    suspend fun pendingToSync(uid: String): List<UserEntity>
+
+    /** Marca un perfil como ya sincronizado. */
+    @Query(
+        """
+        UPDATE users
+        SET meta_pendingSync = 0
+        WHERE uid = :uid
+        """
+    )
+    suspend fun clearPending(uid: String)
 }

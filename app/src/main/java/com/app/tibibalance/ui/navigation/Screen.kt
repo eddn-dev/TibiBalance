@@ -54,9 +54,6 @@ sealed class Screen(val route: String) {
     /** @brief Pantalla que se muestra después del registro para instruir al usuario a verificar su correo electrónico. */
     data object VerifyEmail  : Screen("verify_email")
 
-    /* app con BottomBar: Pantallas principales de la aplicación accesibles después de la autenticación,
-     * usualmente gestionadas por una barra de navegación inferior. */
-
     /**
      * @brief Pantalla contenedora principal que alberga la navegación con barra inferior.
      * @details Actúa como un "hub" o punto de entrada a las secciones principales de la app.
@@ -74,15 +71,5 @@ sealed class Screen(val route: String) {
     /** @brief Pantalla para los ajustes de la aplicación, accesible desde la barra inferior. Ruta: "main/settings". */
     data object Settings     : Screen("main/settings")
 
-    // Se podrían añadir más objetos aquí para nuevas pantallas, por ejemplo:
-    // data object HabitDetail : Screen("habit_detail/{habitId}") {
-    //     fun createRoute(habitId: String) = "habit_detail/$habitId"
-    // }
-
-    /** @brief Pantalla para configurar notificaciones del usuario. de settings */
-    data object NotificationSettings : Screen("main/settings/notifications")
-    /** @brief Pantalla para Editar perfil del usuario. de settings */
-    data object EditPersonal : Screen("main/settings/edit_profile")
-    /** @brief Pantalla para cambiar contraseña */
-    data object ChangePassword : Screen("changePassword")
+    data object EditProfile : Screen("edit_profile")
 }

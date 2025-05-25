@@ -6,17 +6,27 @@ package com.app.data.remote.model
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.app.domain.common.SyncMeta
-import com.app.domain.config.*
+import com.app.domain.config.ChallengeConfig
+import com.app.domain.config.NotifConfig
+import com.app.domain.config.Period
+import com.app.domain.config.Repeat
+import com.app.domain.config.Session
 import com.app.domain.entities.Habit
-import com.app.domain.enums.*
+import com.app.domain.enums.HabitCategory
+import com.app.domain.enums.NotifChannel
+import com.app.domain.enums.NotifMode
+import com.app.domain.enums.OccurrenceInMonth
 import com.app.domain.ids.HabitId
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.PropertyName
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toJavaLocalTime
+import kotlinx.datetime.toKotlinInstant
 import java.time.DayOfWeek
 import java.time.format.DateTimeFormatter
-import kotlinx.datetime.*
-import kotlinx.datetime.TimeZone
-import kotlinx.serialization.Serializable
 
 /*────────────────────────  DTO principal  ────────────────────────*/
 @Suppress("unused")       // necesario para Firestore
@@ -231,7 +241,6 @@ private fun Instant.toTimestamp(): Timestamp =
     Timestamp(toJavaInstant())
 
 /*────────────────  ChallengeConfig ⇆ Map helpers  ───────────────*/
-/*────────────────  ChallengeConfig ⇆ Map helpers  ───────────────*/
 private fun mapToChallenge(raw: Map<String,Any>?): ChallengeConfig? {
     if (raw == null) return null
     return runCatching {
@@ -248,7 +257,7 @@ private fun mapToChallenge(raw: Map<String,Any>?): ChallengeConfig? {
 
 private fun challengeToMap(cfg: ChallengeConfig?): Map<String, Any>? =
     cfg?.let {
-        buildMap<String, Any> {
+        buildMap {
             put("start",         it.start.toString())
             put("end",           it.end.toString())
             put("currentStreak", it.currentStreak)

@@ -42,6 +42,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview // Para Preview
+import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.texts.Description
 
 /**
@@ -162,7 +163,7 @@ private fun SettingItemWithSwitchPreview() {
             leadingIcon = { Icon(Icons.Filled.AccountCircle, "Modo oscuro") },
             text = "Modo Oscuro",
             trailing = {
-                Switch(checked = isChecked, onCheckedChange = { isChecked = it })
+                SwitchToggle(checked = isChecked, onCheckedChange = { isChecked = it })
             }
             // No onClick para la fila, el Switch maneja su propia interacción
         )

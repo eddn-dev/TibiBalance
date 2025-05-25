@@ -11,16 +11,18 @@ import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordScreen
 import com.app.tibibalance.ui.screens.auth.signin.SignInScreen
 import com.app.tibibalance.ui.screens.auth.signup.SignUpScreen
 import com.app.tibibalance.ui.screens.auth.verify.VerifyEmailScreen
-import com.app.tibibalance.ui.screens.settings.ConfigureNotificationScreen
 import com.app.tibibalance.ui.screens.launch.LaunchScreen
-import com.app.tibibalance.ui.screens.profile.EditProfileScreen
 import com.app.tibibalance.ui.screens.main.MainScreen
 import com.app.tibibalance.ui.screens.onboarding.OnboardingPage
 import com.app.tibibalance.ui.screens.onboarding.OnboardingRoute
-import com.app.tibibalance.ui.screens.settings.ChangePasswordScreenPreviewOnly
-import com.app.tibibalance.ui.screens.settings.DeleteAccountScreen
 import com.app.tibibalance.R
 import androidx.compose.runtime.remember
+import com.app.domain.common.SyncMeta
+import com.app.domain.entities.User
+import com.app.domain.entities.UserSettings
+import com.app.tibibalance.ui.screens.profile.EditProfileScreen
+import com.app.tibibalance.ui.screens.settings.SettingsScreen
+import kotlinx.datetime.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,17 +47,21 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         composable(Screen.VerifyEmail.route) { VerifyEmailScreen(navController) }
         composable(Screen.Forgot.route)      { ForgotPasswordScreen(navController) }
         composable(Screen.Main.route)        { MainScreen(navController) }
-
-        composable(Screen.NotificationSettings.route) {
-            ConfigureNotificationScreen(onNavigateUp = { navController.popBackStack() })
-        }
-        composable(Screen.EditPersonal.route) { EditProfileScreen(navController) }
-        composable(Screen.ChangePassword.route) {
-            ChangePasswordScreenPreviewOnly(navController)
-        }
-        composable("delete_account/{isGoogleUser}") { backStackEntry ->
-            val isGoogle = backStackEntry.arguments?.getString("isGoogleUser")?.toBooleanStrictOrNull() ?: false
-            DeleteAccountScreen(navController, isGoogle)
-        }
+        composable(Screen.EditProfile.route) { EditProfileScreen(
+            user = User(
+                uid = "",
+                email = "esotilin@gmail.com",
+                displayName = "Usuario de prueba",
+                photoUrl = "https://lh3.googleusercontent.com/a/ACg8ocIfGMQpHarn5OmTkSerBFPzC2--zfNppkug79c6aOxoVKC9U9OvIw=s96-c",
+                birthDate = LocalDate(2000, 1, 1),
+                settings = UserSettings(),
+                meta = SyncMeta()
+            ),
+            canChangePass = true,
+            onPickPhoto = {launcer -> },
+            onSave = { _, _, _ -> },
+            onChangePass = {navController.navigate(Screen.Forgot.route)},
+            onCancel = {navController.navigate(Screen.Main.route)},
+        )}
     }
 }
