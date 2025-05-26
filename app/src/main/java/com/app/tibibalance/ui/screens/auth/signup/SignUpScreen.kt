@@ -116,7 +116,10 @@ fun SignUpScreen(
     )
 
     Box(
-        Modifier.fillMaxSize().background(gradient)
+        Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .background(gradient)
     ) {
         /* scrollable column */
         Column(

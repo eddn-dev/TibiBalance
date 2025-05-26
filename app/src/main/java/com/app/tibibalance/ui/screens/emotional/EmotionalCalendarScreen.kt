@@ -55,6 +55,7 @@ fun EmotionalCalendarScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(
                 Brush.verticalGradient(
                     listOf(Color(0xFF3EA8FE).copy(.25f), Color.White)

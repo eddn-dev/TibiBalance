@@ -73,7 +73,11 @@ fun EditHabitModal(
             } else pager.animateScrollToPage(ui.currentStep)
         }
 
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
 
             /* ---------- páginas ---------- */
             HorizontalPager(

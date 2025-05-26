@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,7 +47,12 @@ fun HabitsScreen(
         }
     }
 
-    Box(Modifier.fillMaxSize().background(gradient)) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .background(gradient)
+    ) {
         when (val s = ui) {
             HabitsUiState.Loading -> Centered("Cargando…")
             is HabitsUiState.Error -> Centered(s.msg)

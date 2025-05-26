@@ -81,6 +81,7 @@ fun SettingsScreen(
     Box(
         Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(gradient)
     ) {
         ReadyContent(

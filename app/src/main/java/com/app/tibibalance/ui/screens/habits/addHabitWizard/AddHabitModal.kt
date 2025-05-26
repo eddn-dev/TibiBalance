@@ -54,7 +54,11 @@ fun AddHabitModal(
         val pager = rememberPagerState(ui.currentStep) { 4 }
         LaunchedEffect(ui.currentStep) { pager.animateScrollToPage(ui.currentStep) }
 
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
 
             HorizontalPager(
                 state             = pager,

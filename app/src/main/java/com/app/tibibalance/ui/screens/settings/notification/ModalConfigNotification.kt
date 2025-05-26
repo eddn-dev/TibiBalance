@@ -36,7 +36,11 @@ fun ModalConfigNotification(
             .fillMaxWidth()
             .heightIn(max = LocalConfiguration.current.screenHeightDp.dp * .85f)
     ) {
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
 
             /* -------- cuerpo reutilizado -------- */
             Box(Modifier.weight(1f)) {

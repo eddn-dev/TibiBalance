@@ -117,6 +117,7 @@ fun SignInScreen(
     Box(
         Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(gradient)
     ) {
         Column(

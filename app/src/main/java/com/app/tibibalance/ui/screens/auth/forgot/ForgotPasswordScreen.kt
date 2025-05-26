@@ -140,7 +140,11 @@ fun ForgotPasswordScreen(
     )
 
     // Contenedor principal que ocupa toda la pantalla.
-    Box(Modifier.fillMaxSize()) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+    ) {
 
         /* ---------- CONTENIDO PRINCIPAL ---------- */
         // Columna para organizar los elementos verticalmente, con scroll.
