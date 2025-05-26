@@ -57,12 +57,12 @@ import androidx.compose.ui.unit.dp
 @Suppress("UNUSED_FUNCTION") // Suprime el aviso si la función no se usa fuera de este archivo (común para previews o helpers internos)
 @Composable
 fun IconContainer(
+    modifier: Modifier = Modifier, // Modificador estándar
     icon: ImageVector,
     contentDescription: String?,
     backgroundColor: Color = Color.Transparent, // Fondo transparente por defecto
     iconTint: Color = Color.Black, // Tinte negro por defecto
     size: Int = 48, // Tamaño 48dp por defecto
-    modifier: Modifier = Modifier // Modificador estándar
 ) {
     Box(
         modifier = modifier

@@ -56,10 +56,10 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun RoundedIconButton(
+    modifier: Modifier = Modifier, // Modificador externo opcional
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String? = null,
-    modifier: Modifier = Modifier, // Modificador externo opcional
     backgroundColor: Color = Color(0xFF42A5F5), // Color de fondo azul por defecto
     iconTint: Color = Color.White // Tinte blanco por defecto para el icono
 ) {

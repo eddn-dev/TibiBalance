@@ -1,6 +1,8 @@
 /* ui/screens/settings/ConfigureNotificationScreen.kt */
 package com.app.tibibalance.ui.screens.settings.notification
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,7 @@ import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.utils.SettingItem
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ConfigureNotificationScreen(
     navController: NavHostController,
@@ -45,7 +48,13 @@ fun ConfigureNotificationScreen(
 
     /* ---------- UI-state ---------- */
     val ui by viewModel.ui.collectAsState()
-
+    val selectedHabit by viewModel.selectedHabit.collectAsState()
+    selectedHabit?.let { h ->
+        ModalConfigNotification(
+            habitId   = com.app.domain.ids.HabitId(h.id),
+            onDismiss = { viewModel.clearSelectedHabit() }
+        )
+    }
     Box(
         Modifier
             .fillMaxSize()
@@ -61,7 +70,8 @@ fun ConfigureNotificationScreen(
 
             is ConfigureNotifUiState.Loaded -> HabitListSection(
                 habits   = (ui as ConfigureNotifUiState.Loaded).data,
-                onToggle = viewModel::toggleNotification
+                onToggle = viewModel::toggleNotification,
+                vm       = viewModel
             )
         }
 
@@ -79,7 +89,8 @@ fun ConfigureNotificationScreen(
 @Composable
 private fun HabitListSection(
     habits  : List<HabitNotifUi>,
-    onToggle: (HabitNotifUi) -> Unit
+    onToggle: (HabitNotifUi) -> Unit,
+    vm      : ConfigureNotificationViewModel = hiltViewModel()
 ) {
     Column(
         Modifier
@@ -105,7 +116,7 @@ private fun HabitListSection(
                     IconContainer(
                         icon = iconByName(habit.icon),
                         contentDescription = habit.name,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                 },
                 text = habit.name,
@@ -114,10 +125,12 @@ private fun HabitListSection(
                         onClick = { onToggle(habit) },
                         icon = if (habit.enabled) Icons.Default.NotificationsActive
                                else Icons.Default.NotificationsOff,
+                        modifier = Modifier.size(32.dp),
                     )
                 },
                 containerColor = Color.White,
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(bottom = 12.dp),
+                onClick =  { vm.selectHabit(habit) }
             )
         }
     }

@@ -1,3 +1,4 @@
+/* ui/screens/settings/notification/ConfigureNotificationViewModel.kt */
 package com.app.tibibalance.ui.screens.settings.notification
 
 import androidx.lifecycle.ViewModel
@@ -13,10 +14,10 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import javax.inject.Inject
 
-/* ──────────── UI models ──────────── */
+/* ───────────── modelos UI ───────────── */
 
 data class HabitNotifUi(
-    val id      : String,   // HabitId.value
+    val id      : String,
     val name    : String,
     val icon    : String,
     val enabled : Boolean
@@ -29,7 +30,7 @@ sealed class ConfigureNotifUiState {
     data class Error (val msg : String)  : ConfigureNotifUiState()
 }
 
-/* ──────────── ViewModel ──────────── */
+/* ───────────── ViewModel ───────────── */
 
 @HiltViewModel
 class ConfigureNotificationViewModel @Inject constructor(
@@ -38,17 +39,25 @@ class ConfigureNotificationViewModel @Inject constructor(
     private val updateHabit  : UpdateHabit
 ) : ViewModel() {
 
-    /* ---- lista reactiva de hábitos del usuario ---- */
+    /* ---------- listado reactivo ---------- */
     val ui: StateFlow<ConfigureNotifUiState> = getHabitsFlow()
         .map { list ->
             val items = list.map { it.toUi() }
             if (items.isEmpty()) ConfigureNotifUiState.Empty
-            else                  ConfigureNotifUiState.Loaded(items)
+            else                 ConfigureNotifUiState.Loaded(items)
         }
         .catch { emit(ConfigureNotifUiState.Error(it.message ?: "Error")) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ConfigureNotifUiState.Loading)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000),
+            ConfigureNotifUiState.Loading)
 
-    /* ---- toggle habilitar / deshabilitar ---- */
+    /* ---------- hábito seleccionado para el modal ---------- */
+    private val _selectedHabit = MutableStateFlow<HabitNotifUi?>(null)
+    val selectedHabit: StateFlow<HabitNotifUi?> = _selectedHabit.asStateFlow()
+
+    fun selectHabit(habit: HabitNotifUi) { _selectedHabit.value = habit }
+    fun clearSelectedHabit()             { _selectedHabit.value = null }
+
+    /* ---------- habilitar / deshabilitar campana ---------- */
     fun toggleNotification(habitUi: HabitNotifUi) = viewModelScope.launch {
         val habit = getHabitById(HabitId(habitUi.id)).first() ?: return@launch
 
@@ -56,17 +65,17 @@ class ConfigureNotificationViewModel @Inject constructor(
             notifConfig = habit.notifConfig.copy(enabled = !habit.notifConfig.enabled),
             meta        = habit.meta.copy(
                 updatedAt   = Clock.System.now(),
-                pendingSync = true                      //  offline-first  ✅
+                pendingSync = true
             )
         )
-        updateHabit(updated)     // reglas de negocio en el use-case (reto, plantilla, etc.)
+        updateHabit(updated)
     }
 
-    /* ---- mapper dominio ➜ UI ---- */
+    /* ---------- mapper dominio ➜ UI ---------- */
     private fun Habit.toUi() = HabitNotifUi(
         id      = id.value,
         name    = name,
-        icon    = icon,                // atributo String que ya usas en HabitsScreen
+        icon    = icon,
         enabled = notifConfig.enabled
     )
 }
