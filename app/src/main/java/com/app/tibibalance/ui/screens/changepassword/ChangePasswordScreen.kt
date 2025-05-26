@@ -60,7 +60,11 @@ fun ChangePasswordScreen(
         listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
     )
 
-    Box(Modifier.fillMaxSize()) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+    ) {
         Column(
             Modifier
                 .fillMaxSize()

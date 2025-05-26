@@ -62,6 +62,7 @@ fun OnboardingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(gradient),
         contentAlignment = Alignment.Center // Centra el contenido de este Box (la Column principal)
     ) {
