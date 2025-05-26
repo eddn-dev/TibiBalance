@@ -74,7 +74,6 @@ fun MainScreen(rootNav: NavHostController) {
                     /* —— Cuenta —— */
                     onDevices        = { /* TODO */ },
                     onAchievements   = { /* TODO */ },
-                    onConfigureNotis = { /* TODO */ },
 
                     /* —— Sesión —— */
                     onSignOut        = { /* TODO signOut() */ },
