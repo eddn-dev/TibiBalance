@@ -50,16 +50,17 @@ class UserRepositoryImpl @Inject constructor(
             val now = Clock.System.now()
 
             /* 1️⃣  PUSH remoto */
-            val payload = buildMap<String, Any> {
-                put("meta.updatedAt", now.toString())
-                displayName?.let { put("displayName", it) }
-                birthDate?.let { put("birthDate", it.toString()) }
-                photoUrl?.let { put("photoUrl", it) }
-            }
-            if (payload.size > 1) {                        // hay algo distinto a updatedAt
-                db.collection("users").document(uid)
-                    .set(payload, SetOptions.merge()).await()
-            }
+            val payloadForRemote = mutableMapOf<String, Any>()
+
+            displayName?.let { payloadForRemote["displayName"] = it }
+            birthDate?.let { payloadForRemote["birthDate"] = it.toString() }
+            photoUrl?.let { payloadForRemote["photoUrl"] = it }
+
+            // Always set/update the meta field to be a map with updatedAt
+            payloadForRemote["meta"] = mapOf("updatedAt" to now.toString())
+
+            db.collection("users").document(uid)
+                .set(payloadForRemote, SetOptions.merge()).await()
 
             /* 2️⃣  Actualiza local */
             val local = dao.find(uid)
@@ -149,7 +150,7 @@ class UserRepositoryImpl @Inject constructor(
     // --- UserRepositoryImpl.kt
     private fun DocumentSnapshot.toUser(): User? = runCatching {
         User(
-            uid         = getString("uid") ?: return null,          // uid se guarda
+            uid         = getString("uid") ?: return@runCatching null,          // uid se guarda
             email       = getString("email") ?: "",
             displayName = getString("displayName"),
             photoUrl    = getString("photoUrl"),
@@ -171,6 +172,8 @@ class UserRepositoryImpl @Inject constructor(
                 pendingSync = false
             )
         )
+    }.onFailure { ex ->
+        Log.e("UserSync", "mapper error", ex)
     }.getOrNull()
 
 
