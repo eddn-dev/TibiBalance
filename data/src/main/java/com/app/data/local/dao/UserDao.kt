@@ -60,4 +60,8 @@ interface UserDao {
         """
     )
     suspend fun clearPending(uid: String)
+
+    //Borra todos los registros de la tabla
+    @Query("DELETE FROM users")
+    suspend fun clear()
 }

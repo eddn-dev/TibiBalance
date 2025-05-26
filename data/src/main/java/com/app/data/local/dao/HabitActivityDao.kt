@@ -29,4 +29,8 @@ interface HabitActivityDao {
            OR meta_pendingSync = 0
     """)
     suspend fun purgeSyncedOrDeleted()
+
+    //Borra todos los registros de la tabla
+    @Query("DELETE FROM activities")
+    suspend fun clear()
 }

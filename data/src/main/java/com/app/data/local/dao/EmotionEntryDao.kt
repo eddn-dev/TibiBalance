@@ -24,4 +24,8 @@ interface EmotionEntryDao {
     @Query("SELECT * FROM emotions WHERE date = :date LIMIT 1")
     suspend fun findByDate(date: LocalDate): EmotionEntryEntity?
 
+    //Borra todos los registros de la tabla
+    @Query("DELETE FROM emotions")
+    suspend fun clear()
+
 }

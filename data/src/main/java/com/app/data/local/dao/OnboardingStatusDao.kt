@@ -20,4 +20,7 @@ interface OnboardingStatusDao {
     @Query("SELECT * FROM onboarding_status WHERE uid = :uid LIMIT 1")
     suspend fun find(uid: String): OnboardingStatusEntity?
 
+    //Borra todos los registros de la tabla
+    @Query("DELETE FROM onboarding_status")
+    suspend fun clear()
 }

@@ -37,4 +37,8 @@ interface HabitDao {
     /* ─────────── Actividades asociadas ─────────────────────────── */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertActivity(entity: HabitActivityEntity)
+
+    //Borra todos los registros de la tabla
+    @Query("DELETE FROM habits")
+    suspend fun clear()
 }

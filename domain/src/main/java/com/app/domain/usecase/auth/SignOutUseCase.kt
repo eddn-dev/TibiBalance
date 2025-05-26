@@ -6,7 +6,11 @@ import javax.inject.Inject
 // SignOutUseCase
 
 class SignOutUseCase @Inject constructor(
-    private val repo: AuthRepository
+    private val repo: AuthRepository,
+    private val clearLocalData: ClearLocalData
 ) {
-    suspend operator fun invoke() = repo.signOut()
+    suspend operator fun invoke() {
+        repo.signOut()
+        clearLocalData()
+    }
 }

@@ -20,4 +20,8 @@ interface DailyMetricsDao {
 
     @Upsert
     suspend fun upsertAll(metrics: List<DailyMetricsEntity>)
+
+    //Borra todos los registros de la tabla
+    @Query("DELETE FROM daily_metrics")
+    suspend fun clear()
 }
