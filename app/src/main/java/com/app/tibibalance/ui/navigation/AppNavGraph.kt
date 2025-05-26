@@ -13,6 +13,7 @@ import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordScreen
 import com.app.tibibalance.ui.screens.auth.signin.SignInScreen
 import com.app.tibibalance.ui.screens.auth.signup.SignUpScreen
 import com.app.tibibalance.ui.screens.auth.verify.VerifyEmailScreen
+import com.app.tibibalance.ui.screens.changepassword.ChangePasswordScreen
 import com.app.tibibalance.ui.screens.launch.LaunchScreen
 import com.app.tibibalance.ui.screens.main.MainScreen
 import com.app.tibibalance.ui.screens.onboarding.OnboardingPage
@@ -43,5 +44,6 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         composable(Screen.Forgot.route)      { ForgotPasswordScreen(navController) }
         composable(Screen.Main.route)        { MainScreen(navController) }
         composable(Screen.EditProfile.route) { EditProfileScreen(navController)}
+        composable(Screen.ChangePassword.route) { ChangePasswordScreen(navController)}
     }
 }

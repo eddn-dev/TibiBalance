@@ -20,7 +20,11 @@ interface AuthRepository {
     suspend fun signIn(credentials: UserCredentials): AuthResult<Boolean>
     suspend fun signInWithGoogle(idToken: String): AuthResult<Boolean>
     suspend fun sendPasswordReset(email: String): AuthResult<Unit>
-    suspend fun isEmailVerified(): Boolean        // sigue devolviendo Bool puro
+    suspend fun isEmailVerified(): Boolean
+    suspend fun changePassword(
+        currentPassword: String,
+        newPassword    : String
+    ): AuthResult<Unit>
     suspend fun signOut()
     suspend fun sendEmailVerification(): AuthResult<Unit>
     suspend fun reload(): AuthResult<Unit>

@@ -59,6 +59,7 @@ import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
+import com.app.tibibalance.ui.navigation.Screen
 import kotlinx.datetime.LocalDate
 import java.util.Calendar
 
@@ -195,7 +196,7 @@ fun EditProfileScreen(
                 Subtitle("Contraseña")
                 if (vm.canChangePassword) {
                     SettingRow("••••••••••••••") {
-                        nav.navigate("changePassword")
+                        nav.navigate(Screen.ChangePassword.route)
                     }
                 } else {
                     Text(

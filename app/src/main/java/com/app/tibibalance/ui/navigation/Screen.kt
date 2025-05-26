@@ -38,38 +38,39 @@ sealed class Screen(val route: String) {
 
     /* ─── onboarding ─────────────────────────────── */
     /** Flujo introductorio mostrado al primer arranque. */
-    data object Onboarding : Screen("onboarding")
+    data object Onboarding      : Screen("onboarding")
     /* auth flow: Pantallas relacionadas con el proceso de autenticación. */
 
     /** @brief La pantalla inicial de la aplicación, generalmente donde el usuario decide iniciar sesión o registrarse. */
-    data object Launch       : Screen("launch")
+    data object Launch          : Screen("launch")
     /** @brief Pantalla para que los usuarios existentes inicien sesión con sus credenciales. */
-    data object SignIn       : Screen("sign_in")
+    data object SignIn          : Screen("sign_in")
     /** @brief Pantalla para que nuevos usuarios creen una cuenta. */
-    data object SignUp       : Screen("sign_up")
+    data object SignUp          : Screen("sign_up")
     /** @brief Pantalla para iniciar el proceso de recuperación de contraseña (generalmente pidiendo el correo). */
-    data object Forgot       : Screen("forgot_pass")
+    data object Forgot          : Screen("forgot_pass")
     /** @brief Pantalla para completar la recuperación de contraseña (potencialmente después de seguir un enlace de correo). */
-    data object Recover      : Screen("recover_pass") // Nota: Esta ruta no está en AppNavGraph.kt actualmente.
+    data object Recover         : Screen("recover_pass") // Nota: Esta ruta no está en AppNavGraph.kt actualmente.
     /** @brief Pantalla que se muestra después del registro para instruir al usuario a verificar su correo electrónico. */
-    data object VerifyEmail  : Screen("verify_email")
+    data object VerifyEmail     : Screen("verify_email")
 
     /**
      * @brief Pantalla contenedora principal que alberga la navegación con barra inferior.
      * @details Actúa como un "hub" o punto de entrada a las secciones principales de la app.
      * La ruta es "main".
      */
-    data object Main         : Screen("main")
+    data object Main            : Screen("main")
     /** @brief Pantalla de inicio principal de la aplicación, accesible desde la barra inferior. Ruta: "main/home". */
-    data object Home         : Screen("main/home")
+    data object Home            : Screen("main/home")
     /** @brief Pantalla para la gestión o visualización de emociones, accesible desde la barra inferior. Ruta: "main/emotions". */
-    data object Emotions     : Screen("main/emotions")
+    data object Emotions        : Screen("main/emotions")
     /** @brief Pantalla para la gestión o visualización de hábitos, accesible desde la barra inferior. Ruta: "main/habits". */
-    data object Habits       : Screen("main/habits")
+data object Habits              : Screen("main/habits")
     /** @brief Pantalla para visualizar o editar el perfil del usuario, accesible desde la barra inferior. Ruta: "main/profile". */
-    data object Profile      : Screen("main/profile")
+    data object Profile         : Screen("main/profile")
     /** @brief Pantalla para los ajustes de la aplicación, accesible desde la barra inferior. Ruta: "main/settings". */
-    data object Settings     : Screen("main/settings")
+    data object Settings        : Screen("main/settings")
 
-    data object EditProfile : Screen("edit_profile")
+    data object EditProfile     : Screen("edit_profile")
+    data object ChangePassword  : Screen("change_password")
 }

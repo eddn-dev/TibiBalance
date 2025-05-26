@@ -12,6 +12,7 @@ import com.app.domain.error.AuthError
 import com.app.domain.error.AuthResult
 import com.app.domain.model.UserCredentials
 import com.app.domain.repository.AuthRepository
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthProvider
 import com.google.firebase.auth.FirebaseUser
@@ -96,6 +97,36 @@ class AuthRepositoryImpl @Inject constructor(
         auth.currentUser?.sendEmailVerification()?.await()
         AuthResult.Success(Unit)
     } catch (t: Throwable) { AuthResult.Error(t.toAuthError()) }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun changePassword(
+        currentPassword: String,
+        newPassword   : String
+    ): AuthResult<Unit> {
+        return try {
+            val user = auth.currentUser
+                ?: return AuthResult.Error(AuthError.Unknown(IllegalStateException("No user")))
+
+            /* 1️⃣  Sólo aplica a cuentas Email/Password --------------------------- */
+            val email = user.email
+            val provider = currentProvider()
+            if (provider != EmailAuthProvider.PROVIDER_ID) {
+                return AuthResult.Error(AuthError.Unknown(IllegalStateException("Wrong provider")))
+            }
+
+            /* 2️⃣  Re-authenticate ------------------------------------------------- */
+            val cred = EmailAuthProvider.getCredential(email!!, currentPassword)
+            user.reauthenticate(cred).await()                // lanza si falla pwd
+
+            /* 3️⃣  Actualiza la contraseña ---------------------------------------- */
+            user.updatePassword(newPassword).await()
+
+            AuthResult.Success(Unit)
+        } catch (t: Throwable) {
+            AuthResult.Error(t.toAuthError())
+        }
+    }
+
 
     override suspend fun reload(): AuthResult<Unit> = try {
         auth.currentUser?.reload()?.await()
