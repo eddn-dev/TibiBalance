@@ -59,7 +59,6 @@ fun MainScreen(rootNav: NavHostController) {
 
                 SettingsScreen(
                     navController = rootNav,               // usa nav raíz para flows externos
-                    onNavigateUp  = { mainNav.popBackStack() },
                 )
             }
         }

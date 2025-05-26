@@ -35,13 +35,12 @@ import com.app.tibibalance.ui.navigation.Screen
 
 @Composable
 fun SettingsScreen(
-    navController: NavHostController,
-    onNavigateUp: () -> Unit
+    navController: NavHostController
 ) {
-    /* VM y estado */
     val vm: SettingsViewModel = hiltViewModel()
     val ui by vm.ui.collectAsState()
 
+    /* Navegación a Launch cuando se cierre sesión */
     LaunchedEffect(Unit) {
         vm.loggedOut.collect {
             navController.navigate(Screen.Launch.route) {
@@ -51,34 +50,36 @@ fun SettingsScreen(
         }
     }
 
-
     when {
-        ui.loading -> Centered("Cargando…")
-
+        ui.loading       -> Centered("Cargando…")
         ui.error != null -> Centered(ui.error!!)
-
-        ui.user != null -> SettingsContent(
-            user            = ui.user!!,
-            navController   = navController,
-            onNavigateUp    = onNavigateUp,
-            signingOut      = ui.signingOut,
-            onSignOut       = vm::signOut
+        ui.user != null  -> SettingsContent(
+            user                 = ui.user!!,
+            navController        = navController,
+            signingOut           = ui.signingOut,
+            /* VM callbacks */
+            onChangeTheme        = vm::changeTheme,
+            onToggleGlobalNotif  = vm::toggleGlobalNotif,
+            onToggleTTS          = vm::toggleTTS,
+            onSignOut            = vm::signOut
         )
     }
 }
 
-/* ───────────────────── Pantalla principal ──────────────────── */
+/* ────────────────────  Contenedor top-level  ─────────────────── */
 
 @Composable
 private fun SettingsContent(
-    user          : User,
-    navController : NavHostController,
-    onNavigateUp  : () -> Unit,
-    signingOut    : Boolean,
-    /* acciones de alto nivel */
-    onSignOut     : () -> Unit,
+    user                : User,
+    navController       : NavHostController,
+    signingOut          : Boolean,
+    /* VM callbacks */
+    onChangeTheme       : (ThemeMode) -> Unit,
+    onToggleGlobalNotif : (Boolean) -> Unit,
+    onToggleTTS         : (Boolean) -> Unit,
+    onSignOut           : () -> Unit
 ) {
-    /* helpers de navegación pre-rellenados */
+    /* Destinos secundarios */
     val onEditPersonal   = { navController.navigate(Screen.EditProfile.route) }
     val onConfigureNotis = { navController.navigate(Screen.ConfigureNotif.route) }
 
@@ -91,66 +92,67 @@ private fun SettingsContent(
             .fillMaxSize()
             .background(gradient)
     ) {
+
         SettingsBody(
-            user               = user,
-            onEditPersonal     = onEditPersonal,
-            onDevices          = { /* TODO */ },
-            onAchievements     = { /* TODO */ },
-            onConfigureNotis   = onConfigureNotis,
-            onChangeTheme      = { /* TODO */ },
-            onToggleGlobalNotif= { /* TODO */ },
-            onToggleTTS        = { /* TODO */ },
-            onSignOut          = onSignOut,
-            signingOut         = signingOut,
-            onDeleteAccount    = { /* TODO */ },
-            onOpenTerms        = { /* TODO */ },
-            onOpenPrivacy      = { /* TODO */ },
+            user                 = user,
+            onEditPersonal       = onEditPersonal,
+            onDevices            = { /* TODO */ },
+            onAchievements       = { /* TODO */ },
+            onConfigureNotis     = onConfigureNotis,
+            onChangeTheme        = onChangeTheme,
+            onToggleGlobalNotif  = onToggleGlobalNotif,
+            onToggleTTS          = onToggleTTS,
+            onSignOut            = onSignOut,
+            signingOut           = signingOut,
+            onDeleteAccount      = { /* TODO */ },
+            onOpenTerms          = { /* TODO */ },
+            onOpenPrivacy        = { /* TODO */ }
         )
     }
 }
 
-/* ───────────────────────  Cuerpo  ──────────────────────────── */
+/* ───────────────────────  Cuerpo scrollable ─────────────────── */
 
 @Composable
 private fun SettingsBody(
     user               : User,
-    /* cuenta */
+    /* Cuenta */
     onEditPersonal     : () -> Unit,
     onDevices          : () -> Unit,
     onAchievements     : () -> Unit,
     onConfigureNotis   : () -> Unit,
-    /* prefs */
+    /* Preferencias */
     onChangeTheme      : (ThemeMode) -> Unit,
     onToggleGlobalNotif: (Boolean) -> Unit,
     onToggleTTS        : (Boolean) -> Unit,
     onOpenTerms        : () -> Unit,
     onOpenPrivacy      : () -> Unit,
-    /* sesión */
+    /* Sesión */
     onSignOut          : () -> Unit,
     signingOut         : Boolean,
-    onDeleteAccount    : () -> Unit,
+    onDeleteAccount    : () -> Unit
 ) {
-    /* diálogos locales */
+    /* diálogos */
     val snackbar = remember { SnackbarHostState() }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Eliminar cuenta") },
-            text  = { Text("¿Seguro? Esta acción es irreversible.") },
-            confirmButton = {
+            title           = { Text("Eliminar cuenta") },
+            text            = { Text("¿Seguro? Esta acción es irreversible.") },
+            confirmButton   = {
                 TextButton(
                     onClick = { onDeleteAccount(); showDeleteDialog = false }
                 ) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
             },
-            dismissButton  = {
+            dismissButton   = {
                 TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
             }
         )
     }
 
-    /* estado de switches */
+    /* estado local para switches/botones – sincronizado con el VM */
     val settings = user.settings
     var theme     by remember { mutableStateOf(settings.theme) }
     var notifGlob by remember { mutableStateOf(settings.notifGlobal) }
@@ -160,14 +162,19 @@ private fun SettingsBody(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(top = 80.dp, start = 24.dp, end = 24.dp, bottom = 24.dp),
+            .padding(top = 96.dp, start = 24.dp, end = 24.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        /* ---------- header ---------- */
-        SettingsHeader()
-
-        /* ---------- Cuenta ---------- */
+        ImageContainer(
+            resId = R.drawable.ic_settings,
+            contentDescription = "Configuracion",
+            modifier = Modifier.size(128.dp)
+        )
+        Title(
+            text = "Configuración",
+        )
+        /* ── Grupo: Cuenta ── */
         FormContainer(backgroundColor = Color(0xFFD8EAF1)) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.AutoMirrored.Filled.ListAlt) },
@@ -191,34 +198,36 @@ private fun SettingsBody(
             )
         }
 
-        /* ---------- Preferencias ---------- */
+        /* ── Grupo: Preferencias ── */
         FormContainer(backgroundColor = Color(0xFFE8F2F8)) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Palette) },
                 text        = "Tema: ${theme.label()}",
-                onClick     = { theme = theme.next().also(onChangeTheme) }
+                onClick     = {
+                    theme = theme.next().also(onChangeTheme)
+                }
             )
             SwitchSettingItem(
-                leadingIcon = { Icon24(Icons.Default.NotificationsActive) },
-                text = "Notificaciones globales",
-                checked = notifGlob,
-                onCheckedChange = {
+                leadingIcon      = { Icon24(Icons.Default.NotificationsActive) },
+                text             = "Notificaciones globales",
+                checked          = notifGlob,
+                onCheckedChange  = {
                     notifGlob = it
                     onToggleGlobalNotif(it)
                 }
             )
             SwitchSettingItem(
-                leadingIcon = { Icon24(Icons.Default.RecordVoiceOver) },
-                text = "Texto a voz (TTS)",
-                checked = tts,
-                onCheckedChange = {
+                leadingIcon      = { Icon24(Icons.Default.RecordVoiceOver) },
+                text             = "Texto a voz (TTS)",
+                checked          = tts,
+                onCheckedChange  = {
                     tts = it
                     onToggleTTS(it)
                 }
             )
         }
 
-        /* ---------- Legal ---------- */
+        /* ── Grupo: Legal ── */
         FormContainer(backgroundColor = Color(0xFFF3F6F8)) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Description) },
@@ -232,7 +241,7 @@ private fun SettingsBody(
             )
         }
 
-        /* ---------- Sesión ---------- */
+        /* ── Sesión ── */
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -240,14 +249,14 @@ private fun SettingsBody(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             DangerButton(
-                text = if (signingOut) "Cerrando…" else "Cerrar sesión",
-                onClick = onSignOut,
-                enabled = !signingOut,
+                text     = if (signingOut) "Cerrando…" else "Cerrar sesión",
+                onClick  = onSignOut,
+                enabled  = !signingOut,
                 modifier = Modifier.weight(1f)
             )
             DangerButton(
-                text = "Eliminar cuenta",
-                onClick = { showDeleteDialog = true },
+                text     = "Eliminar cuenta",
+                onClick  = { showDeleteDialog = true },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -256,39 +265,25 @@ private fun SettingsBody(
     SnackbarHost(snackbar)
 }
 
-/* ───────────────────  Helper composables ───────────────────── */
+/* ───────────────────── Helpers ───────────────────── */
 
 @Composable
-private fun SettingsHeader() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        ImageContainer(
-            resId = R.drawable.ic_settings,
-            contentDescription = "Ajustes",
-            modifier = Modifier.size(104.dp)
-        )
-        Title(text = "Ajustes")
-    }
-}
+private fun Icon24(icon: ImageVector) =
+    Icon(icon, contentDescription = null, tint = Color(0xFF3EA8FE), modifier = Modifier.size(24.dp))
 
 @Composable
 private fun SwitchSettingItem(
-    leadingIcon : @Composable () -> Unit,
-    text        : String,
-    checked     : Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    leadingIcon     : @Composable () -> Unit,
+    text            : String,
+    checked         : Boolean,
+    onCheckedChange : (Boolean) -> Unit
 ) = SettingItem(
     leadingIcon = leadingIcon,
     text        = text,
     trailing    = { SwitchToggle(checked = checked, onCheckedChange = onCheckedChange) }
 )
 
-@Composable
-private fun Icon24(icon: ImageVector) =
-    Icon(icon, null, tint = Color(0xFF3EA8FE), modifier = Modifier.size(24.dp))
-
+/* extensiones ThemeMode */
 private fun ThemeMode.label() = when (this) {
     ThemeMode.SYSTEM -> "Sistema"
     ThemeMode.LIGHT  -> "Claro"
@@ -300,9 +295,8 @@ private fun ThemeMode.next() = when (this) {
     ThemeMode.DARK   -> ThemeMode.SYSTEM
 }
 
-/* ---------- Center helper ---------- */
 @Composable
-private fun Centered(txt: String) =
+private fun Centered(msg: String) =
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Description(txt)
+        Description(msg)
     }
