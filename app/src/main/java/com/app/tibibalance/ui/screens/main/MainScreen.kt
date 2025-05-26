@@ -57,37 +57,9 @@ fun MainScreen(rootNav: NavHostController) {
             composable(Screen.Profile.route)  { ViewProfileScreen(rootNav) }
             composable(Screen.Settings.route) {
 
-                val demoUser = remember {
-                    User(
-                        uid = "demo",
-                        email = "demo@tibi.app",
-                        displayName = "Demo User",
-                        photoUrl = "https://lh3.googleusercontent.com/a/ACg8ocIfGMQpHarn5OmTkSerBFPzC2--zfNppkug79c6aOxoVKC9U9OvIw=s96-c",
-                        birthDate = LocalDate(2000, 1, 1)
-                    )
-                }
-
                 SettingsScreen(
-                    user          = demoUser,
                     navController = rootNav,               // usa nav raíz para flows externos
                     onNavigateUp  = { mainNav.popBackStack() },
-
-                    /* —— Cuenta —— */
-                    onDevices        = { /* TODO */ },
-                    onAchievements   = { /* TODO */ },
-
-                    /* —— Sesión —— */
-                    onSignOut        = { /* TODO signOut() */ },
-                    onDeleteAccount  = { /* TODO open DeleteAccount route */ },
-
-                    /* —— Preferencias —— */
-                    onChangeTheme       = { /* TODO updateTheme(it) */ },
-                    onToggleGlobalNotif = { /* TODO setGlobalNotif(it) */ },
-                    onToggleTTS         = { /* TODO setTTS(it) */ },
-
-                    /* —— Legal —— */
-                    onOpenTerms    = { /* TODO rootNav.navigate(Screen.Terms.route) */ },
-                    onOpenPrivacy  = { /* TODO rootNav.navigate(Screen.Privacy.route) */ }
                 )
             }
         }

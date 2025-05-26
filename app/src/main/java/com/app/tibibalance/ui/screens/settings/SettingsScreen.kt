@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.domain.entities.User
 import com.app.domain.enums.ThemeMode
@@ -24,55 +25,62 @@ import com.app.tibibalance.ui.components.buttons.DangerButton
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
+import com.app.tibibalance.ui.components.layout.Header
+import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.navigation.Screen
 
-/* ─────────────────────────  Public entry  ─────────────────────── */
+/* ─────────────────────────  Entry  ─────────────────────────── */
 
 @Composable
 fun SettingsScreen(
-    user                 : User,
-    navController        : NavHostController,
-    onNavigateUp         : () -> Unit,
-    /* ─── cuenta ─── */
-    onEditPersonal: () -> Unit = {
-        navController.navigate(Screen.EditProfile.route)
-    },
-    onDevices            : () -> Unit,
-    onAchievements       : () -> Unit,
-    onConfigureNotis     : () -> Unit = {
-        navController.navigate(Screen.ConfigureNotif.route)
-    },
-    /* ─── sesión ─── */
-    onSignOut            : () -> Unit,
-    onDeleteAccount      : () -> Unit,
-    /* ─── preferencias ─── */
-    onChangeTheme        : (ThemeMode) -> Unit,
-    onToggleGlobalNotif  : (Boolean) -> Unit,
-    onToggleTTS          : (Boolean) -> Unit,
-    /* ─── legal ─── */
-    onOpenTerms          : () -> Unit,
-    onOpenPrivacy        : () -> Unit,
+    navController: NavHostController,
+    onNavigateUp: () -> Unit
 ) {
-    val snackbar = remember { SnackbarHostState() }
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    /* VM y estado */
+    val vm: SettingsViewModel = hiltViewModel()
+    val ui by vm.ui.collectAsState()
 
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title  = { Text("Eliminar cuenta") },
-            text   = { Text("¿Seguro? Esta acción es irreversible.") },
-            confirmButton = {
-                TextButton(
-                    onClick = { onDeleteAccount(); showDeleteDialog = false }
-                ) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton  = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
+    LaunchedEffect(Unit) {
+        vm.loggedOut.collect {
+            navController.navigate(Screen.Launch.route) {
+                popUpTo(navController.graph.id) { inclusive = true }
+                launchSingleTop = true          // evita duplicar destino
             }
+        }
+    }
+
+
+    when {
+        ui.loading -> Centered("Cargando…")
+
+        ui.error != null -> Centered(ui.error!!)
+
+        ui.user != null -> SettingsContent(
+            user            = ui.user!!,
+            navController   = navController,
+            onNavigateUp    = onNavigateUp,
+            signingOut      = ui.signingOut,
+            onSignOut       = vm::signOut
         )
     }
+}
+
+/* ───────────────────── Pantalla principal ──────────────────── */
+
+@Composable
+private fun SettingsContent(
+    user          : User,
+    navController : NavHostController,
+    onNavigateUp  : () -> Unit,
+    signingOut    : Boolean,
+    /* acciones de alto nivel */
+    onSignOut     : () -> Unit,
+) {
+    /* helpers de navegación pre-rellenados */
+    val onEditPersonal   = { navController.navigate(Screen.EditProfile.route) }
+    val onConfigureNotis = { navController.navigate(Screen.ConfigureNotif.route) }
 
     val gradient = Brush.verticalGradient(
         listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
@@ -83,28 +91,28 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(gradient)
     ) {
-        ReadyContent(
+        SettingsBody(
             user               = user,
             onEditPersonal     = onEditPersonal,
-            onDevices          = onDevices,
-            onAchievements     = onAchievements,
+            onDevices          = { /* TODO */ },
+            onAchievements     = { /* TODO */ },
             onConfigureNotis   = onConfigureNotis,
+            onChangeTheme      = { /* TODO */ },
+            onToggleGlobalNotif= { /* TODO */ },
+            onToggleTTS        = { /* TODO */ },
             onSignOut          = onSignOut,
-            onDeleteClick      = { showDeleteDialog = true },
-            onChangeTheme      = onChangeTheme,
-            onToggleGlobalNotif= onToggleGlobalNotif,
-            onToggleTTS        = onToggleTTS,
-            onOpenTerms        = onOpenTerms,
-            onOpenPrivacy      = onOpenPrivacy,
+            signingOut         = signingOut,
+            onDeleteAccount    = { /* TODO */ },
+            onOpenTerms        = { /* TODO */ },
+            onOpenPrivacy      = { /* TODO */ },
         )
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
     }
 }
 
-/* ───────────────────────  Content  ───────────────────────────── */
+/* ───────────────────────  Cuerpo  ──────────────────────────── */
 
 @Composable
-private fun ReadyContent(
+private fun SettingsBody(
     user               : User,
     /* cuenta */
     onEditPersonal     : () -> Unit,
@@ -119,8 +127,30 @@ private fun ReadyContent(
     onOpenPrivacy      : () -> Unit,
     /* sesión */
     onSignOut          : () -> Unit,
-    onDeleteClick      : () -> Unit,
+    signingOut         : Boolean,
+    onDeleteAccount    : () -> Unit,
 ) {
+    /* diálogos locales */
+    val snackbar = remember { SnackbarHostState() }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Eliminar cuenta") },
+            text  = { Text("¿Seguro? Esta acción es irreversible.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { onDeleteAccount(); showDeleteDialog = false }
+                ) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton  = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    /* estado de switches */
     val settings = user.settings
     var theme     by remember { mutableStateOf(settings.theme) }
     var notifGlob by remember { mutableStateOf(settings.notifGlobal) }
@@ -137,7 +167,7 @@ private fun ReadyContent(
         /* ---------- header ---------- */
         SettingsHeader()
 
-        /* ---------- grupo: Cuenta ---------- */
+        /* ---------- Cuenta ---------- */
         FormContainer(backgroundColor = Color(0xFFD8EAF1)) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.AutoMirrored.Filled.ListAlt) },
@@ -161,31 +191,34 @@ private fun ReadyContent(
             )
         }
 
-        /* ---------- grupo: Preferencias ---------- */
+        /* ---------- Preferencias ---------- */
         FormContainer(backgroundColor = Color(0xFFE8F2F8)) {
-            /* Tema */
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Palette) },
                 text        = "Tema: ${theme.label()}",
                 onClick     = { theme = theme.next().also(onChangeTheme) }
             )
-            /* Notif global */
             SwitchSettingItem(
                 leadingIcon = { Icon24(Icons.Default.NotificationsActive) },
                 text = "Notificaciones globales",
                 checked = notifGlob,
-                onCheckedChange = { notifGlob = it; onToggleGlobalNotif(it) }
+                onCheckedChange = {
+                    notifGlob = it
+                    onToggleGlobalNotif(it)
+                }
             )
-            /* TTS */
             SwitchSettingItem(
                 leadingIcon = { Icon24(Icons.Default.RecordVoiceOver) },
                 text = "Texto a voz (TTS)",
                 checked = tts,
-                onCheckedChange = { tts = it; onToggleTTS(it) }
+                onCheckedChange = {
+                    tts = it
+                    onToggleTTS(it)
+                }
             )
         }
 
-        /* ---------- grupo: Legal ---------- */
+        /* ---------- Legal ---------- */
         FormContainer(backgroundColor = Color(0xFFF3F6F8)) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Description) },
@@ -207,20 +240,23 @@ private fun ReadyContent(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             DangerButton(
-                text = "Cerrar sesión",
+                text = if (signingOut) "Cerrando…" else "Cerrar sesión",
                 onClick = onSignOut,
+                enabled = !signingOut,
                 modifier = Modifier.weight(1f)
             )
             DangerButton(
                 text = "Eliminar cuenta",
-                onClick = onDeleteClick,
+                onClick = { showDeleteDialog = true },
                 modifier = Modifier.weight(1f)
             )
         }
     }
+
+    SnackbarHost(snackbar)
 }
 
-/* ───────────────────── helper composables ───────────────────── */
+/* ───────────────────  Helper composables ───────────────────── */
 
 @Composable
 private fun SettingsHeader() {
@@ -237,7 +273,6 @@ private fun SettingsHeader() {
     }
 }
 
-/* Fila con Switch usando tu SwitchToggle */
 @Composable
 private fun SwitchSettingItem(
     leadingIcon : @Composable () -> Unit,
@@ -250,21 +285,24 @@ private fun SwitchSettingItem(
     trailing    = { SwitchToggle(checked = checked, onCheckedChange = onCheckedChange) }
 )
 
-/* Icon utilitario 24 dp */
 @Composable
 private fun Icon24(icon: ImageVector) =
-    Icon(icon, contentDescription = null, tint = Color(0xFF3EA8FE), modifier = Modifier.size(24.dp))
-
-/* ───────────────────  Extensiones  ──────────────────────────── */
+    Icon(icon, null, tint = Color(0xFF3EA8FE), modifier = Modifier.size(24.dp))
 
 private fun ThemeMode.label() = when (this) {
     ThemeMode.SYSTEM -> "Sistema"
     ThemeMode.LIGHT  -> "Claro"
     ThemeMode.DARK   -> "Oscuro"
 }
-
 private fun ThemeMode.next() = when (this) {
     ThemeMode.SYSTEM -> ThemeMode.LIGHT
     ThemeMode.LIGHT  -> ThemeMode.DARK
     ThemeMode.DARK   -> ThemeMode.SYSTEM
 }
+
+/* ---------- Center helper ---------- */
+@Composable
+private fun Centered(txt: String) =
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Description(txt)
+    }
