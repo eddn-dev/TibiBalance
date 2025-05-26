@@ -1,4 +1,4 @@
-package com.app.tibibalance.ui.screens.profile
+package com.app.tibibalance.ui.screens.profile.edit
 
 import com.app.domain.entities.User
 

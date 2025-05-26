@@ -1,5 +1,5 @@
 /* ui/screens/profile/EditProfileRoute.kt */
-package com.app.tibibalance.ui.screens.profile
+package com.app.tibibalance.ui.screens.profile.edit
 
 import android.net.Uri
 import android.os.Build

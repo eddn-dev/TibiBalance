@@ -18,6 +18,7 @@ import com.app.tibibalance.ui.components.navigation.bottomItems
 import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.screens.emotional.EmotionalCalendarScreen
 import com.app.tibibalance.ui.screens.habits.HabitsScreen
+import com.app.tibibalance.ui.screens.profile.show.ViewProfileScreen
 import com.app.tibibalance.ui.screens.settings.SettingsScreen
 import kotlinx.datetime.LocalDate
 
@@ -53,7 +54,7 @@ fun MainScreen(rootNav: NavHostController) {
             composable(Screen.Home.route)     { /* TODO HomeScreen() */ }
             composable(Screen.Emotions.route) { EmotionalCalendarScreen() }
             composable(Screen.Habits.route)   { HabitsScreen() }   // 👈 ya conectada
-            composable(Screen.Profile.route)  { /* TODO ProfileScreen() */ }
+            composable(Screen.Profile.route)  { ViewProfileScreen(rootNav) }
             composable(Screen.Settings.route) {
 
                 val demoUser = remember {

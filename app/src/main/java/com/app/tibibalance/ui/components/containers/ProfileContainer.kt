@@ -79,3 +79,36 @@ fun ProfileContainer(
         )
     }
 }
+
+// --- Preview ---
+
+/**
+ * @brief Previsualización del [ProfileContainer] con valores por defecto.
+ */
+@Preview(showBackground = true, name = "ProfileContainer Default")
+@Composable
+private fun ProfileContainerPreview() {
+    MaterialTheme {
+        ProfileContainer(
+            imageResId = R.drawable.avatar_placeholder, // Usa tu imagen de prueba
+            contentDescription = "Avatar por defecto"
+            // Usa tamaño y color de fondo por defecto
+        )
+    }
+}
+
+/**
+ * @brief Previsualización del [ProfileContainer] con tamaño y color personalizados.
+ */
+@Preview(showBackground = true, name = "ProfileContainer Custom")
+@Composable
+private fun ProfileContainerCustomPreview() {
+    MaterialTheme {
+        ProfileContainer(
+            imageResId = R.drawable.avatar_placeholder,
+            contentDescription = "Avatar pequeño azul",
+            size = 64.dp, // Tamaño más pequeño
+            backgroundColor = MaterialTheme.colorScheme.primaryContainer // Color de fondo del tema
+        )
+    }
+}
