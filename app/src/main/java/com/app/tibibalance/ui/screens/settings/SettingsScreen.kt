@@ -41,7 +41,9 @@ fun SettingsScreen(
     },
     onDevices            : () -> Unit,
     onAchievements       : () -> Unit,
-    onConfigureNotis     : () -> Unit,
+    onConfigureNotis     : () -> Unit = {
+        navController.navigate(Screen.ConfigureNotif.route)
+    },
     /* ─── sesión ─── */
     onSignOut            : () -> Unit,
     onDeleteAccount      : () -> Unit,

@@ -56,7 +56,6 @@ fun MainScreen(rootNav: NavHostController) {
             composable(Screen.Profile.route)  { /* TODO ProfileScreen() */ }
             composable(Screen.Settings.route) {
 
-                /* ✨ user demo para que compile; cámbialo por tu ViewModel */
                 val demoUser = remember {
                     User(
                         uid = "demo",
