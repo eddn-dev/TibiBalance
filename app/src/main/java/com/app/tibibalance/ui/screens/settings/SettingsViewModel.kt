@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// ui/screens/settings/SettingsViewModel.kt
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val authRepo     : AuthRepository,
-    private val observeUser  : ObserveUser,
+    authRepo      : AuthRepository,
+    observeUser   : ObserveUser,
     private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
+    /* ---------- UI ---------- */
     data class UiState(
         val loading   : Boolean = true,
         val user      : User?   = null,
@@ -28,37 +28,43 @@ class SettingsViewModel @Inject constructor(
         val signingOut: Boolean = false
     )
 
-    private val _ui = MutableStateFlow(UiState())
-    val  ui : StateFlow<UiState> = _ui
-
-    /* evento one–shot para que la pantalla navegue a Launch */
-    // SettingsViewModel.kt  ── solo la línea que declara el SharedFlow
-    private val _loggedOut = MutableSharedFlow<Unit>(
-        replay = 1,                      // ←  guarda el último valor
-        extraBufferCapacity = 0,
-        onBufferOverflow   = BufferOverflow.DROP_OLDEST
-    )
+    /** Evento one–shot de logout */
+    private val _loggedOut = MutableSharedFlow<Unit>(replay = 1)
     val loggedOut: SharedFlow<Unit> = _loggedOut
 
+    private val _ui = MutableStateFlow(UiState())
+    val ui: StateFlow<UiState> = _ui
 
     init {
-        viewModelScope.launch {
-            authRepo.authState().collect { uid ->
+        /* 1️⃣  Escuchar authState y conmutar al flujo de usuario */
+        authRepo.authState()                             // Flow<String?>
+            .flatMapLatest { uid ->
                 if (uid == null) {
-                    _loggedOut.emit(Unit)          // 👈  ya no hay usuario
+                    // Emitimos logout y devolvemos un flow “vacío” para el user
+                    _loggedOut.emit(Unit)
+                    flowOf<User?>(null)
                 } else {
-                    observeUser(uid)
-                        .onEach { _ui.value = UiState(loading = false, user = it) }
-                        .catch { e -> _ui.value = UiState(loading = false, error = e.message) }
-                        .collect()
+                    observeUser(uid)                     // Flow<User>
                 }
             }
-        }
+            .onEach { user ->
+                _ui.value = if (user == null) {
+                    UiState(error = "Sin sesión")        // ← o loading = false
+                } else {
+                    UiState(loading = false, user = user)
+                }
+            }
+            .catch { e ->
+                _ui.value = UiState(loading = false, error = e.message)
+            }
+            .launchIn(viewModelScope)
     }
 
+    /* 2️⃣  Sign-out */
     fun signOut() = viewModelScope.launch {
         _ui.update { it.copy(signingOut = true) }
-        signOutUseCase()                           // ← hace authRepo.signOut()
-        _ui.update { it.copy(signingOut = false) } // el flujo authState() disparará loggedOut
+        signOutUseCase()
+        _ui.update { it.copy(signingOut = false) }
+        // No es necesario emitir aquí: authState() emitirá null y flatMapLatest ya lo maneja
     }
 }

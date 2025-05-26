@@ -7,6 +7,7 @@ import com.app.domain.error.AuthResult
 import com.app.domain.usecase.auth.CheckEmailVerifiedUseCase
 import com.app.domain.usecase.auth.ResendVerificationUseCase
 import com.app.domain.repository.AuthRepository
+import com.app.domain.usecase.auth.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 class VerifyEmailViewModel @Inject constructor(
     private val resendUseCase : ResendVerificationUseCase,
     private val checkUseCase  : CheckEmailVerifiedUseCase,
-    private val signOutRepo   : AuthRepository         // solo para signOut()
+    private val signOut       : SignOutUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow<VerifyEmailUiState>(VerifyEmailUiState.Idle)
@@ -44,7 +45,7 @@ class VerifyEmailViewModel @Inject constructor(
     }
 
     fun signOut() = viewModelScope.launch {
-        signOutRepo.signOut()
+        signOut.invoke()
         _ui.value = VerifyEmailUiState.SignedOut
     }
 

@@ -53,7 +53,7 @@ fun MainScreen(rootNav: NavHostController) {
         ) {
             composable(Screen.Home.route)     { /* TODO HomeScreen() */ }
             composable(Screen.Emotions.route) { EmotionalCalendarScreen() }
-            composable(Screen.Habits.route)   { HabitsScreen() }   // 👈 ya conectada
+            composable(Screen.Habits.route)   { HabitsScreen() }
             composable(Screen.Profile.route)  { ViewProfileScreen(rootNav) }
             composable(Screen.Settings.route) {
 

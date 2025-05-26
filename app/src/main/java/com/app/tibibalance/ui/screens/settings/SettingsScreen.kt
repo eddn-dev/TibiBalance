@@ -45,8 +45,8 @@ fun SettingsScreen(
     LaunchedEffect(Unit) {
         vm.loggedOut.collect {
             navController.navigate(Screen.Launch.route) {
-                popUpTo(navController.graph.id) { inclusive = true }
-                launchSingleTop = true          // evita duplicar destino
+                popUpTo(Screen.Launch.route) { inclusive = true }
+                launchSingleTop = true
             }
         }
     }
