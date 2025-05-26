@@ -25,5 +25,6 @@ interface AuthRepository {
     suspend fun sendEmailVerification(): AuthResult<Unit>
     suspend fun reload(): AuthResult<Unit>
     suspend fun syncVerification(): AuthResult<Unit>
+    fun currentProvider(): String?
 }
 

@@ -13,6 +13,7 @@ import com.app.domain.error.AuthResult
 import com.app.domain.model.UserCredentials
 import com.app.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthProvider
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -122,7 +123,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun FirebaseFirestore.ensureUserDocument(user: FirebaseUser) {
+    suspend fun FirebaseFirestore.ensureUserDocument(user: FirebaseUser) {
         val uid = user.uid
         val docRef = collection("users").document(uid)
         val snap   = docRef.get().await()
@@ -158,7 +159,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun FirebaseFirestore.ensureUserDocument(
+    suspend fun FirebaseFirestore.ensureUserDocument(
         user        : FirebaseUser,
         displayName : String?      = null,
         birthDate   : LocalDate?   = null
@@ -195,4 +196,10 @@ class AuthRepositoryImpl @Inject constructor(
 
         doc.set(newUser, SetOptions.merge()).await()
     }
+
+    override fun currentProvider(): String? =
+        auth.currentUser                     // FirebaseUser?
+            ?.providerData                   // lista de UserInfo (incluye “firebase”)
+            ?.firstOrNull { it.providerId != FirebaseAuthProvider.PROVIDER_ID }  // omite entry “firebase”
+            ?.providerId
 }

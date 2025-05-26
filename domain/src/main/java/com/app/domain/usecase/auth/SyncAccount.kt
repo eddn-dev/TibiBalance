@@ -4,6 +4,7 @@ import com.app.domain.repository.AuthRepository
 import com.app.domain.repository.EmotionRepository
 import com.app.domain.repository.HabitRepository
 import com.app.domain.repository.OnboardingRepository
+import com.app.domain.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -13,6 +14,7 @@ class SyncAccount @Inject constructor(
     private val habitRepo : HabitRepository,
     private val emotionRepo: EmotionRepository,
     private val onboardingRepo: OnboardingRepository,
+    private val userRepo  : UserRepository,
     private val authRepo : AuthRepository
 ) {
     suspend operator fun invoke(): Result<Unit> = withContext(Dispatchers.IO) {
@@ -23,6 +25,7 @@ class SyncAccount @Inject constructor(
             habitRepo.syncNow().getOrThrow()
             emotionRepo.syncNow().getOrThrow()
             onboardingRepo.syncNow(uid).getOrThrow()
+            userRepo.syncNow(uid).getOrThrow()
         }.onFailure {
             it.printStackTrace()
         }
