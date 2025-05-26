@@ -51,7 +51,6 @@ fun HabitsScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(gradient)
     ) {
         when (val s = ui) {

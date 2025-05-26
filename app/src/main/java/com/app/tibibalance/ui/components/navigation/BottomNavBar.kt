@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding // Importar si se usa en preview
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -69,13 +70,17 @@ fun BottomNavBar(
     onItemClick: (String) -> Unit
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth().height(80.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .navigationBarsPadding(),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 8.dp,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
         Row(
-            Modifier.fillMaxSize(),
+            Modifier
+                .fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
