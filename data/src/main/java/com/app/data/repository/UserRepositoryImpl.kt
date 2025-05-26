@@ -7,7 +7,10 @@ import androidx.annotation.RequiresApi
 import com.app.data.local.dao.UserDao
 import com.app.data.mappers.UserMappers.toDomain
 import com.app.data.mappers.UserMappers.toEntity
+import com.app.data.mappers.toFirestoreDate
 import com.app.data.mappers.toFirestoreMap
+import com.app.data.mappers.toTimestamp
+import com.app.data.mappers.toUser
 import com.app.domain.common.SyncMeta
 import com.app.domain.entities.User
 import com.app.domain.entities.UserSettings
@@ -53,11 +56,11 @@ class UserRepositoryImpl @Inject constructor(
             val payloadForRemote = mutableMapOf<String, Any>()
 
             displayName?.let { payloadForRemote["displayName"] = it }
-            birthDate?.let { payloadForRemote["birthDate"] = it.toString() }
+            birthDate?.let { payloadForRemote["birthDate"] = it.toFirestoreDate() } // Date
             photoUrl?.let { payloadForRemote["photoUrl"] = it }
 
             // Always set/update the meta field to be a map with updatedAt
-            payloadForRemote["meta"] = mapOf("updatedAt" to now.toString())
+            payloadForRemote["meta"] = mapOf("updatedAt" to now.toTimestamp())
 
             db.collection("users").document(uid)
                 .set(payloadForRemote, SetOptions.merge()).await()
@@ -145,37 +148,6 @@ class UserRepositoryImpl @Inject constructor(
             Result.failure(ex)
         }
     }
-
-
-    // --- UserRepositoryImpl.kt
-    private fun DocumentSnapshot.toUser(): User? = runCatching {
-        User(
-            uid         = getString("uid") ?: return@runCatching null,          // uid se guarda
-            email       = getString("email") ?: "",
-            displayName = getString("displayName"),
-            photoUrl    = getString("photoUrl"),
-            birthDate   = getString("birthDate")          // "yyyy-MM-dd"
-                ?.let(LocalDate::parse) ?: LocalDate(2000,1,1),
-            settings    = UserSettings(
-                theme            = getString("settings.theme")
-                    ?.let { ThemeMode.valueOf(it) } ?: ThemeMode.SYSTEM,
-                notifGlobal      = getBoolean("settings.notifGlobal") ?: true,
-                language         = getString("settings.language") ?: "es",
-                accessibilityTTS = getBoolean("settings.accessibilityTTS") ?: false
-            ),
-            meta = SyncMeta(
-                createdAt   = getString("meta.createdAt")?.let(Instant::parse)
-                    ?: Instant.DISTANT_PAST,
-                updatedAt   = getString("meta.updatedAt")?.let(Instant::parse)
-                    ?: Instant.DISTANT_PAST,
-                deletedAt   = getString("meta.deletedAt")?.let(Instant::parse),
-                pendingSync = false
-            )
-        )
-    }.onFailure { ex ->
-        Log.e("UserSync", "mapper error", ex)
-    }.getOrNull()
-
 
     /* ---- placeholder si no hay registro local (no debería ocurrir) ---- */
     private fun UserPlaceholder(uid: String) = User(
