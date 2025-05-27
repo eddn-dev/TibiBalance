@@ -36,6 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.app.tibibalance.ui.theme.Text
+import com.app.tibibalance.ui.theme.barColor
+import com.app.tibibalance.ui.theme.trackColor
 
 /**
  * @brief Un [Composable] que muestra una barra de progreso lineal con un texto de porcentaje debajo.
@@ -58,8 +61,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 fun ProgressBar(
     percent: Int,
     modifier: Modifier = Modifier,
-    barColor: Color = Color(0xFFBCE2C2), // Color verde claro por defecto para la barra
-    trackColor: Color = Color(0xFFE0E0E0) // Color gris claro por defecto para el fondo
 ) {
     // Columna para agrupar la barra y el texto
     Column(
@@ -94,7 +95,7 @@ fun ProgressBar(
             text = "$percent%", // Formatea el número con el símbolo '%'
             fontSize = 12.sp, // Tamaño de fuente pequeño
             fontWeight = FontWeight.Medium, // Peso de fuente medio
-            color = Color(0xFF000000), // Color negro para el texto (podría usar MaterialTheme.colorScheme.onSurface)
+            color = Text, // Color negro para el texto (podría usar MaterialTheme.colorScheme.onSurface)
             textAlign = TextAlign.Center, // Texto centrado
             modifier = Modifier.fillMaxWidth() // Ocupa el ancho para el centrado
         )

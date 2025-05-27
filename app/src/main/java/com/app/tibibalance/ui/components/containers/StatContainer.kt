@@ -40,6 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.app.tibibalance.ui.theme.Container
+import com.app.tibibalance.ui.theme.Text
+import com.app.tibibalance.ui.theme.TextLight
+import com.app.tibibalance.ui.theme.Tint
 
 /**
  * @brief Un [Composable] que muestra una estadística (con icono opcional, valor y etiqueta) dentro de un contenedor estilizado.
@@ -63,8 +67,8 @@ fun StatContainer(
     value: String,
     label: String,
     icon: ImageVector? = null, // Nuevo parámetro para el icono
-    iconTint: Color = Color.Black, // Tinte por defecto para el icono
-    backgroundColor: Color = Color(0xFFE0F7FA),
+    iconTint: Color = Tint, // Tinte por defecto para el icono
+    backgroundColor: Color = Container,
     cornerRadius: Dp = 12.dp,
     modifier: Modifier = Modifier
 ) {
@@ -99,13 +103,13 @@ fun StatContainer(
                 Text(
                     text = value,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color.Black
+                    color = Text
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = label,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.DarkGray
+                    color = TextLight
                 )
             }
         }

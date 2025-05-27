@@ -257,7 +257,7 @@ fun InputIcon(
                         },
                         modifier = Modifier.size(56.dp), // Tamaño de cada celda/botón de icono
                         colors = IconButtonDefaults.iconToggleButtonColors(
-                            // Colores cuando el botón está seleccionado (checked)
+                            //  Colores cuando el botón está seleccionado (checked)
                             checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                             checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                             // Los colores no seleccionados usan los defaults del tema

@@ -39,6 +39,8 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
+import com.app.tibibalance.ui.theme.BluePrimaryLight
+import com.app.tibibalance.ui.theme.DefaultTint
 
 /* ────────────────────────────────────────────────────────────────── */
 /* Sección pública                                                   */
@@ -97,8 +99,8 @@ internal fun HabitList(
                 onClick            = onAdd,
                 icon               = Icons.Default.Add,
                 contentDescription = "Agregar hábito",
-                backgroundColor    = Color(0xFF3EA8FE),
-                iconTint           = Color.White
+                backgroundColor    = BluePrimaryLight,
+                iconTint           = DefaultTint
             )
         }
     }

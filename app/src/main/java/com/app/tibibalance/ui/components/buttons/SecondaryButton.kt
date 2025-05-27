@@ -52,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.tibibalance.ui.theme.*
 
 /**
  * @brief Un [Composable] que representa un botón de acción secundaria con estilo delineado.
@@ -85,14 +86,14 @@ fun SecondaryButton(
         shape  = RoundedCornerShape(12.dp), // Bordes redondeados
         colors = ButtonDefaults.outlinedButtonColors( // Colores para OutlinedButton
             // Estado normal
-            containerColor         = Color.White, // Fondo blanco
-            contentColor           = Color.Black, // Texto negro
+            containerColor         = DefaultTint, // Fondo blanco
+            contentColor           = Text, // Texto negro
             // Estado deshabilitado
-            disabledContainerColor = Color.White.copy(alpha = 0.5f), // Fondo blanco semitransparente
-            disabledContentColor   = Color.Black.copy(alpha = 0.5f) // Texto negro semitransparente
+            disabledContainerColor = DefaultTint.copy(alpha = 0.5f), // Fondo blanco semitransparente
+            disabledContentColor   = Text.copy(alpha = 0.5f) // Texto negro semitransparente
         ),
         // Define el borde del botón
-        border = BorderStroke(1.dp, if (enabled) Color.LightGray else Color.LightGray.copy(alpha = 0.5f)) // Borde gris claro (más tenue si está deshabilitado)
+        border = BorderStroke(1.dp, if (enabled) Border else Border.copy(alpha = 0.5f)) // Borde gris claro (más tenue si está deshabilitado)
     ) {
         // Contenido del botón (el texto)
         Text(

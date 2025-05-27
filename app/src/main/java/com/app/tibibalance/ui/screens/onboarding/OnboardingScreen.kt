@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.*
+import com.app.tibibalance.ui.theme.gradient
 // Eliminar importaciones de accompanist.pager
 // import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
@@ -43,18 +44,11 @@ fun OnboardingScreen(
     onComplete: () -> Unit,
     viewModel: OnboardingViewModel = viewModel()
 ) {
-    // 1) Degradado de fondo
-    val gradient = Brush.verticalGradient(
-        listOf(
-            Color(0xFF3EA8FE).copy(alpha = .25f),
-            Color.White
-        )
-    )
 
-    // 2) Observa las composiciones precargadas
+    // 1) Observa las composiciones precargadas
     val compositions by viewModel.compositions.collectAsState()
 
-    // 3) Estado del Pager y coroutine scope
+    // 2) Estado del Pager y coroutine scope
     // Usar rememberPagerState de androidx.compose.foundation.pager
     val pagerState = rememberPagerState(initialPage = 0) { pages.size } // La nueva API requiere el count aquí
     val scope = rememberCoroutineScope()

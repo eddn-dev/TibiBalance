@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.app.tibibalance.ui.theme.*
 
 /**
  * @brief Un [Composable] que representa un botón circular con un icono, típicamente para acciones flotantes.
@@ -60,8 +61,8 @@ fun RoundedIconButton(
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String? = null,
-    backgroundColor: Color = Color(0xFF42A5F5), // Color de fondo azul por defecto
-    iconTint: Color = Color.White // Tinte blanco por defecto para el icono
+    backgroundColor: Color = RoundedButton, // Color de fondo azul por defecto
+    iconTint: Color = DefaultTint // Tinte blanco por defecto para el icono
 ) {
     Box(
         modifier = modifier

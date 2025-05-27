@@ -63,7 +63,7 @@ fun InputEmail(
         },
         shape   = RoundedCornerShape(12.dp),
         colors  = colors,
-        readOnly = readOnly,   // ← aplicado
-        enabled  = enabled     // ← aplicado
+        readOnly = readOnly,
+        enabled  = enabled
     )
 }

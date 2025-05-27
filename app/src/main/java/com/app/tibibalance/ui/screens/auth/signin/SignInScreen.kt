@@ -3,17 +3,37 @@ package com.app.tibibalance.ui.screens.auth.signin
 
 import android.app.Activity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,17 +42,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.tibibalance.R
 import com.app.tibibalance.auth.GoogleOneTapHelper
-import com.app.tibibalance.ui.components.containers.ImageContainer
-import com.app.tibibalance.ui.components.layout.Header
-import com.app.tibibalance.ui.components.containers.FormContainer
-import com.app.tibibalance.ui.components.buttons.TextButtonLink
 import com.app.tibibalance.ui.components.buttons.GoogleSignButton
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
+import com.app.tibibalance.ui.components.buttons.TextButtonLink
+import com.app.tibibalance.ui.components.containers.FormContainer
+import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputPassword
+import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
+import com.app.tibibalance.ui.theme.White
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 
@@ -111,7 +132,7 @@ fun SignInScreen(
 
     /* --- UI principal --- */
     val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), Color.White)
+        listOf(MaterialTheme.colorScheme.primary.copy(.25f), White)
     )
 
     Box(
