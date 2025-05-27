@@ -3,13 +3,12 @@ package com.app.tibibalance.ui.screens.emotional
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text // Keep Text for potential future use if needed, but not directly used for emotion label now.
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.R
@@ -17,11 +16,11 @@ import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.buttons.EmotionButton
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.texts.Subtitle
-import com.commandiron.spin_wheel_compose.SpinWheel
-import com.commandiron.spin_wheel_compose.SpinWheelDefaults
-import com.commandiron.spin_wheel_compose.state.rememberSpinWheelState
-import kotlinx.coroutines.launch
 import java.time.LocalDate
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.MaterialTheme // Still useful for general styling
 
 /**
  * @file    RegisterEmotionalStateModal.kt
@@ -39,7 +38,7 @@ fun RegisterEmotionalStateModal(
     onDismiss: () -> Unit,
     onConfirm: (Emotion) -> Unit
 ) {
-    // Emociones disponibles en orden de rueda
+    // Emociones disponibles en orden deseado para la cuadrícula
     val emotions = listOf(
         Emotion.FELICIDAD,
         Emotion.TRANQUILIDAD,
@@ -50,17 +49,6 @@ fun RegisterEmotionalStateModal(
     )
 
     var selectedEmotion by remember { mutableStateOf<Emotion?>(null) }
-    val coroutineScope = rememberCoroutineScope()
-    val spinState = rememberSpinWheelState(
-        pieCount         = emotions.size,
-        durationMillis   = 400,
-        delayMillis      = 0,
-        rotationPerSecond= 5f,
-        easing           = LinearOutSlowInEasing,
-        startDegree      = 0f,
-        resultDegree     = 360f,
-        autoSpinDelay    = 0
-    )
 
     ModalContainer(
         onDismissRequest = onDismiss,
@@ -69,52 +57,47 @@ fun RegisterEmotionalStateModal(
         Column(
             modifier           = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             horizontalAlignment= Alignment.CenterHorizontally,
             verticalArrangement= Arrangement.spacedBy(16.dp)
         ) {
             // Título con la fecha
             Subtitle(
-                text      = "¿Cómo te sentiste el ${date.dayOfMonth}/${date.monthValue}/${date.year}?",
+                text      = "Selecciona la emoción que más resonó contigo en ${date.dayOfMonth}/${date.monthValue}/${date.year}",
                 textAlign = TextAlign.Center,
                 modifier  = Modifier.fillMaxWidth()
             )
 
-            // Rueda de emociones
-            Box(
-                modifier         = Modifier
+            // Cuadrícula de emociones
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3), // 3 columnas para una cuadrícula
+                modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
-                contentAlignment = Alignment.Center
+                    .wrapContentHeight(), // Ajusta la altura al contenido
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // Espacio horizontal entre elementos
+                verticalArrangement = Arrangement.spacedBy(5.dp) // Espacio vertical entre elementos
             ) {
-                SpinWheel(
-                    state      = spinState,
-                    onClick    = {
-                        coroutineScope.launch { spinState.animate() }
-                    },
-                    dimensions = SpinWheelDefaults.spinWheelDimensions(
-                        spinWheelSize = 280.dp,
-                        frameWidth    = 0.dp,
-                        selectorWidth = 0.dp
-                    ),
-                    colors     = SpinWheelDefaults.spinWheelColors(
-                        frameColor    = Color.Transparent,
-                        dividerColor  = Color.Transparent,
-                        selectorColor = Color.Transparent,
-                        pieColors     = List(emotions.size) { Color.Transparent }
-                    )
-                ) { pieIndex ->
-                    val emotion = emotions[pieIndex]
+                items(emotions) { emotion ->
+                    // El EmotionButton ya debería incluir la imagen y el texto de la emoción.
+                    // Si EmotionButton solo muestra la imagen, y necesitas el texto debajo,
+                    // tendríamos que modificar EmotionButton o crear un composable nuevo.
+                    // Asumo que EmotionButton es el que debe mostrar el label.
                     EmotionButton(
-                        emotionLabel = emotion.label,
+                        emotionLabel = emotion.label, // El texto se pasa aquí
                         emotionRes   = emotion.drawableRes,
                         isSelected   = selectedEmotion == emotion,
-                        size         = if (emotion == Emotion.DISGUSTO) 80.dp else 48.dp,
+                        size         = 100.dp, // Tamaño fijo y más grande para el botón de emoción
                         onClick      = {
                             selectedEmotion = emotion
                         },
-                        modifier     = Modifier.padding(4.dp)
+                        // Puedes añadir un Modifier aquí si necesitas padding o tamaño específico
+                        // para el contenedor del EmotionButton dentro de la celda de la cuadrícula
+                        modifier = Modifier
+                            .fillMaxWidth() // Para que ocupe el ancho de la celda
+                            .padding(4.dp) // Pequeño padding alrededor del botón
                     )
+                    // Eliminado el Text duplicado aquí.
+                    // Si tu EmotionButton no muestra el texto, entonces el problema está ahí.
                 }
             }
 
@@ -127,7 +110,7 @@ fun RegisterEmotionalStateModal(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 10.dp)
             )
         }
     }
@@ -141,7 +124,7 @@ fun RegisterEmotionalStateModal(
  */
 enum class Emotion(val drawableRes: Int, val label: String) {
     FELICIDAD    (R.drawable.ic_happyimage,    "Felicidad"),
-    TRANQUILIDAD (R.drawable.ic_calmimage,     "Tranquilidad"),
+    TRANQUILIDAD (R.drawable.ic_calmimage,     "Calma"),
     TRISTEZA     (R.drawable.ic_sadimage,      "Tristeza"),
     ENOJO        (R.drawable.ic_angryimage,    "Enojo"),
     DISGUSTO     (R.drawable.ic_disgustingimage,  "Disgusto"),

@@ -164,7 +164,7 @@ private fun EmotionStats(days: List<EmotionDayUi>) {
             ImageContainer(
                 resId = topIcon ?: R.drawable.ic_happyimage,
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(45.dp)
             )
         },
         text    = "Has estado $name durante $count días",

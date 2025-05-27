@@ -119,7 +119,7 @@ fun CalendarGrid(
                             .clickable(enabled = dayItem.day != null) { dayItem.onClick() },
                         shape          = RoundedCornerShape(8.dp), // Bordes redondeados
                         // Color de fondo condicional: más oscuro si está seleccionado
-                        color          = if (dayItem.isSelected) Color(0xFF85C3DE) else Color(0x40AED3E3),
+                        color          = if (dayItem.isSelected) Color(0xFF85C3DE) else Color(0xCCAED3E3),
                         // Borde condicional: solo visible si está seleccionado
                         border         = if (dayItem.isSelected) BorderStroke(1.dp, Color(0xFF85C3DE)) else null,
                         tonalElevation = 0.dp // Sin elevación adicional
@@ -135,7 +135,7 @@ fun CalendarGrid(
                                 ImageContainer(
                                     resId = resourceId,
                                     contentDescription = null, // Icono decorativo
-                                    modifier = Modifier.size(32.dp) // Tamaño del icono
+                                    modifier = Modifier.size(55.dp) // Tamaño del icono
                                 )
                             }
                             // Muestra el número del día si existe
@@ -144,7 +144,7 @@ fun CalendarGrid(
                                     text      = dayNumber.toString(), // Número del día
                                     fontSize  = 16.sp, // Tamaño del texto
                                     // Color blanco semitransparente para que sea visible sobre el icono
-                                    color     = Color.White.copy(alpha = 0.6f),
+                                    color     = Color.White.copy(alpha = 0.8f),
                                     textAlign = TextAlign.Center, // Centrado
                                     modifier  = Modifier.align(Alignment.Center) // Asegura alineación central
                                 )
