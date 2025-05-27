@@ -37,7 +37,18 @@
 package com.app.tibibalance.ui.screens.auth.verify
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Error
@@ -57,7 +68,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.tibibalance.R
-import com.app.tibibalance.ui.components.*
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.buttons.TextButtonLink
 import com.app.tibibalance.ui.components.containers.ImageContainer
@@ -65,6 +75,9 @@ import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
+import com.app.tibibalance.ui.theme.BluePrimaryLight
+import com.app.tibibalance.ui.theme.White
+import com.app.tibibalance.ui.theme.gradient
 
 /**
  * @brief Composable principal para la pantalla de verificación de correo electrónico.
@@ -147,12 +160,6 @@ fun VerifyEmailScreen(
         dismissOnClickOutside = !loading
     )
 
-    /* ---------- Background ---------- */
-    // Define un fondo degradado para la pantalla.
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
-
     // Contenedor Box principal que ocupa toda la pantalla y aplica el fondo.
     Box(
         Modifier
@@ -168,7 +175,7 @@ fun VerifyEmailScreen(
             showBackButton = false, // No se muestra botón de retroceso.
             modifier       = Modifier
                 .fillMaxWidth()
-                .background(Color.White) // Fondo blanco para el Header.
+                .background(White) // Fondo blanco para el Header.
                 .height(56.dp) // Altura estándar para la barra de aplicación.
                 .align(Alignment.TopCenter) // Alinea el Header en la parte superior.
         )
@@ -226,7 +233,7 @@ fun VerifyEmailScreen(
             /* Botón: Ya lo verifiqué */
             PrimaryButton(
                 text = "Ya lo verifiqué",
-                container = Color(0xFF3EA8FE), // Color de fondo personalizado.
+                container = BluePrimaryLight,
                 onClick = vm::verify, // Llama al método del ViewModel para verificar.
                 modifier = Modifier
                     .fillMaxWidth()

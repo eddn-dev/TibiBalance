@@ -47,6 +47,10 @@ import com.app.tibibalance.ui.components.containers.AchievementContainer
 import com.app.tibibalance.ui.components.containers.HabitContainer
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Title
+import com.app.tibibalance.ui.theme.BluePrimaryLight
+import com.app.tibibalance.ui.theme.Container
+import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.theme.Metrics
 
 @Composable
 fun HomeScreen(
@@ -54,9 +58,6 @@ fun HomeScreen(
     onNavigateToConnectedDevices: () -> Unit,
     onDismissTipsModal: () -> Unit = {}
 ) {
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
 
     Box(
         modifier = Modifier
@@ -166,7 +167,7 @@ fun HomeScreen(
                 Title(text = "Meta de pasos")
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFF5FBFD),
+                    color = Container,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(64.dp)
@@ -182,7 +183,7 @@ fun HomeScreen(
                                 .fillMaxWidth()
                                 .height(12.dp)
                                 .background(
-                                    color = Color(0xFFE0E0E0),
+                                    color = Metrics,
                                     shape = RoundedCornerShape(6.dp)
                                 )
                         ) {
@@ -191,7 +192,7 @@ fun HomeScreen(
                                     .fillMaxHeight()
                                     .fillMaxWidth(5230f / 8000f)
                                     .background(
-                                        color = Color(0xFF3EA8FE),
+                                        color = BluePrimaryLight,
                                         shape = RoundedCornerShape(6.dp)
                                     )
                             )

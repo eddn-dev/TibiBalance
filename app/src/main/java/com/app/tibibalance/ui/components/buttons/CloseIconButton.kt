@@ -4,7 +4,7 @@
  * @brief   Define un [Composable] reutilizable para un botón de icono con una 'X' (cerrar).
  *
  * @details Este archivo contiene el [Composable] `CloseIconButton` que muestra un
- * [IconButton] estándar con el icono [Icons.Default.Close]. Se utiliza comúnmente
+ * [IconButton] estándar con el icono [Icons.Default.'Close]. Se utiliza comúnmente
  * para permitir al usuario cerrar diálogos modales, pantallas o secciones.
  * Incluye también una función de previsualización [CloseIconButtonPreview].
  */
@@ -17,12 +17,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color // Usado para el tinte hardcoded
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.app.tibibalance.ui.theme.Tint
 
 /**
- * @brief Un [Composable] que muestra un [IconButton] con el icono de cierre ([Icons.Default.Close]).
+ * @brief Un [Composable] que muestra un [IconButton] con el icono de cierre ([Icons.Default.'Close]).
  *
  * @details Este componente proporciona un botón estándar para acciones de "cerrar".
  * Internamente, utiliza el componente [IconButton] de Material 3 y le aplica un
@@ -55,7 +55,7 @@ fun CloseIconButton(
             // TODO: Considerar usar stringResource(R.string.close_button_description)
             contentDescription = "Cerrar", // Texto para accesibilidad
             // TODO: Considerar usar MaterialTheme.colorScheme.onSurface o similar
-            tint = Color.Black // Tinte del icono (actualmente negro fijo)
+            tint = Tint // Tinte del icono (actualmente negro fijo)
         )
     }
 }

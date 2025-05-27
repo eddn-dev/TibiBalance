@@ -55,7 +55,7 @@ fun SwitchToggle(
         onCheckedChange = onCheckedChange, // Callback para cambios de estado
         modifier = modifier, // Aplica el modificador externo
         enabled = enabled, // Controla si es interactivo
-        colors = SwitchDefaults.colors( // Configuración de colores personalizados
+        colors = SwitchDefaults.colors( // //Configuración de colores personalizados
             // Colores para el estado 'checked' (encendido)
             checkedThumbColor = Color.White, // Color del círculo (pulgar)
             checkedTrackColor = Color(0xFF458BAE), // Color del riel (pista)

@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview // Importar Preview
 import androidx.compose.ui.unit.dp
 
 /**
- * @brief Un [Composable] genérico para campos de entrada de texto delineados.
+ * @brief Un [Composable] g enérico para campos de entrada de texto delineados.
  *
  * @details Proporciona un [OutlinedTextField] estilizado con bordes redondeados y colores
  * basados en el tema. Permite configurar múltiples aspectos como el modo de una/múltiples

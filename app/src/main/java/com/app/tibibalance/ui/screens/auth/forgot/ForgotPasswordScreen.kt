@@ -1,4 +1,4 @@
-/**
+ /**
  * @file    ForgotPasswordScreen.kt
  * @ingroup ui_screens_auth // Grupo para pantallas de autenticación
  * @brief   Define el [Composable] para la pantalla de recuperación de contraseña.
