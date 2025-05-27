@@ -14,5 +14,6 @@ sealed interface SignUpUiState {
 
     data class Error(val message: String) : SignUpUiState        // global
     data class Success(val email: String)  : SignUpUiState       // vía e-mail
+    data class VerificationEmailSent(val email: String) : SignUpUiState // e-mail de verificación
     object GoogleSuccess                  : SignUpUiState        // vía Google
 }

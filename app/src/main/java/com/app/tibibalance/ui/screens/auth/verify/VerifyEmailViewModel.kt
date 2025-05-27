@@ -7,6 +7,7 @@ import com.app.domain.error.AuthResult
 import com.app.domain.usecase.auth.CheckEmailVerifiedUseCase
 import com.app.domain.usecase.auth.ResendVerificationUseCase
 import com.app.domain.repository.AuthRepository
+import com.app.domain.usecase.auth.ResendEmailResult
 import com.app.domain.usecase.auth.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,11 @@ class VerifyEmailViewModel @Inject constructor(
     private val _ui = MutableStateFlow<VerifyEmailUiState>(VerifyEmailUiState.Idle)
     val ui: StateFlow<VerifyEmailUiState> = _ui
 
-    fun resend() = viewModelScope.launch {
+    fun resend(email: String) = viewModelScope.launch {
         _ui.value = VerifyEmailUiState.Loading
-        when (resendUseCase()) {
-            is AuthResult.Success -> _ui.value = VerifyEmailUiState.Success("Correo reenviado")
-            is AuthResult.Error   -> _ui.value = VerifyEmailUiState.Error("Error al reenviar")
+        when (val result = resendUseCase(email)) {
+            is ResendEmailResult.Success -> _ui.value = VerifyEmailUiState.Success("Correo reenviado")
+            is ResendEmailResult.Failure -> _ui.value = VerifyEmailUiState.Error("Fallo: ${result.reason}")
         }
     }
 

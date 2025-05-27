@@ -65,6 +65,7 @@ import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * @brief Composable principal para la pantalla de verificación de correo electrónico.
@@ -81,6 +82,7 @@ fun VerifyEmailScreen(
     /* ---------- State ---------- */
     // Observa el estado de la UI emitido por el ViewModel.
     val uiState by vm.ui.collectAsState()
+    val email = FirebaseAuth.getInstance().currentUser?.email
 
     /* ---------- React to side-effects (Navegación post-cierre de sesión) ---------- */
     // Efecto lanzado cuando uiState cambia, específicamente para manejar el cierre de sesión.
@@ -215,7 +217,7 @@ fun VerifyEmailScreen(
             /* Botón: Reenviar correo */
             PrimaryButton(
                 text = "Reenviar correo",
-                onClick = vm::resend, // Llama al método del ViewModel para reenviar.
+                onClick = { vm.resend(email.toString()) }, // Llama al método del ViewModel para reenviar.
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp) // Altura del botón.

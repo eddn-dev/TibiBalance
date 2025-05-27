@@ -25,7 +25,6 @@ import androidx.credentials.CreatePasswordRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.tibibalance.R
-import com.app.tibibalance.ui.components.*
 import com.app.tibibalance.ui.components.buttons.GoogleSignButton
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.buttons.TextButtonLink
@@ -80,35 +79,77 @@ fun SignUpScreen(
 
     /* ----- navegación reactiva ----- */
     LaunchedEffect(uiState) {
-        when (uiState) {
-            is SignUpUiState.Success       -> nav.navigate(Screen.VerifyEmail.route) {
-                popUpTo(Screen.SignUp.route) { inclusive = true }
+        when (val state = uiState) {
+            is SignUpUiState.VerificationEmailSent -> {
+                nav.navigate(Screen.VerifyEmail.route) {
+                    popUpTo(Screen.SignUp.route) { inclusive = true }
+                }
+                vm.dismissSuccess()
             }
-            SignUpUiState.GoogleSuccess    -> nav.navigate(Screen.Main.route) {
-                popUpTo(Screen.Launch.route) { inclusive = true }
+            is SignUpUiState.GoogleSuccess -> {
+                nav.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Launch.route) { inclusive = true }
+                }
+            }
+            is SignUpUiState.Error -> {
+                scope.launch { snackbar.showSnackbar(state.message) }
             }
             else -> Unit
         }
     }
 
+
     /* ----- flags de diálogo ----- */
     val loading = uiState is SignUpUiState.Loading
     val fieldErr = uiState as? SignUpUiState.FieldError
 
+    val isError = uiState is SignUpUiState.Error
+    val isSuccess = uiState is SignUpUiState.VerificationEmailSent
+
     ModalInfoDialog(
-        visible  = loading || uiState is SignUpUiState.Error,
+        visible  = loading || isError || isSuccess,
         loading  = loading,
-        icon     = when (uiState) {
-            is SignUpUiState.Error -> Icons.Default.Error
-            else                   -> null
+        icon     = when {
+            isSuccess -> Icons.Default.Check
+            isError   -> Icons.Default.Error
+            else      -> null
         },
-        title    = if (uiState is SignUpUiState.Error) "Error" else null,
-        message  = (uiState as? SignUpUiState.Error)?.message,
-        primaryButton = if (uiState is SignUpUiState.Error)
-            DialogButton("Aceptar") { vm.consumeError() } else null,
+        iconColor = when {
+            isSuccess -> MaterialTheme.colorScheme.onPrimaryContainer
+            isError   -> MaterialTheme.colorScheme.error
+            else      -> MaterialTheme.colorScheme.onPrimary
+        },
+        iconBgColor = when {
+            isSuccess -> MaterialTheme.colorScheme.primaryContainer
+            isError   -> MaterialTheme.colorScheme.errorContainer
+            else      -> MaterialTheme.colorScheme.primaryContainer
+        },
+        title = when {
+            isSuccess -> "Cuenta creada"
+            isError   -> "Error"
+            else      -> null
+        },
+        message = when {
+            isSuccess -> "Te enviamos un enlace para verificar tu correo."
+            isError   -> (uiState as SignUpUiState.Error).message
+            else      -> null
+        },
+        primaryButton = when {
+            isSuccess -> DialogButton("Continuar") {
+                vm.dismissSuccess()
+                nav.navigate(Screen.VerifyEmail.route) {
+                    popUpTo(Screen.SignUp.route) { inclusive = true }
+                }
+            }
+            isError -> DialogButton("Aceptar") {
+                vm.consumeError()
+            }
+            else -> null
+        },
         dismissOnBack = !loading,
         dismissOnClickOutside = !loading
     )
+
 
     /* ----- UI principal ----- */
     val gradient = Brush.verticalGradient(
@@ -184,7 +225,22 @@ fun SignUpScreen(
                 text = stringResource(R.string.btn_sign_up),
                 enabled = !loading,
                 onClick = {
-                    vm.signUp(username, birthDate, email, pass1, pass2)
+                    vm.signUp(
+                        userName = username,
+                        birthDate = birthDate,
+                        email = email,
+                        password = pass1,
+                        confirm = pass2,
+                        onSuccess = {
+                            nav.navigate(Screen.VerifyEmail.route) {
+                                popUpTo(Screen.SignUp.route) { inclusive = true }
+                            }
+                        },
+                        onError = { error ->
+                            scope.launch { snackbar.showSnackbar(error) }
+                        }
+                    )
+
                     scope.launch {
                         try { cm.createCredential(activity, CreatePasswordRequest(username, pass1)) }
                         catch (_: Exception) {}
