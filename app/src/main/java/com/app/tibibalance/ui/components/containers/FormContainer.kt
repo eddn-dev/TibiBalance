@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview // Importar Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.app.tibibalance.ui.theme.Form
 
 /**
  * @brief Un [Composable] que actúa como contenedor estilizado para agrupar elementos de formulario.
@@ -58,7 +59,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 @Composable
 fun FormContainer(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color(0xFFC8DEFA),    // Azul suave por defecto
+    backgroundColor: Color = Form,    // Azul suave por defecto
     cornerRadiusDp: Int = 16, // Radio de esquina por defecto
     tonalElevation: Dp = 3.dp, // Elevación por defecto
     contentPadding: PaddingValues = PaddingValues(16.dp), // Padding interno por defecto

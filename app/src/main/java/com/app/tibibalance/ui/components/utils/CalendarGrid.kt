@@ -21,28 +21,39 @@
  * @see Box Contenedor para superponer icono y número en la celda.
  * @see com.app.tibibalance.ui.components.containers.ImageContainer Composable (asumido) para mostrar el icono de emoción.
  * @see Text Composable para mostrar mes, días de semana y número del día.
- * @see Modifier.chunked Extensión útil para agrupar días en semanas.
+ * @see 'Modifier.chunked Extensión útil para agrupar días en semanas.
  */
 package com.app.tibibalance.ui.components.utils
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.* // Importar remember y mutableStateOf para previews
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.tibibalance.R // Asegúrate que R está importado correctamente
+import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.containers.ImageContainer
-import com.app.tibibalance.ui.components.utils.EmotionDay
+import com.app.tibibalance.ui.theme.DayContainerSelected
+import com.app.tibibalance.ui.theme.DayContainerUnSelected
+import com.app.tibibalance.ui.theme.NumberDay
 
 
 /**
@@ -119,9 +130,9 @@ fun CalendarGrid(
                             .clickable(enabled = dayItem.day != null) { dayItem.onClick() },
                         shape          = RoundedCornerShape(8.dp), // Bordes redondeados
                         // Color de fondo condicional: más oscuro si está seleccionado
-                        color          = if (dayItem.isSelected) Color(0xFF85C3DE) else Color(0xCCAED3E3),
+                        color          = if (dayItem.isSelected) DayContainerSelected else DayContainerUnSelected,
                         // Borde condicional: solo visible si está seleccionado
-                        border         = if (dayItem.isSelected) BorderStroke(1.dp, Color(0xFF85C3DE)) else null,
+                        border         = if (dayItem.isSelected) BorderStroke(1.dp, DayContainerSelected) else null,
                         tonalElevation = 0.dp // Sin elevación adicional
                     ) {
                         // Contenedor para superponer icono y número del día
@@ -144,7 +155,7 @@ fun CalendarGrid(
                                     text      = dayNumber.toString(), // Número del día
                                     fontSize  = 16.sp, // Tamaño del texto
                                     // Color blanco semitransparente para que sea visible sobre el icono
-                                    color     = Color.White.copy(alpha = 0.8f),
+                                    color     = NumberDay,
                                     textAlign = TextAlign.Center, // Centrado
                                     modifier  = Modifier.align(Alignment.Center) // Asegura alineación central
                                 )

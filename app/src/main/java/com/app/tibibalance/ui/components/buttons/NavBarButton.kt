@@ -18,7 +18,7 @@
  * @see androidx.compose.foundation.layout.Box Contenedor principal del botón.
  * @see androidx.compose.foundation.layout.Column Usado para alinear icono y texto verticalmente.
  */
-package com.app.tibibalance.ui.components
+package com.app.tibibalance.ui.components.buttons
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -102,7 +102,7 @@ fun NavBarButton(
             Text(
                 text = item.label, // Texto de la etiqueta desde BottomNavItem
                 fontSize = 12.sp, // Tamaño de fuente específico para la etiqueta
-                // Color del texto: primario si está seleccionado, onSurface si no
+                // Color del texto: primario si está seleccionado, onSurface en caso contrario
                 color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 // maxLines = 1 // Opcional: para asegurar que la etiqueta no haga wrap
             )

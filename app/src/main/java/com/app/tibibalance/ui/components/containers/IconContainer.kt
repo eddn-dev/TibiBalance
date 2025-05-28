@@ -128,7 +128,7 @@ private fun IconContainerSmallPreview() {
         IconContainer(
             icon = Icons.Filled.Favorite,
             contentDescription = "Icono Favorito (Pequeño)",
-            size = 24 // Tamaño pequeño
+            size = 24 // Tamaño pequeño /
         )
     }
 }

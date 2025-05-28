@@ -33,6 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.texts.*
+import com.app.tibibalance.ui.theme.Container
+import com.app.tibibalance.ui.theme.DailyTip
+import com.app.tibibalance.ui.theme.LinkText
+import com.app.tibibalance.ui.theme.Tips
 
 @Composable
 fun HomeTipsSection(
@@ -49,7 +53,7 @@ fun HomeTipsSection(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color(0xFFB2E1F5), shape = RoundedCornerShape(20.dp))
+                .background(color = Tips, shape = RoundedCornerShape(20.dp))
                 .clickable { onConnectClick() }
                 .padding(16.dp)
         ) {
@@ -69,7 +73,7 @@ fun HomeTipsSection(
                     )
                     Text(
                         "(Toca para conectar)",
-                        style = MaterialTheme.typography.labelLarge.copy(color = Color(0xFF007AFF))
+                        style = MaterialTheme.typography.labelLarge.copy(color = LinkText)
                     )
                 }
             }
@@ -79,7 +83,7 @@ fun HomeTipsSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color(0xFFE6F4FC), shape = RoundedCornerShape(20.dp))
+                .background(color = Container, shape = RoundedCornerShape(20.dp))
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -89,7 +93,7 @@ fun HomeTipsSection(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFDCEBF2), shape = RoundedCornerShape(16.dp))
+                    .background(DailyTip, shape = RoundedCornerShape(16.dp))
                     .padding(12.dp)
             ) {
                 Subtitle("¡Comienza a Moverte Hoy!")
@@ -99,7 +103,7 @@ fun HomeTipsSection(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFDCEBF2), shape = RoundedCornerShape(16.dp))
+                    .background(DailyTip, shape = RoundedCornerShape(16.dp))
                     .padding(12.dp)
             ) {
                 Row(
@@ -125,7 +129,7 @@ fun HomeTipsSection(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFDCEBF2), shape = RoundedCornerShape(16.dp))
+                    .background(DailyTip, shape = RoundedCornerShape(16.dp))
                     .padding(12.dp)
             ) {
                 Row(modifier = Modifier.fillMaxWidth(),

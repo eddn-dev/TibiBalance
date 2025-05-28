@@ -39,8 +39,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview // Importar Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog // Usar Dialog para la ventana modal
 import com.app.tibibalance.ui.components.buttons.PrimaryButton

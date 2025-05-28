@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview // Importar para Preview
 import androidx.compose.ui.unit.dp
+import com.app.tibibalance.ui.theme.*
 
 /**
  * @brief Un [Composable] que representa un botón para acciones peligrosas o destructivas.
@@ -54,7 +55,7 @@ fun DangerButton(
     modifier    : Modifier = Modifier.fillMaxWidth(), // Default a ancho completo
     enabled     : Boolean  = true, // Habilitado por defecto
     isLoading   : Boolean  = false, // No cargando por defecto
-    container   : Color    = Color(0xFFFF3333), // Color rojo por defecto
+    container   : Color    = Alert, // Color rojo por defecto
     contentColor: Color    = Color.White // Color blanco por defecto
 ) {
     // El botón solo está realmente habilitado si el parámetro 'enabled' es true

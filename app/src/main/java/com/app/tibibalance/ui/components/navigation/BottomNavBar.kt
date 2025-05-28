@@ -35,7 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview // Importar Preview
 import androidx.compose.ui.unit.dp
-import com.app.tibibalance.ui.components.NavBarButton // Importar NavBarButton
+import com.app.tibibalance.ui.components.buttons.NavBarButton // Importar NavBarButton
 // Importar BottomNavItem si está en otro paquete
 // import com.app.tibibalance.ui.components.navigation.BottomNavItem
 // Importar iconos para la preview

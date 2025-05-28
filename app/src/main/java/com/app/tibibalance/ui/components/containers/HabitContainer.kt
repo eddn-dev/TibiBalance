@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.app.tibibalance.ui.theme.Container
+import com.app.tibibalance.ui.theme.Text
 
 @Composable
 fun HabitContainer(
@@ -33,7 +35,7 @@ fun HabitContainer(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .background(Color(0xFFF5FBFD), shape = RoundedCornerShape(16.dp))
+            .background(Container, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -44,7 +46,7 @@ fun HabitContainer(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black
+            color = Text
         )
     }
 }

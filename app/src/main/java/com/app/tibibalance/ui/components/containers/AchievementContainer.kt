@@ -3,25 +3,32 @@
  * @ingroup ui_components
  * @brief   Tarjeta que muestra el progreso de un logro.
  *
- * @param icon        Composable que dibuja el icono representativo.
- * @param title       Título breve del logro.
- * @param description Descripción o meta a alcanzar.
- * @param percent     Avance en rango 0‒100 que alimenta la barra de progreso.
- * @param modifier    Modificador externo para tamaño, padding o clics.
+ * @param 'icon        Composable que dibuja el icono representativo.
+ * @param 'title       Título breve del logro.
+ * @param 'description Descripción o meta a alcanzar.
+ * @param 'percent     Avance en rango 0‒100 que alimenta la barra de progreso.
+ * @param 'modifier    Modificador externo para tamaño, padding o clics.
  */
 package com.app.tibibalance.ui.components.containers
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.ui.components.utils.ProgressBar
+import com.app.tibibalance.ui.theme.Container
+import com.app.tibibalance.ui.theme.Text
+import com.app.tibibalance.ui.theme.TextLight
 
 @Composable
 fun AchievementContainer(
@@ -34,7 +41,7 @@ fun AchievementContainer(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFF5FBFD), shape = RoundedCornerShape(16.dp))
+            .background(Container, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -46,13 +53,13 @@ fun AchievementContainer(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
+                color = Text
             )
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.DarkGray
+                color = TextLight
             )
 
             ProgressBar(
