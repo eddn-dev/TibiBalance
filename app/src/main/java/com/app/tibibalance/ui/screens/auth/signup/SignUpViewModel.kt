@@ -18,12 +18,14 @@ import java.time.LocalDate
 import javax.inject.Inject
 import android.util.Patterns                                         // :contentReference[oaicite:0]{index=0}
 import androidx.annotation.RequiresApi
+import com.app.domain.usecase.auth.SendVerificationEmailUseCase
 import kotlinx.datetime.toKotlinLocalDate
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase : SignUpUseCase,
-    private val googleUseCase : GoogleSignInUseCase
+    private val googleUseCase : GoogleSignInUseCase,
+    private val sendEmailUseCase: SendVerificationEmailUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow<SignUpUiState>(SignUpUiState.Idle)
@@ -99,17 +101,18 @@ class SignUpViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun signUp(
         userName : String,
-        birthDate: java.time.LocalDate?,
+        birthDate: LocalDate?,
         email    : String,
         password : String,
-        confirm  : String
+        confirm  : String,
+        onSuccess: () -> Unit = {},
+        onError  : (String) -> Unit = {}
     ) {
-        /* 1️⃣ validación local */
+        // Validación local
         localValidate(userName, birthDate, email, password, confirm)?.let {
             _ui.value = it; return
         }
 
-        /* 2️⃣ caso de uso */
         viewModelScope.launch {
             _ui.value = SignUpUiState.Loading
 
@@ -121,8 +124,16 @@ class SignUpViewModel @Inject constructor(
                     dob = dobKtx
                 )
             ) {
-                is AuthResult.Success -> _ui.value = SignUpUiState.Success(email)
-                is AuthResult.Error   -> _ui.value = mapError(res.error)
+                is AuthResult.Success -> {
+                    val emailSent = sendEmailUseCase(email)
+                    _ui.value = SignUpUiState.VerificationEmailSent(email)
+                    onSuccess()
+                }
+
+                is AuthResult.Error -> {
+                    _ui.value = mapError(res.error)
+                    onError("Falló el registro: ${res.error}")
+                }
             }
         }
     }

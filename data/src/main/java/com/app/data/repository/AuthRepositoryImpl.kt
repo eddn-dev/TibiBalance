@@ -30,6 +30,10 @@ import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
+import java.net.HttpURLConnection
+import java.net.URL
+import org.json.JSONObject
+import android.util.Log
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
@@ -49,12 +53,17 @@ class AuthRepositoryImpl @Inject constructor(
         credentials: UserCredentials,
         displayName: String,
         birthDate  : LocalDate
-    ): AuthResult<Unit> = try {
-        auth.createUserWithEmailAndPassword(credentials.email, credentials.password).await()
-        auth.currentUser?.sendEmailVerification()?.await()
-        auth.currentUser?.let { firestore.ensureUserDocument(it, displayName, birthDate) }
-        AuthResult.Success(Unit)
-    } catch (t: Throwable) { AuthResult.Error(t.toAuthError()) }
+    ): AuthResult<Unit> {
+        return try {
+            auth.createUserWithEmailAndPassword(credentials.email, credentials.password).await()
+            val emailSent = auth.currentUser?.email?.let { sendVerificationEmailBackend(it) } ?: false
+            if (!emailSent) {
+                return AuthResult.Error(AuthError.Unknown(Exception("Error enviando correo de verificación desde backend")))
+            }
+            auth.currentUser?.let { firestore.ensureUserDocument(it, displayName, birthDate) }
+            AuthResult.Success(Unit)
+        } catch (t: Throwable) { AuthResult.Error(t.toAuthError()) }
+    }
 
     /* ── Inicio de sesión e-mail / pass ────────────────────────── */
     override suspend fun signIn(credentials: UserCredentials): AuthResult<Boolean> =
@@ -93,10 +102,15 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun isEmailVerified(): Boolean =
         auth.currentUser?.isEmailVerified == true    // single-source-of-truth
 
-    override suspend fun sendEmailVerification(): AuthResult<Unit> = try {
-        auth.currentUser?.sendEmailVerification()?.await()
-        AuthResult.Success(Unit)
-    } catch (t: Throwable) { AuthResult.Error(t.toAuthError()) }
+    override suspend fun sendEmailVerification(): AuthResult<Unit> {
+        return try {
+            val emailSent = auth.currentUser?.email?.let { sendVerificationEmailBackend(it) } ?: false
+            if (!emailSent) {
+                return AuthResult.Error(AuthError.Unknown(Exception("Error enviando correo de verificación desde backend")))
+            }
+            AuthResult.Success(Unit)
+        } catch (t: Throwable) { AuthResult.Error(t.toAuthError()) }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun changePassword(
@@ -226,6 +240,40 @@ class AuthRepositoryImpl @Inject constructor(
         ).toFirestoreMap()
 
         doc.set(newUser, SetOptions.merge()).await()
+    }
+
+    /* Función para enviar el correo desde el backend de Node.js */
+    private fun sendVerificationEmailBackend(email: String): Boolean {
+        return try {
+            val url = URL("https://tibiserver.onrender.com/send-confirmation")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+
+            val json = JSONObject().apply {
+                put("email", email)
+            }
+
+            connection.outputStream.use {
+                it.write(json.toString().toByteArray())
+            }
+
+            val responseCode = connection.responseCode
+            val responseMessage = connection.inputStream.bufferedReader().use { it.readText() }
+            connection.disconnect()
+
+            if (responseCode in 200..299) {
+                Log.i("AuthRepo", "Correo de verificación enviado correctamente para $email")
+                true
+            } else {
+                Log.e("AuthRepo", "Error enviando correo de verificación: Código $responseCode - $responseMessage")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepo", "Error enviando correo de verificación al backend: ${e.message}", e)
+            false
+        }
     }
 
     override fun currentProvider(): String? =
