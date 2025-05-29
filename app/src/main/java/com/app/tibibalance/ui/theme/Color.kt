@@ -56,3 +56,10 @@ val Metrics =  Color(0xFFE0E0E0)
 val AccountSettings = Color(0xFFD8EAF1)
 val PreferencesSettings = Color(0xFFE8F2F8)
 val LegalSettings = Color(0xFFF3F6F8)
+
+/** Colores del modo oscuro */
+val DarkBackground = Color(0xFF20304A)
+val DarkSurface = Color(0xFF546586)
+val DarkTextPrimary = Color(0xFF8E90A7)
+val DarkHighlight = Color(0xFFE0D9E0)
+val DarkAlert = Color(0xFFFF4D4D)
