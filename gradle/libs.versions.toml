@@ -9,7 +9,7 @@ ksp                   = "2.0.21-1.0.28"
 work                  = "2.9.0"
 gradleWrapper         = "8.12.1"
 composeCompiler         = "2.0.0"
-
+wearComposeM3 = "1.5.0-beta02"
 kotlinxCoroutines     = "1.10.2"
 kotlinxDatetime       = "0.6.2"
 kotlinxSerialization  = "1.7.3"
@@ -37,6 +37,8 @@ lottie                = "6.6.6"
 accompanist           = "0.37.3"
 spinwheel             = "1.1.1"
 playServicesWearable  = "19.0.0"
+healthServices        = "1.0.0"
+wearCompose           = "1.4.1"
 
 # --------------------------------------------------------
 # Plugins (👈 añadidos los que faltaban)
@@ -59,6 +61,13 @@ dokka                 = { id = "org.jetbrains.dokka",                 version.re
 # Libraries (sin cambios salvo las que ya habías añadido)
 # --------------------------------------------------------
 [libraries]
+health-services-client      = { group = "androidx.health", name = "health-services-client", version.ref = "healthServices" }
+org-jetbrains-kotlinx-kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
+wear-compose-foundation     = { group = "androidx.wear.compose", name = "compose-foundation",  version.ref = "wearCompose" }
+wear-compose-material       = { group = "androidx.wear.compose", name = "compose-material",    version.ref = "wearCompose" }
+wear-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "wearComposeM3" }
+wear-compose-navigation     = { group = "androidx.wear.compose", name = "compose-navigation",  version.ref = "wearCompose" }
+wear-compose-ui-tooling     = { group = "androidx.wear.compose", name = "compose-ui-tooling",  version.ref = "wearCompose" }
 android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "androidDatabaseSqlcipher" }
 androidx-core-ktx        = { group = "androidx.core",              name = "core-ktx",                 version.ref = "coreKtx" }
 lifecycle-runtime-ktx    = { group = "androidx.lifecycle",         name = "lifecycle-runtime-ktx",    version.ref = "lifecycleKtx" }
@@ -125,4 +134,10 @@ auth = [
     "credentials-play",
     "play-services-auth",
     "googleid"
+]
+wear-compose = [
+    "wear-compose-foundation",
+    "wear-compose-material",
+    "wear-compose-navigation",
+    "wear-compose-ui-tooling"
 ]

@@ -37,13 +37,13 @@ package com.app.wear.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material3.*
 
 /**
  * @brief Un [Composable] que representa el botón de acción principal estándar de la aplicación.
@@ -88,12 +88,9 @@ fun PrimaryButton(
         modifier = modifier.height(48.dp), // Altura fija (ajustada a 48dp)
         shape = RoundedCornerShape(12.dp), // Bordes redondeados
         colors = ButtonDefaults.buttonColors( // Colores del botón
-            containerColor         = Color(0xFF3EA8FE), // Fondo normal
             contentColor           = contentColor, // Contenido normal
-            disabledContainerColor = Color(0xFF3EA8FE).copy(alpha = 0.5f), // Fondo deshabilitado (más transparente)
             disabledContentColor   = contentColor.copy(alpha = 0.5f) // Contenido deshabilitado
         ),
-        contentPadding = PaddingValues(horizontal = 24.dp) // Padding interno
     ) {
         // Contenido condicional: Indicador de carga o Texto
         if (isLoading) {
@@ -101,7 +98,6 @@ fun PrimaryButton(
             CircularProgressIndicator(
                 strokeWidth = 3.dp, // Grosor del indicador
                 modifier    = Modifier.size(24.dp), // Tamaño del indicador
-                color       = contentColor // Color del indicador
             )
         } else {
             // Muestra el texto si no está cargando
