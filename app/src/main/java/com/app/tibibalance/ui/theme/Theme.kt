@@ -13,19 +13,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.app.domain.enums.ThemeMode
 
-/** Para el modo oscuro */
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkHighlight,
-    onPrimary = Color.White,
-    primaryContainer = DarkSurface,
-    onPrimaryContainer = Color.White,
-    background = DarkBackground,
+    primary = DarkPrimary,
+    onPrimary = DarkOnSurface, // Texto en botones primarios
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnSurface,
+    background = DarkPrimary, // Fondo principal
     surface = DarkSurface,
-    onBackground = DarkTextPrimary,
-    onSurface = DarkTextPrimary,
-    secondary = DarkHighlight,
-    tertiary = BluePrimaryDark,
-    error = DarkAlert
+    onBackground = DarkOnSurface,
+    onSurface = DarkOnSurface,
+    secondary = DarkPrimaryContainer,
+    tertiary = DarkPrimary,
+    error = DarkError
 )
 
 private val LightColorScheme = lightColorScheme(

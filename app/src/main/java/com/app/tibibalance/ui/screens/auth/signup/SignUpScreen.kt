@@ -177,7 +177,7 @@ fun SignUpScreen(
 
     /* ----- UI principal ----- */
     val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), White)
+        listOf(MaterialTheme.colorScheme.primary.copy(.25f), MaterialTheme.colorScheme.background)
     )
 
     Box(

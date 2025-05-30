@@ -53,7 +53,7 @@ import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputPassword
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.White
+//import com.app.tibibalance.ui.theme.White
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 
@@ -132,7 +132,7 @@ fun SignInScreen(
 
     /* --- UI principal --- */
     val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), White)
+        listOf(MaterialTheme.colorScheme.primary.copy(.25f), MaterialTheme.colorScheme.background)
     )
 
     Box(
