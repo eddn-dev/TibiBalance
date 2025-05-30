@@ -2,7 +2,7 @@ package com.app.wear.data.repository
 
 import com.app.wear.data.datasource.ICommunicationDataSource
 import com.app.wear.data.datasource.ISensorDataSource
-import com.app.wear.data.mapper.toPayload
+import com.app.wear.data.mapper.toPayload // Necesitarás crear este mapper
 import com.app.wear.domain.model.WearableDailyMetrics
 import com.app.wear.domain.repository.IWearMetricsRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,10 +14,16 @@ class WearMetricsRepositoryImpl @Inject constructor(
 ) : IWearMetricsRepository {
 
     override suspend fun sendMetricsToCompanionApp(metrics: WearableDailyMetrics): Result<Unit> {
-        return communicationDataSource.sendMetricsPayload(metrics.toPayload())
+        // Mapear del modelo de dominio del wear al DTO/Payload de la capa de datos del wear
+        val metricsPayload = metrics.toPayload() // Usando una función de extensión mapper
+        return communicationDataSource.sendMetricsPayload(metricsPayload)
     }
 
-    override fun getRealTimeHeartRate(): Flow<Int> = sensorDataSource.getHeartRateUpdates()
+    override fun getRealTimeHeartRate(): Flow<Int> {
+        return sensorDataSource.getHeartRateUpdates()
+    }
 
-    override suspend fun getCurrentSteps(): Int = sensorDataSource.fetchCurrentStepCount()
+    override suspend fun getCurrentSteps(): Int {
+        return sensorDataSource.fetchCurrentStepCount()
+    }
 }

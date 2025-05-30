@@ -4,8 +4,11 @@ import com.app.wear.domain.repository.IWearMetricsRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+// Caso de uso para observar el ritmo cardíaco en tiempo real.
 class ObserveHeartRateUseCase @Inject constructor(
-    private val repository: IWearMetricsRepository
+    private val metricsRepository: IWearMetricsRepository
 ) {
-    operator fun invoke(): Flow<Int> = repository.getRealTimeHeartRate()
+    operator fun invoke(): Flow<Int> {
+        return metricsRepository.getRealTimeHeartRate()
+    }
 }

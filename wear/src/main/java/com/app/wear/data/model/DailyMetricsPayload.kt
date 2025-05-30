@@ -1,4 +1,4 @@
-package com.app.wear.data.model
+package com.app.wear.data.model // Asegúrate que el paquete sea correcto
 
 import kotlinx.serialization.Serializable
 
@@ -9,6 +9,6 @@ data class DailyMetricsPayload(
     val caloriesBurned: Float?,
     val activeMinutes: Int?,
     val distanceMeters: Float?,
-    val userId: String?,
-    val timestamp: Long
+    val userId: String?, // Para identificar al usuario en el backend/app móvil
+    val timestamp: Long // Unix timestamp en milisegundos
 )

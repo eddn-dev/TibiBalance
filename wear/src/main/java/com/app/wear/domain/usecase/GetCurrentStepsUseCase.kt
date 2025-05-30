@@ -4,7 +4,9 @@ import com.app.wear.domain.repository.IWearMetricsRepository
 import javax.inject.Inject
 
 class GetCurrentStepsUseCase @Inject constructor(
-    private val repository: IWearMetricsRepository
+    private val metricsRepository: IWearMetricsRepository
 ) {
-    suspend operator fun invoke(): Int = repository.getCurrentSteps()
+    suspend operator fun invoke(): Int {
+        return metricsRepository.getCurrentSteps()
+    }
 }
