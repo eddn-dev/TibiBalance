@@ -10,7 +10,7 @@ plugins {
 
     // Hilt
     alias(libs.plugins.hilt.android)
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -50,46 +50,46 @@ android {
     }
     composeOptions {
         // Ajusta al versión de tu Compose Compiler
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
 dependencies {
     // Core & Lifecycle
-    implementation(libs.core.ktx)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
 
     // Compose UI
     implementation(platform(libs.compose.bom))
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
     implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.material3)
+    implementation(libs.compose.material3)
     debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Firebase BoM + Firestore & Auth
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
 
     // Hilt DI
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation)
 
     // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.ui.test.junit4)
+    androidTestImplementation(libs.compose.ui.test.junit4)
 
     // Wearable Data Layer
-    implementation ("com.google.android.gms:play-services-wearable:19.0.0")
+    implementation(libs.google.play.services.wearable)
 
     // Kotlinx Serialization JSON
-    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation(libs.kotlinxSerializationJson)
 
     // Si tu modelo DailyMetrics está en el módulo app, agrega también: implementation (project(":app"))
 }
