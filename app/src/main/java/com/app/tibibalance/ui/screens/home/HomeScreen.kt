@@ -104,26 +104,29 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         AchievementContainer(
-                            icon = {
+
+                            iconRes = R.drawable.iconstepsimage,
+                            /*icon = {
                                 ImageContainer(
                                     resId = R.drawable.iconstepsimage,
                                     contentDescription = "Pasos",
                                     modifier = Modifier.size(40.dp)
                                 )
-                            },
+                            },*/
                             title = "5,230",
                             description = "Pasos",
                             percent = 65,
                             modifier = Modifier.weight(1f)
                         )
                         AchievementContainer(
-                            icon = {
+                            iconRes = R.drawable.iconclockimage,
+                            /*icon = {
                                 ImageContainer(
                                     resId = R.drawable.iconclockimage,
                                     contentDescription = "Minutos de ejercicio",
                                     modifier = Modifier.size(40.dp)
                                 )
-                            },
+                            },*/
                             title = "35",
                             description = "min de ejercicio",
                             percent = 70,
@@ -135,26 +138,28 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         AchievementContainer(
-                            icon = {
+                            iconRes = R.drawable.iconfireimage,
+                            /*icon = {
                                 ImageContainer(
                                     resId = R.drawable.iconfireimage,
                                     contentDescription = "Calorías quemadas",
                                     modifier = Modifier.size(40.dp)
                                 )
-                            },
+                            },*/
                             title = "450",
                             description = "Kcal quemadas",
                             percent = 55,
                             modifier = Modifier.weight(1f)
                         )
                         AchievementContainer(
-                            icon = {
+                            iconRes = R.drawable.iconheartimage,
+                            /*icon = {
                                 ImageContainer(
                                     resId = R.drawable.iconheartimage,
                                     contentDescription = "Frecuencia cardiaca",
                                     modifier = Modifier.size(40.dp)
                                 )
-                            },
+                            },*/
                             title = "78",
                             description = "bpm",
                             percent = 78,

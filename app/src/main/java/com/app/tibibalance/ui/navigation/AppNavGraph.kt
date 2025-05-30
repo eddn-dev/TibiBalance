@@ -48,5 +48,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
         composable(Screen.ChangePassword.route) { ChangePasswordScreen(navController)}
         composable(Screen.ConfigureNotif.route) { ConfigureNotificationScreen(navController) }
+
+        composable(Screen.Achievements.route) { AchiviementsScreen(navController) }
     }
 }

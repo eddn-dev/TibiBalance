@@ -11,61 +11,84 @@
  */
 package com.app.tibibalance.ui.components.containers
 
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.ui.components.utils.ProgressBar
-import com.app.tibibalance.ui.theme.Container
-import com.app.tibibalance.ui.theme.Text
-import com.app.tibibalance.ui.theme.TextLight
+import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.res.painterResource
+
 
 @Composable
 fun AchievementContainer(
-    icon: @Composable () -> Unit,
+    iconRes: Int,
     title: String,
     description: String,
     percent: Int,
+    isUnlocked: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val alphaValue = if (isUnlocked) 1f else 0.4f
+    val colorMatrix = if (isUnlocked) ColorMatrix() else ColorMatrix().apply { setToSaturation(0f) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Container, shape = RoundedCornerShape(16.dp))
-            .padding(16.dp),
+            .background(Color(0xFFF5FBFD), shape = RoundedCornerShape(16.dp))
+            .padding(horizontal = 12.dp, vertical = 8.dp) // reduce padding
+            .alpha(alphaValue),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        icon()
+        Image(
+            painter = painterResource(id = iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(50.dp), // más pequeño
+            colorFilter = ColorFilter.colorMatrix(colorMatrix)
+        )
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp) // espacio compacto entre elementos
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = Text
+                color = Color.Black,
+                maxLines = 1
             )
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = TextLight
+                color = Color.DarkGray,
+                maxLines = 2
             )
 
             ProgressBar(
                 percent = percent,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 4.dp)
             )
+
+            /*if (!isUnlocked) {
+                Text(
+                    text = "No desbloqueado",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }*/
         }
     }
 }
