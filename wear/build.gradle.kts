@@ -11,6 +11,7 @@ plugins {
     // Hilt
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.ksp)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -90,6 +91,17 @@ dependencies {
 
     // Kotlinx Serialization JSON
     implementation(libs.kotlinxSerializationJson)
+
+    // ViewModel for MVVM
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
+    // Health Services (optional)
+    // implementation("androidx.health:health-services-client:1.1.0-alpha03")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     // Si tu modelo DailyMetrics está en el módulo app, agrega también: implementation (project(":app"))
 }
