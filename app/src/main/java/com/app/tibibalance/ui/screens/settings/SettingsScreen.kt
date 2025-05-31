@@ -114,7 +114,7 @@ private fun SettingsContent(
     Box(
         Modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(gradient())
     ) {
 
         SettingsBody(

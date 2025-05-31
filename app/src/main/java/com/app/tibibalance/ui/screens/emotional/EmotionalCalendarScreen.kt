@@ -62,7 +62,7 @@ fun EmotionalCalendarScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient),
+            .background(gradient()),
         contentAlignment = Alignment.TopCenter
     ) {
 

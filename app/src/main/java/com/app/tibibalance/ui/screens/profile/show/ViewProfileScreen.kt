@@ -51,7 +51,7 @@ fun ViewProfileScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(gradient())
     ) {
         when {
             ui.loading -> Centered("Cargando…")

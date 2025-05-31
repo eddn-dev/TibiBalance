@@ -62,7 +62,7 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(gradient())
     ) {
         Column(
             modifier = Modifier

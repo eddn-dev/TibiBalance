@@ -61,7 +61,7 @@ fun TextButtonLink(
         // Texto interno del botón
         Text(
             text = text, // El texto a mostrar
-            color = LinkText, // Usa el color primario del tema
+            color = MaterialTheme.colorScheme.primary, // Usa el color primario del tema
             // Usa el estilo bodySmall y aplica el subrayado condicionalmente
             style = MaterialTheme.typography.bodySmall.copy(
                 textDecoration = if (underline) TextDecoration.Underline else TextDecoration.None
