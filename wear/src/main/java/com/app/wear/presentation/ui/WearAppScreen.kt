@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.MaterialTheme
@@ -22,7 +23,7 @@ import com.app.wear.presentation.viewmodel.WearMetricsViewModel
 @Composable
 fun WearAppScreen(
     // Hilt inyectará el ViewModel aquí
-    metricsViewModel: WearMetricsViewModel = viewModel()
+    metricsViewModel: WearMetricsViewModel = hiltViewModel()
 ) {
     val uiState by metricsViewModel.uiState.collectAsState()
 
