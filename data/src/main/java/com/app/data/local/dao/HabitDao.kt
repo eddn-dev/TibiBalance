@@ -34,6 +34,9 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE id = :id and m_deletedAt is null LIMIT 1")
     fun observeById(id: String): Flow<HabitEntity?>
 
+    @Query("SELECT * FROM habits WHERE isBuiltIn = 0 ORDER BY name")
+    suspend fun getAllUserHabitsList(): List<HabitEntity>
+
     /* ─────────── Actividades asociadas ─────────────────────────── */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertActivity(entity: HabitActivityEntity)

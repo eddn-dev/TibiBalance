@@ -23,10 +23,12 @@
 package com.app.domain.repository
 
 import com.app.domain.entities.Habit
+import com.app.domain.entities.HabitActivity // Added import
 import com.app.domain.ids.HabitId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate // Added import
 
 interface HabitRepository {
 
@@ -34,6 +36,11 @@ interface HabitRepository {
     fun observeUserHabits()     : Flow<List<Habit>>   // isBuiltIn = false
     fun observeSuggestedHabits(): Flow<List<Habit>>   // isBuiltIn = true
     fun observeHabit(id: HabitId) : Flow<Habit?>
+
+    /* One-shot reads ---------------------- */ // Added section for clarity
+    suspend fun getHabitsOnce(): List<Habit>
+    suspend fun getHabitByIdOnce(id: HabitId): Habit?
+    suspend fun getHabitActivitiesByDate(date: LocalDate): List<HabitActivity>
 
     /* Comandos ---------------------------- */
     suspend fun create(habit: Habit)

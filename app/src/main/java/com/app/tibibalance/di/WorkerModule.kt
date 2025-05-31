@@ -3,7 +3,10 @@ package com.app.tibibalance.di
 import android.app.Application
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
+import com.app.data.worker.DailyCompletionCheckSchedulerImpl // Added
+import com.app.domain.usecase.worker.DailyCompletionCheckScheduler // Added
 import com.app.tibibalance.sync.HabitSyncWorker
+import dagger.Binds // Added
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,10 +15,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WorkerModule {
+abstract class WorkerModule { // Changed to abstract class
 
     @Provides
-    fun provideWorkManager(context: Application) = WorkManager.getInstance(context)
+    fun provideWorkManager(context: Application): WorkManager = WorkManager.getInstance(context)
 
     @Provides
     @Singleton
@@ -26,4 +29,9 @@ object WorkerModule {
             HabitSyncWorker.periodicRequest()
         )
 
+    @Binds
+    @Singleton
+    abstract fun bindDailyCompletionCheckScheduler(
+        impl: DailyCompletionCheckSchedulerImpl
+    ): DailyCompletionCheckScheduler
 }

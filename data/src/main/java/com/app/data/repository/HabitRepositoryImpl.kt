@@ -14,6 +14,7 @@
  */
 package com.app.data.repository
 
+import com.app.data.local.dao.HabitActivityDao // Added import
 import com.app.data.local.dao.HabitDao
 import com.app.data.local.entities.*
 import com.app.data.mappers.HabitActivityMappers.toEntity
@@ -33,13 +34,20 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit // Added import
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate // Added import
+import kotlinx.datetime.TimeZone // Added import
+import kotlinx.datetime.atStartOfDayIn // Added import
+import kotlinx.datetime.plus // Added import
+
 
 @Singleton
 class HabitRepositoryImpl @Inject constructor(
-    private val dao        : HabitDao,
-    private val remote     : HabitRemoteDataSource,
-    private val authRepo   : AuthRepository,
+    private val habitDao    : HabitDao, // Renamed for clarity
+    private val activityDao : HabitActivityDao, // Added
+    private val remote      : HabitRemoteDataSource,
+    private val authRepo    : AuthRepository,
     @IoDispatcher private val io: CoroutineDispatcher
 ) : HabitRepository {
 
@@ -74,9 +82,55 @@ class HabitRepositoryImpl @Inject constructor(
             .distinctUntilChanged()
 
     override fun observeHabit(id: HabitId): Flow<Habit?> =
-        dao.observeById(id.raw)
+        habitDao.observeById(id.raw) // Changed dao to habitDao
             .map { it?.toDomain() }
             .distinctUntilChanged()
+
+    /* ─────────────────────── One-shot reads ─────────────────── */
+
+    override suspend fun getHabitsOnce(): List<Habit> = withContext(io) {
+        try {
+            // Assuming HabitDao gets a method like getAllUserHabitsList() that returns List<HabitEntity>
+            // This method should filter by isBuiltIn = false
+            // This will be added in Step 10: @Query("SELECT * FROM habits WHERE isBuiltIn = 0") suspend fun getAllUserHabitsList(): List<HabitEntity>
+            habitDao.getAllUserHabitsList().map { it.toDomain() }
+        } catch (e: Exception) {
+            // Log.e("HabitRepositoryImpl", "Error fetching habits once", e) // Consider logging
+            emptyList()
+        }
+    }
+
+    override suspend fun getHabitByIdOnce(id: HabitId): Habit? = withContext(io) {
+        try {
+            habitDao.findById(id.raw)?.toDomain()
+        } catch (e: Exception) {
+            // Log.e("HabitRepositoryImpl", "Error fetching habit by ID once", e) // Consider logging
+            null
+        }
+    }
+
+    override suspend fun getHabitActivitiesByDate(localDate: kotlinx.datetime.LocalDate): List<HabitActivity> = withContext(io) {
+        val systemZone = TimeZone.currentSystemDefault()
+        val startOfDayInstant = localDate.atStartOfDayIn(systemZone)
+        val endOfDayInstant = localDate.plus(1, DateTimeUnit.DAY).atStartOfDayIn(systemZone)
+
+        // Using epoch milliseconds as DAOs often work with Long for date-time.
+        // The DAO method will need to be compatible with this.
+        // Step 10 will add:
+        // @Query("SELECT * FROM activities WHERE completedAt >= :startOfDayMillis AND completedAt < :endOfDayMillis")
+        // suspend fun getActivitiesForDayRangeMillis(startOfDayMillis: Long, endOfDayMillis: Long): List<HabitActivityEntity>
+        // For HabitActivityDao
+
+        val startOfDayMillis = startOfDayInstant.toEpochMilliseconds()
+        val endOfDayMillis = endOfDayInstant.toEpochMilliseconds()
+
+        try {
+            activityDao.getActivitiesForDayRangeMillis(startOfDayMillis, endOfDayMillis).map { it.toDomain() }
+        } catch (e: Exception) {
+            // Log.e("HabitRepositoryImpl", "Error fetching activities by date", e) // Consider logging
+            emptyList()
+        }
+    }
 
     /* ─────────────────────── operaciones CRUD ────────────────── */
 
@@ -86,10 +140,10 @@ class HabitRepositoryImpl @Inject constructor(
             meta = habit.meta.copy(createdAt = Clock.System.now(), pendingSync = true)
         ).toEntity()
 
-        dao.upsert(entity)
+        habitDao.upsert(entity) // Changed dao to habitDao
         try {
             remote.pushHabit(uid, habit)
-            dao.upsert(entity.copy(meta = entity.meta.copy(pendingSync = false)))
+            habitDao.upsert(entity.copy(meta = entity.meta.copy(pendingSync = false))) // Changed dao to habitDao
         } catch (_: Exception) { /* se queda pendingSync = true */ }
     }
 
@@ -100,17 +154,17 @@ class HabitRepositoryImpl @Inject constructor(
         val updated = habit.copy(
             meta = habit.meta.copy(updatedAt = Clock.System.now(), pendingSync = true)
         )
-        dao.upsert(updated.toEntity())
+        habitDao.upsert(updated.toEntity()) // Changed dao to habitDao
 
         try {
             remote.pushHabit(uid, updated)
-            dao.upsert(updated.copy(meta = updated.meta.copy(pendingSync = false)).toEntity())
+            habitDao.upsert(updated.copy(meta = updated.meta.copy(pendingSync = false)).toEntity()) // Changed dao to habitDao
         } catch (_: Exception) { /* pendingSync queda true */ }
     }
 
     override suspend fun delete(id: HabitId) = withContext(io) {
         val uid = currentUid() ?: return@withContext
-        dao.delete(id.raw)
+        habitDao.delete(id.raw) // Changed dao to habitDao
         try { remote.deleteHabit(uid, id) } catch (_: Exception) { /* ignorar, worker */ }
     }
 
@@ -125,11 +179,11 @@ class HabitRepositoryImpl @Inject constructor(
             meta      = SyncMeta(pendingSync = true)
         )
 
-        dao.insertActivity(act.toEntity())
+        habitDao.insertActivity(act.toEntity()) // Changed dao to habitDao
 
         try {
             remote.pushActivity(uid, act)
-            dao.insertActivity(act.copy(meta = act.meta.copy(pendingSync = false)).toEntity())
+            habitDao.insertActivity(act.copy(meta = act.meta.copy(pendingSync = false)).toEntity()) // Changed dao to habitDao
         } catch (_: Exception) { /* offline, worker reintentará */ }
     }
 
@@ -139,17 +193,17 @@ class HabitRepositoryImpl @Inject constructor(
         return@withContext try {
 
             /* 1) PUSH locales pendientes */
-            dao.pendingToSync().forEach { entity ->
+            habitDao.pendingToSync().forEach { entity -> // Changed dao to habitDao
                 remote.pushHabit(uid, entity.toDomain())
-                dao.upsert(entity.copy(meta = entity.meta.copy(pendingSync = false)))
+                habitDao.upsert(entity.copy(meta = entity.meta.copy(pendingSync = false))) // Changed dao to habitDao
             }
 
             /* 2) PULL remotos y resolver LWW */
             val remotes = remote.fetchUserHabits(uid)
             remotes.forEach { remoteHabit ->
-                val local = dao.findById(remoteHabit.id.raw)          // suspend OK aquí
+                val local = habitDao.findById(remoteHabit.id.raw)          // suspend OK aquí, changed dao to habitDao
                 val winner = resolveLww(local, remoteHabit)
-                dao.upsert(winner.toEntity())
+                habitDao.upsert(winner.toEntity()) // Changed dao to habitDao
             }
 
             Result.success(Unit)

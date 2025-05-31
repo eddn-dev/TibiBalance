@@ -22,6 +22,9 @@ interface HabitActivityDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(entity: HabitActivityEntity)
 
+    @Query("SELECT * FROM activities WHERE completedAt >= :startOfDayMillis AND completedAt < :endOfDayMillis ORDER BY completedAt DESC")
+    suspend fun getActivitiesForDayRangeMillis(startOfDayMillis: Long, endOfDayMillis: Long): List<HabitActivityEntity>
+
     /** Limpia tombstones o filas ya sincronizadas. */
     @Query("""
         DELETE FROM activities

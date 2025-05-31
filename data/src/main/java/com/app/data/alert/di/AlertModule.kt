@@ -1,13 +1,10 @@
 package com.app.data.alert.di
 
 import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
-import com.app.data.R
-import com.app.data.alert.HabitAlertManager
-import com.app.data.alert.HabitAlertReceiver
+// Removed NotificationChannel, NotificationManager, Build, R, HabitAlertReceiver imports
+import com.app.data.alert.HabitNotificationScheduler // Changed import
+import com.app.domain.repository.HabitRepository // Added import
 import com.app.domain.service.AlertManager
 import dagger.Module
 import dagger.Provides
@@ -29,25 +26,11 @@ object AlertModule {
     @Singleton
     fun provideAlertManager(
         @ApplicationContext ctx: Context,
-        alarm: AlarmManager
-    ): AlertManager = HabitAlertManager(ctx, alarm)
+        alarm: AlarmManager,
+        habitRepository: HabitRepository // Added HabitRepository
+    ): AlertManager = HabitNotificationScheduler(ctx, alarm, habitRepository) // Changed to HabitNotificationScheduler
 
-    @Provides
-    @Singleton
-    @JvmSuppressWildcards
-    fun provideChannelInitializer(
-        @ApplicationContext ctx: Context
-    ): ChannelInitializer = ChannelInitializer {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val mgr = ctx.getSystemService(NotificationManager::class.java)
-            val ch  = NotificationChannel(
-                HabitAlertReceiver.CHANNEL_HABITS,
-                ctx.getString(R.string.channel_habits),
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            mgr.createNotificationChannel(ch)
-        }
-    }
+    // Removed provideChannelInitializer method
 }
 
-fun interface ChannelInitializer { operator fun invoke() }
+// Removed ChannelInitializer fun interface

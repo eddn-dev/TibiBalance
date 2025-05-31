@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">TibiBalance</string>
-    <string name="channel_habits">Hábitos</string>
+    <!-- Renamed and updated -->
+    <string name="notification_channel_habits_name">Recordatorios de Hábitos</string>
+    <!-- Added -->
+    <string name="notification_channel_habits_description">Notificaciones para tus hábitos programados.</string>
+
+    <!-- Added for worker -->
+    <string name="uncompleted_habits_notification_title">Revisión de Hábitos</string>
+    <string name="uncompleted_habits_notification_text">¡%1$s te espera!</string>
     <string name="launch_subtitle">Bienvenido a TibiBalance</string>
     <string name="btn_sign_in">Iniciar sesión</string>
     <string name="btn_sign_up">Crear cuenta</string>
