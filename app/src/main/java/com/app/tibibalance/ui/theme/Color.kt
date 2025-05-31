@@ -75,7 +75,7 @@ val LegalSettings = Color(0xFFF3F6F8)
 
 
 val DarkPrimary = Color(0xFF20304A)
-val DarkPrimaryContainer = Color(0xFF546586)
-val DarkSurface = Color(0xFF8E90A7)
+val DarkPrimaryContainer = Color(0xFF8E90A7)
+val DarkSurface = Color(0xFF546586)
 val DarkOnSurface = Color(0xFFE0D9E0)
 val DarkError = Color(0xFFFF4D4D)

@@ -293,7 +293,8 @@ private fun SettingsBody(
 
 @Composable
 private fun Icon24(icon: ImageVector) =
-    Icon(icon, contentDescription = null, tint = BluePrimaryLight, modifier = Modifier.size(24.dp))
+    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary
+        , modifier = Modifier.size(24.dp))
 
 @Composable
 private fun SwitchSettingItem(
