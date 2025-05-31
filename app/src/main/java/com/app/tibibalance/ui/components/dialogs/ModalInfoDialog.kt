@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview // Para previews
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
@@ -232,7 +233,9 @@ private fun InfoContent(
         title?.let {
             Text(
                 text  = it,
-                style = MaterialTheme.typography.titleMedium, // Estilo para títulos
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 18.sp
+                ), // Estilo para títulos
                 textAlign = TextAlign.Center // Título centrado
             )
             Spacer(Modifier.height(8.dp)) // Espacio post-título
@@ -242,7 +245,9 @@ private fun InfoContent(
         message?.let {
             Text(
                 text  = it,
-                style = MaterialTheme.typography.bodyMedium, // Estilo para cuerpo de texto
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp // Aquí defines el tamaño de la fuente en sp
+                ),
                 textAlign = TextAlign.Center // Mensaje centrado
             )
             // Espacio antes de los botones, solo si hay mensaje
@@ -310,7 +315,7 @@ private fun ModalInfoDialogErrorPreview() {
             iconColor = MaterialTheme.colorScheme.onErrorContainer,
             iconBgColor = MaterialTheme.colorScheme.errorContainer,
             title = "Error de Conexión",
-            message = "No se pudo conectar al servidor. Por favor, revisa tu conexión a internet.",
+            message = "No se pudo conectar al servidor.\n Por favor, revisa tu conexión a internet.",
             primaryButton = DialogButton("Reintentar") {}
         )
     }
