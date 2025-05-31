@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
@@ -24,6 +25,7 @@ import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.utils.WizardNavBar
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.*
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -33,6 +35,9 @@ fun AddHabitModal(
     vm: AddHabitViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
+    val context = LocalContext.current
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
 
     /* ------------- escucha de cierre programático ------------- */
     LaunchedEffect(Unit) {
@@ -91,7 +96,15 @@ fun AddHabitModal(
                     notifyOn  = ui.form.notify,
                     onBack    = vm::back,
                     onNext    = vm::next,
-                    onSave    = vm::save,
+                    onSave = {
+                        //val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        //val context = LocalContext.current
+                        if (userId != null) {
+                            vm.save(userId, context)
+                        } else {
+                            // puedes mostrar un diálogo de error o un toast si lo deseas
+                        }
+                    },
                     onCancel  = vm::requestExit
                 )
             }

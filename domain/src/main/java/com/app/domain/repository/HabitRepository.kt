@@ -41,4 +41,9 @@ interface HabitRepository {
     suspend fun delete(id: HabitId)
     suspend fun markCompleted(id: HabitId, at: Instant = Clock.System.now())
     suspend fun syncNow(): Result<Unit>
+
+
+
+    suspend fun evaluateAchievements(userId: String)
+
 }

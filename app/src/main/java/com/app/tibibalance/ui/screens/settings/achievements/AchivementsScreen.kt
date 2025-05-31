@@ -20,6 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontWeight
 
+
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementsViewModel
+import androidx.compose.runtime.getValue
+
+
 @Composable
 fun AchievementsScreen(
     onNavigateUp: () -> Unit
@@ -27,6 +35,11 @@ fun AchievementsScreen(
     val gradient = Brush.verticalGradient(
         listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
     )
+
+    val vm: AchievementsViewModel = hiltViewModel()
+    val logros by vm.logros.collectAsState()
+
+
 
     // Contenedor principal que ocupa toda la pantalla.
     Box(
@@ -98,13 +111,24 @@ fun AchievementsScreen(
                     isUnlocked = true // <- Este aparecerá como bloqueado
                 )
 
+
+                val tibio = logros["tibio_bienestar"]
+
                 AchievementContainer(
+                    iconRes = R.drawable.bienestar,
+                    title = "Tibio del bienestar",
+                    description = "Agrega un hábito de bienestar.",
+                    percent = tibio?.progress ?: 0,
+                    isUnlocked = tibio?.unlocked == true
+                )
+
+                /*AchievementContainer(
                     iconRes = R.drawable.bienestar,
                     title = "Tibio del bienestar",
                     description = "Agrega un hábito de bienestar.",
                     percent = 70, // progreso  de logro
                     isUnlocked = true // <- Este aparecerá como bloqueado
-                )
+                )*/
 
                 AchievementContainer(
                     iconRes = R.drawable.explorer,

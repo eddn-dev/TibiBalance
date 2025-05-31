@@ -19,6 +19,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+import android.content.Context
+import androidx.work.WorkManager
+import com.app.tibibalance.sync.EvaluarLogrosWorker
+
+
 @HiltViewModel
 class AddHabitViewModel @Inject constructor(
     private val createHabit : CreateHabit,
@@ -88,18 +94,37 @@ class AddHabitViewModel @Inject constructor(
     )
 
     /* ---------- guardado ---------- */
-    @RequiresApi(Build.VERSION_CODES.O)
+    /*@RequiresApi(Build.VERSION_CODES.O)
     fun save() = viewModelScope.launch {
         val state = _ui.updateAndGet { it.copy(saving = true) }
         runCatching { createHabit(state.form.toHabit()) }
             .onSuccess {
                 /* mostramos diálogo de éxito */
                 _ui.value = AddHabitUiState(savedOk = true)
+
+            }
+            .onFailure { ex ->
+                _ui.update { it.copy(saving = false, errorMsg = ex.message) }
+            }
+    }*/
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun save(userId: String, context: Context) = viewModelScope.launch {
+        val state = _ui.updateAndGet { it.copy(saving = true) }
+        runCatching { createHabit(state.form.toHabit()) }
+            .onSuccess {
+                // Lanza el Worker para evaluar logros
+                val work = EvaluarLogrosWorker.oneTime(userId)
+                WorkManager.getInstance(context).enqueue(work)
+
+                // Mostrar éxito
+                _ui.value = AddHabitUiState(savedOk = true)
             }
             .onFailure { ex ->
                 _ui.update { it.copy(saving = false, errorMsg = ex.message) }
             }
     }
+
 
     /* ---------- validaciones ---------- */
     fun isStepValid(step: Int, f: HabitForm): Boolean = when (step) {
