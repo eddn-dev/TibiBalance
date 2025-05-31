@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.app.domain.entities.Habit
 import com.app.domain.config.Repeat
+import com.app.tibibalance.ui.components.buttons.DangerButton
 import com.app.tibibalance.ui.components.inputs.InputIcon
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
@@ -29,7 +30,9 @@ private val dateFmt = DateTimeFormatter.ofPattern("d LLL uuuu")
 fun ShowHabitStep(
     habit         : Habit,
     onEditNotif   : () -> Unit,
-    onToggleNotif : (Boolean) -> Unit
+    onToggleNotif : (Boolean) -> Unit,
+    onDelete      : () -> Unit,
+    deleting      : Boolean
 ) {
     /* helpers -------------------------------------------------------- */
     val repeatTxt = remember(habit.repeat) { repeatAsText(habit.repeat) }
@@ -73,6 +76,13 @@ fun ShowHabitStep(
             text     = "Editar notificaciones",
             onClick  = onEditNotif,
             modifier = Modifier.fillMaxWidth()
+        )
+
+        DangerButton(
+            text       = "Eliminar hábito",
+            onClick    = onDelete,
+            isLoading  = deleting,
+            modifier   = Modifier.fillMaxWidth()
         )
     }
 }
