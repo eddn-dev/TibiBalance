@@ -1,11 +1,17 @@
-package com.app.wear.presentation.ui // Asegúrate que el paquete sea correcto
+package com.app.wear.presentation.ui
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,68 +19,123 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.wear.R
 import com.app.wear.presentation.viewmodel.WearMetricsUiState
 import com.app.wear.presentation.viewmodel.WearMetricsViewModel
-// It seems R.drawable.tibiowatchimage is not used in the new version.
-// If it was, an import like import com.app.wear.R would be needed,
-// but the new UI structure doesn't include the image.
 
+/**
+ * @brief Pantalla principal de Wear OS con el gradiente de fondo y la imagen.
+ *        Integra la lógica de estados (Loading/Success/Error) proveniente del ViewModel.
+ *
+ * @param metricsViewModel Hilt-inyecta el ViewModel que expone uiState.
+ */
 @Composable
 fun WearAppScreen(
-    // Hilt inyectará el ViewModel aquí
     metricsViewModel: WearMetricsViewModel = hiltViewModel()
 ) {
+    // Obsérvese el estado UI proveniente del ViewModel
     val uiState by metricsViewModel.uiState.collectAsState()
 
-    Column(
+    // Definición del gradiente vertical
+    val gradient= Brush.verticalGradient(
+        colors = listOf(
+            Color(0xFF3EA8FE).copy(alpha = 0.45f),
+            Color.White
+        )
+    )
+
+    // Contenedor principal con gradiente
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(gradient),
+        contentAlignment = Alignment.Center
     ) {
-        Text("TibiBalance Watch", style = MaterialTheme.typography.title3)
-        Spacer(modifier = Modifier.height(12.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Imagen superior (si está disponible en drawable)
+            Image(
+                painter = painterResource(id = R.drawable.tibiowatchimage),
+                contentDescription = "Icono de reloj TibiBalance",
+                modifier = Modifier
+                    .size(80.dp)
+                    .padding(bottom = 12.dp),
+                contentScale = ContentScale.Fit
+            )
 
-        when (val state = uiState) {
-            is WearMetricsUiState.Loading -> {
-                CircularProgressIndicator()
-                Text("Cargando datos...", modifier = Modifier.padding(top = 8.dp))
-            }
-            is WearMetricsUiState.Success -> {
-                Text("Pasos: ${state.steps}", style = MaterialTheme.typography.body1)
-                Text("Ritmo Cardíaco: ${state.heartRate ?: "N/A"}", style = MaterialTheme.typography.body1)
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { metricsViewModel.onSendMetricsClicked() }) {
-                    Text("Enviar Métricas")
-                }
-                if (state.lastSentStatus.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+            // Título (opcional, si se desea mantener texto estático)
+            Text(
+                text = "TibiBalance Watch",
+                style = MaterialTheme.typography.title3,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            // Renderizado condicional según el estado
+            when (val state = uiState) {
+                is WearMetricsUiState.Loading -> {
+                    CircularProgressIndicator()
                     Text(
-                        text = state.lastSentStatus,
-                        style = MaterialTheme.typography.caption2,
+                        text = "Cargando datos...",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
                 }
-            }
-            is WearMetricsUiState.Error -> {
-                Text("Error: ${state.message}", color = MaterialTheme.colors.error)
-                 Button(onClick = { /* Lógica para reintentar, si aplica */ }) {
-                    Text("Reintentar")
+                is WearMetricsUiState.Success -> {
+                    // Muestra métricas (pasos y frecuencia cardíaca)
+                    Text(
+                        text = "Pasos: ${state.steps}",
+                        style = MaterialTheme.typography.body1
+                    )
+                    Text(
+                        text = "Ritmo Cardíaco: ${state.heartRate ?: "N/A"}",
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Botón para enviar métricas
+                    Button(
+                        onClick = { metricsViewModel.onSendMetricsClicked() },
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(40.dp)
+                    ) {
+                        Text("Enviar Métricas")
+                    }
+
+                    // Texto de estado posterior al envío
+                    if (state.lastSentStatus.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = state.lastSentStatus,
+                            style = MaterialTheme.typography.caption2,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+                is WearMetricsUiState.Error -> {
+                    // Mensaje de error con opción para reintentar
+                    Text(
+                        text = "Error: ${state.message}",
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Button(onClick = { metricsViewModel.onSendMetricsClicked() }) {
+                        Text("Reintentar")
+                    }
                 }
             }
         }
     }
 }
-
-// The old Preview is not compatible as it doesn't use the ViewModel.
-// A new preview would require providing a mock ViewModel or disabling ViewModel creation in preview.
-// For now, I will remove the old preview. A new one can be added later if needed.
-// @Preview(showBackground = true, widthDp = 200, heightDp = 200)
-// @Composable
-// fun WearAppScreenPreview() {
-//     // This preview would need a way to provide a WearMetricsViewModel
-//     // or a mock version of WearMetricsUiState.
-//     // WearAppScreen() // This won't work directly with Hilt ViewModels in Preview
-// }
