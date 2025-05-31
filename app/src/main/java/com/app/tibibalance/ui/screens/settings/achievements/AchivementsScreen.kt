@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Text
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontWeight
+
 @Composable
 fun AchievementsScreen(
     onNavigateUp: () -> Unit
@@ -137,7 +138,7 @@ fun AchievementsScreen(
                     isUnlocked = true // <- Este aparecerá como bloqueado
                 )
 
-                //Spacer(modifier = Modifier.height(120.dp))
+                Spacer(modifier = Modifier.height(120.dp))
             }
 
         }

@@ -121,7 +121,7 @@ private fun SettingsContent(
             user                 = user,
             onEditPersonal       = onEditPersonal,
             onDevices            = { /* TODO */ },
-            onAchievements       = { /* TODO */ },
+            onAchievements       = {navController.navigate(Screen.Achievements.route) },
             onConfigureNotis     = onConfigureNotis,
             onChangeTheme        = onChangeTheme,
             onToggleGlobalNotif  = onToggleGlobalNotif,
