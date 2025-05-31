@@ -138,7 +138,7 @@ fun AchievementsScreen(
                     isUnlocked = true // <- Este aparecerá como bloqueado
                 )
 
-                Spacer(modifier = Modifier.height(120.dp))
+                //Spacer(modifier = Modifier.height(120.dp))
             }
 
         }
