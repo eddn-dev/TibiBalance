@@ -199,7 +199,7 @@ private fun SettingsBody(
             text = "Configuración",
         )
         /* ── Grupo: Cuenta ── */
-        FormContainer(backgroundColor = AccountSettings) {
+        FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.AutoMirrored.Filled.ListAlt) },
                 text        = "Editar información personal",
@@ -223,7 +223,7 @@ private fun SettingsBody(
         }
 
         /* ── Grupo: Preferencias ── */
-        FormContainer(backgroundColor = PreferencesSettings) {
+        FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Palette) },
                 text        = "Tema: ${theme.label()}",
@@ -252,7 +252,7 @@ private fun SettingsBody(
         }
 
         /* ── Grupo: Legal ── */
-        FormContainer(backgroundColor = LegalSettings) {
+        FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Description) },
                 text        = "Términos de uso",
