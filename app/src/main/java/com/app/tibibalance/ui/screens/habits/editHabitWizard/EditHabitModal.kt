@@ -89,7 +89,9 @@ fun EditHabitModal(
                     0 -> ShowHabitStep(
                         habit         = data!!,
                         onEditNotif   = vm::jumpToNotif,
-                        onToggleNotif = vm::toggleNotifications
+                        onToggleNotif = vm::toggleNotifications,
+                        onDelete      = vm::requestDelete,
+                        deleting      = ui.deleting
                     )
                     1 -> if (!challengeOn) BasicInfoStep(ui.form, vm::updateForm)
                     else Spacer(Modifier.fillMaxSize())   // hueco invisible
@@ -126,6 +128,15 @@ fun EditHabitModal(
                     msg   = "Perderás los cambios realizados.",
                     onYes = { vm.confirmExit(true) },
                     onNo  = { vm.confirmExit(false) }
+                )
+            }
+
+            if (ui.askDelete) {
+                ConfirmDialog(
+                    title = "¿Eliminar hábito?",
+                    msg   = "Esta acción no se puede deshacer.",
+                    onYes = { vm.confirmDelete(true) },
+                    onNo  = { vm.confirmDelete(false) }
                 )
             }
         }

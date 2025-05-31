@@ -11,6 +11,9 @@ data class EditHabitUiState(
     val askExit                 : Boolean   = false,
     val saving                  : Boolean   = false,
     val savedOk                 : Boolean   = false,
+    val askDelete               : Boolean   = false,
+    val deleting                : Boolean   = false,
+    val deletedOk               : Boolean   = false,
     val errorMsg                : String?   = null
 )
 sealed interface EditEvent { object Dismiss : EditEvent }

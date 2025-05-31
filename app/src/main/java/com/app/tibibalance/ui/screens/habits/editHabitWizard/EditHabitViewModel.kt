@@ -140,9 +140,31 @@ class EditHabitViewModel @Inject constructor(
             }
     }
 
-    fun delete() = viewModelScope.launch {
-        habitId.value?.let { deleteHabit(it) }
-        _events.send(EditEvent.Dismiss)
+    fun requestDelete() = _ui.update { it.copy(askDelete = true) }
+
+    /**
+     * El usuario respondió al diálogo de confirmación.
+     * - Si acepta ⇒ ejecutamos `delete()`.
+     * - En ambos casos ocultamos el diálogo.
+     */
+    fun confirmDelete(confirm: Boolean) {
+        if (confirm) delete()
+        _ui.update { it.copy(askDelete = false) }
+    }
+
+    /* modifica el existente */
+    private fun delete() = viewModelScope.launch {
+        val id = habitId.value ?: return@launch
+        _ui.update { it.copy(deleting = true) }
+
+        runCatching { deleteHabit(id) }
+            .onSuccess {
+                _ui.value = EditHabitUiState(deletedOk = true)   // disparará el dismiss
+                _events.send(EditEvent.Dismiss)
+            }
+            .onFailure { ex ->
+                _ui.update { it.copy(deleting = false, errorMsg = ex.message) }
+            }
     }
 
     /* --- validaciones idénticas al wizard de alta --- */
