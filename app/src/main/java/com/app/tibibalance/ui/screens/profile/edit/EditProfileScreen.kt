@@ -168,7 +168,7 @@ fun EditProfileScreen(
             }
 
             /* ---------- formulario ---------- */
-            FormContainer(backgroundColor = Color(0xFFDEEDF4)) {
+            FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
 
                 InputText(
                     value         = name,

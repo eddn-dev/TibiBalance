@@ -24,7 +24,8 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = DarkOnSurface,
     secondary = DarkPrimaryContainer,
     tertiary = DarkPrimary,
-    error = DarkError
+    error = DarkError,
+    surfaceVariant = Color(0xFF8E90A7)
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -38,7 +39,8 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color.Black,
     secondary = BluePrimaryLight,
     tertiary = BluePrimaryDark,
-    error = Alert
+    error = Alert,
+    surfaceVariant = Color(0xFFC8DEFA)
 )
 
 @Composable
