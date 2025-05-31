@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.app.domain.enums.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkPrimary,
+    primary = SurfaceDark,
     onPrimary = DarkOnSurface, // Texto en botones primarios
     primaryContainer = DarkPrimaryContainer,
     onPrimaryContainer = DarkOnSurface,
@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color.Black,
     secondary = BluePrimaryLight,
     tertiary = BluePrimaryDark,
-    error = Alert,
+    error = Alert
 )
 
 @Composable

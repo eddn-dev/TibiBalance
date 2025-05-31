@@ -15,6 +15,7 @@
 package com.app.tibibalance.ui.components.utils
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +42,7 @@ import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
 import com.app.tibibalance.ui.theme.BluePrimaryLight
 import com.app.tibibalance.ui.theme.DefaultTint
+
 
 /* ────────────────────────────────────────────────────────────────── */
 /* Sección pública                                                   */
@@ -99,8 +101,8 @@ internal fun HabitList(
                 onClick            = onAdd,
                 icon               = Icons.Default.Add,
                 contentDescription = "Agregar hábito",
-                backgroundColor    = BluePrimaryLight,
-                iconTint           = DefaultTint
+                backgroundColor    = MaterialTheme.colorScheme.primary,
+                iconTint           = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -214,11 +216,11 @@ private fun HeaderBox(text: String) = Box(
     modifier = Modifier
         .fillMaxWidth() // Ocupa todo el ancho
         // Fondo con color específico y esquinas redondeadas
-        .background(Color(0xFF85C3DE), RoundedCornerShape(15.dp))
-        .padding(vertical = 8.dp), // Padding vertical interno
+        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(15.dp))
+        .padding(vertical = 12.dp), // Padding vertical interno
     contentAlignment = Alignment.Center // Centra el contenido (el Title)
 ) {
-    Title(text, Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+    Title(text, Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface)
 }
 
 /**

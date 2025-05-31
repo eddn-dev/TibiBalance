@@ -193,7 +193,7 @@ fun SignInScreen(
             GoogleSignButton(onClick = ::launchGoogleSignIn)
 
             Spacer(Modifier.height(24.dp))
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("¿Aún no tienes cuenta? ", color = Color.Black)
                 TextButtonLink(text = "Regístrate", onClick = { nav.navigate(Screen.SignUp.route) })
             }
