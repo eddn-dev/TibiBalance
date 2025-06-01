@@ -49,6 +49,8 @@ import com.app.tibibalance.ui.components.buttons.DangerButton
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
+import com.app.tibibalance.ui.components.dialogs.ConfirmDeleteDialog
+import com.app.tibibalance.ui.components.dialogs.DeleteAccountDialog
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
@@ -74,18 +76,26 @@ fun SettingsScreen(
         }
     }
 
+    LaunchedEffect(ui.navigatingToGoodbye) {
+        if (ui.navigatingToGoodbye) {
+            navController.navigate(Screen.Goodbye.route) {
+                popUpTo(Screen.Settings.route) { inclusive = true }
+            }
+        }
+    }
+
     when {
         ui.loading       -> Centered("Cargando…")
-        ui.error != null -> Centered(ui.error!!)
         ui.user != null  -> SettingsContent(
-            user                 = ui.user!!,
-            navController        = navController,
-            signingOut           = ui.signingOut,
-            /* VM callbacks */
-            onChangeTheme        = vm::changeTheme,
-            onToggleGlobalNotif  = vm::toggleGlobalNotif,
-            onToggleTTS          = vm::toggleTTS,
-            onSignOut            = vm::signOut
+            user = ui.user!!,
+            navController = navController,
+            signingOut = ui.signingOut,
+            onChangeTheme = vm::changeTheme,
+            onToggleGlobalNotif = vm::toggleGlobalNotif,
+            onToggleTTS = vm::toggleTTS,
+            onSignOut = vm::signOut,
+            vm = vm,
+            ui = ui
         )
     }
 }
@@ -101,11 +111,15 @@ private fun SettingsContent(
     onChangeTheme       : (ThemeMode) -> Unit,
     onToggleGlobalNotif : (Boolean) -> Unit,
     onToggleTTS         : (Boolean) -> Unit,
-    onSignOut           : () -> Unit
+    onSignOut           : () -> Unit,
+    vm: SettingsViewModel,
+    ui: SettingsViewModel.UiState
 ) {
     /* Destinos secundarios */
     val onEditPersonal   = { navController.navigate(Screen.EditProfile.route) }
     val onConfigureNotis = { navController.navigate(Screen.ConfigureNotif.route) }
+    val vm: SettingsViewModel = hiltViewModel()
+    val ui by vm.ui.collectAsState()
 
     Box(
         Modifier
@@ -114,6 +128,8 @@ private fun SettingsContent(
     ) {
 
         SettingsBody(
+            ui                   = ui,
+            vm                   = vm,
             user                 = user,
             onEditPersonal       = onEditPersonal,
             onDevices            = { /* TODO */ },
@@ -124,7 +140,7 @@ private fun SettingsContent(
             onToggleTTS          = onToggleTTS,
             onSignOut            = onSignOut,
             signingOut           = signingOut,
-            onDeleteAccount      = { /* TODO */ },
+            onDeleteAccount = vm::reauthenticateAndDelete,
             onOpenTerms          = { /* TODO */ },
             onOpenPrivacy        = { /* TODO */ }
         )
@@ -135,6 +151,8 @@ private fun SettingsContent(
 
 @Composable
 private fun SettingsBody(
+    ui                 : SettingsViewModel.UiState,
+    vm                 : SettingsViewModel,
     user               : User,
     /* Cuenta */
     onEditPersonal     : () -> Unit,
@@ -150,26 +168,48 @@ private fun SettingsBody(
     /* Sesión */
     onSignOut          : () -> Unit,
     signingOut         : Boolean,
-    onDeleteAccount    : () -> Unit
+    onDeleteAccount: (String) -> Unit
 ) {
     /* diálogos */
     val snackbar = remember { SnackbarHostState() }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showPasswordDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    val errorMessage = ui.error
 
     if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title           = { Text("Eliminar cuenta") },
-            text            = { Text("¿Seguro? Esta acción es irreversible.") },
-            confirmButton   = {
-                TextButton(
-                    onClick = { onDeleteAccount(); showDeleteDialog = false }
-                ) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton   = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
+        ConfirmDeleteDialog(
+            visible = showDeleteDialog,
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                showDeleteDialog = false
+                showPasswordDialog = true
             }
         )
+    }
+
+    if (showPasswordDialog) {
+        DeleteAccountDialog(
+            visible = showPasswordDialog,
+            onDismiss = { showPasswordDialog = false },
+            onConfirm = {
+                onDeleteAccount(it)
+                showPasswordDialog = false
+                showErrorDialog = true  // ← activa el modal de error si lo hay
+            }
+        )
+        if (showErrorDialog && errorMessage != null) {
+            AlertDialog(
+                onDismissRequest = { showErrorDialog = false },
+                title = { Text("Error al eliminar cuenta") },
+                text = { Text(errorMessage) },
+                confirmButton = {
+                    TextButton(onClick = { showErrorDialog = false }) {
+                        Text("Aceptar")
+                    }
+                }
+            )
+        }
     }
 
     /* estado local para switches/botones – sincronizado con el VM */
@@ -283,6 +323,19 @@ private fun SettingsBody(
     }
 
     SnackbarHost(snackbar)
+
+    if (ui.error != null) {
+        AlertDialog(
+            onDismissRequest = { vm.clearError() },
+            title = { Text("Error al eliminar cuenta") },
+            text = { Text(ui.error ?: "") },
+            confirmButton = {
+                TextButton(onClick = { vm.clearError() }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
 }
 
 /* ───────────────────── Helpers ───────────────────── */

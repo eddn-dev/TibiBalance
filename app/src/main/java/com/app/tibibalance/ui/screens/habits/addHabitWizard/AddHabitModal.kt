@@ -18,13 +18,16 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
+import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.utils.WizardNavBar
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.*
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,8 +43,32 @@ fun AddHabitModal(
 
 
     /* ------------- escucha de cierre programático ------------- */
+    var showAchievement by remember { mutableStateOf<AchievementUnlocked?>(null) }
+    var showSavedOk by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        vm.events.collect { if (it is WizardEvent.Dismiss) onDismiss() }
+        vm.events.collect { event ->
+            when (event) {
+                is WizardEvent.Dismiss -> onDismiss()
+                is WizardEvent.ShowAchievement -> showAchievement = event.logro
+            }
+        }
+    }
+
+    LaunchedEffect(ui.savedOk) {
+        if (ui.savedOk) {
+            showSavedOk = true
+        }
+    }
+
+    fun handleSuccessDismiss(vm: AddHabitViewModel) {
+        val next = vm.popNextAchievement()
+        if (next != null) {
+            showAchievement = next
+            vm.consumeSaved() // esto borra ui.savedOk, pero no cierra aún
+        } else {
+            vm.acknowledgeSaved()
+        }
     }
 
     /* ------------- alto máximo: 85 % pantalla ------------- */
@@ -57,6 +84,7 @@ fun AddHabitModal(
 
         /* ---------- Pager ---------- */
         val pager = rememberPagerState(ui.currentStep) { 4 }
+
         LaunchedEffect(ui.currentStep) { pager.animateScrollToPage(ui.currentStep) }
 
         Column(
@@ -100,7 +128,7 @@ fun AddHabitModal(
                         //val userId = FirebaseAuth.getInstance().currentUser?.uid
                         //val context = LocalContext.current
                         if (userId != null) {
-                            vm.save(userId, context)
+                            vm.save(context)
                         } else {
                             // puedes mostrar un diálogo de error o un toast si lo deseas
                         }
@@ -127,15 +155,45 @@ fun AddHabitModal(
         onNo  = { vm.confirmReplace(false) }
     )
 
-    if (ui.savedOk) ModalInfoDialog(
-        visible = true,
-        icon = Icons.Default.Check,
-        title = "¡Listo!",
-        message = "Hábito guardado con éxito.",
-        primaryButton = DialogButton("Aceptar") {
-            vm.acknowledgeSaved()       // ← limpia y cierra
+    if (showSavedOk) {
+        ModalInfoDialog(
+            visible = true,
+            icon = Icons.Default.Check,
+            title = "¡Listo!",
+            message = "Hábito guardado con éxito.",
+            primaryButton = DialogButton("Aceptar") {
+                showSavedOk = false
+                handleSuccessDismiss(vm)
+            }
+        )
+    }
+
+    showAchievement?.let { logro ->
+        val iconRes = when (logro.id) {
+            "tibio_salud"         -> R.drawable.salud
+            "tibio_productividad" -> R.drawable.productivo
+            "tibio_bienestar"     -> R.drawable.bienestar
+            "primer_habito"       -> R.drawable.explorer
+            "cinco_habitos"        -> R.drawable.arquitecto
+            else                  -> R.drawable.avatar_placeholder
         }
-    )
+        ModalAchievementDialog(
+            visible = true,
+            iconResId = iconRes,
+            title = "¡Logro desbloqueado!",
+            message = "${logro.name}\n${logro.description}",
+            primaryButton = DialogButton("Aceptar") {
+                val next = vm.popNextAchievement()
+                if (next != null) {
+                    showAchievement = next
+                } else {
+                    showAchievement = null
+                    vm.acknowledgeSaved()
+                }
+            }
+        )
+    }
+
 }
 
 /* ---------------- barra nav para pasos 1-3 ---------------- */

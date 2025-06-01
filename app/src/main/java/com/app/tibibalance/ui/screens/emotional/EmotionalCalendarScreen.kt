@@ -50,6 +50,7 @@ import com.app.tibibalance.ui.components.containers.HabitContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
+import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.utils.CalendarGrid
 import com.app.tibibalance.ui.components.utils.Centered
@@ -128,6 +129,23 @@ fun EmotionalCalendarScreen(
                     onConfirm = { emo -> vm.confirmEmotion(date, emo) }
                 )
             }
+        }
+        val logroFeliz by vm.logroFeliz.collectAsState()
+        logroFeliz?.let { logro ->
+            val iconRes = when (logro.id) {
+                "feliz_7_dias"         -> R.drawable.calendar
+                "emociones_30_dias" -> R.drawable.emocional
+                else                  -> R.drawable.avatar_placeholder
+            }
+            ModalAchievementDialog(
+                visible = true,
+                iconResId = iconRes,
+                title = "¡Logro desbloqueado!",
+                message = "${logro.name}\n${logro.description}",
+                primaryButton = DialogButton("Aceptar") {
+                    vm.ocultarLogroFeliz()
+                }
+            )
         }
     }
 }
@@ -351,3 +369,4 @@ private fun emotionName(@DrawableRes resId: Int?): String = when (resId) {
     R.drawable.ic_fearimage       -> "Asustado"
     else                          -> ""
 }
+
