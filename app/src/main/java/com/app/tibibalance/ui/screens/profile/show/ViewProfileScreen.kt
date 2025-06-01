@@ -32,6 +32,8 @@ import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.containers.ProfileContainer
+import com.app.tibibalance.ui.components.buttons.AchievementAccessItem
+
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
@@ -61,7 +63,8 @@ fun ViewProfileScreen(
             ui.user != null -> ProfileContent(
                 user = ui.user!!,
                 onEdit = { navController.navigate(Screen.EditProfile.route) },
-                onSignOut = vm::signOut
+                onSignOut = vm::signOut,
+                navController = navController
             )
         }
     }
@@ -70,9 +73,10 @@ fun ViewProfileScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun ProfileContent(
-    user      : com.app.domain.entities.User,
-    onEdit    : () -> Unit,
-    onSignOut : () -> Unit
+    user         : com.app.domain.entities.User,
+    onEdit       : () -> Unit,
+    onSignOut    : () -> Unit,
+    navController: NavHostController
 ) {
     Column(
         modifier = Modifier
@@ -136,6 +140,17 @@ private fun ProfileContent(
             )
 
             Spacer(Modifier.height(22.dp))
+
+
+            AchievementAccessItem(
+                resId = R.drawable.ic_tibio_champion, // ← tu recurso en drawable
+                label = "Ver logros",
+                onClick = {navController.navigate(Screen.Achievements.route)}
+            )
+
+
+            Spacer(Modifier.height(22.dp))
+
 
             /* ---- botones ---- */
             Row(
