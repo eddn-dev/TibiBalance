@@ -19,14 +19,15 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = DarkPrimaryContainer,
     onPrimaryContainer = DarkOnSurface,
     background = DarkPrimary, // Fondo principal
-    surface = DarkSurface,
+    surface = DarkSurface, // Este es el color del modal de hábitos sugeridos
     onBackground = DarkOnSurface,
     onSurface = DarkOnSurface,
     secondary = DarkPrimaryContainer,
     tertiary = DarkPrimary,
     error = DarkError,
     surfaceVariant = Color(0xFF8E90A7),
-    tertiaryContainer = SurfaceDark // Para contenedor de títulos
+    tertiaryContainer = SurfaceDark, // Para contenedor de títulos
+    inverseOnSurface = SurfaceDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -42,7 +43,8 @@ private val LightColorScheme = lightColorScheme(
     tertiary = BluePrimaryDark,
     error = Alert,
     surfaceVariant = Color(0xFFC8DEFA),
-    tertiaryContainer = Color(0xFFAED3E3)
+    tertiaryContainer = Color(0xFFAED3E3),
+    inverseOnSurface     = Color.Black
 )
 
 @Composable
