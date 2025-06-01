@@ -204,7 +204,7 @@ private fun HabitListSection(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Puedes activar o desactivar las notificaciones de tus hábitos, " +
+                    text = "Puedes activar o desactivar las \nnotificaciones de tus hábitos," +
                             "\nsin alterar su configuración. 🔔",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center

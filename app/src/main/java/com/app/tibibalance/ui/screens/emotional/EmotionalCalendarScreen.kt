@@ -220,7 +220,7 @@ private fun CalendarContent(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "Este espacio es para registrar tus emociones cada día. 💖",
+                    text = "Este espacio es para registrar \ntus emociones cada día. 💖",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -235,7 +235,7 @@ private fun CalendarContent(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Toca el recuadro de hoy para empezar a registrar tus emociones. " +
+                    text = "Toca el recuadro de hoy para empezar \na registrar tus emociones. " +
                             "\n¡La constancia diaria te ayudará a \nconocer mejor cómo te sientes! 📊",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center

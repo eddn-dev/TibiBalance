@@ -214,7 +214,7 @@ fun VerifyEmailScreen(
             Text(
                 " ✅ Te enviamos un enlace a tu correo \nelectrónico para verificar tu cuenta." +
                         " \n\nRecuerda que expira en 1 hora ⏰ ," +
-                        " \npor favor, revisa también tu bandeja de \nspam si no lo encuentras. \uD83D\uDCE7",
+                        " \npor favor, revisa también tu bandeja \nde spam si no lo encuentras. \uD83D\uDCE7",
                 style     = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 16.sp
                 ), // Estilo de texto estándar.

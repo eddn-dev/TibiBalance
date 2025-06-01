@@ -162,16 +162,19 @@ private fun ChallengeText(ch: Challenge) {
 /* Utilidad para mapear nombres de Firestore a drawables locales ---------------------- */
 @DrawableRes
 private fun iconForName(name: String): Int = when (name) {
-    "walking"            -> R.drawable.ic_happyimage
-    "stretching"         -> R.drawable.ic_happyimage
-    "energy_bolt"        -> R.drawable.ic_happyimage
-    "ic_tibio_sleepy"    -> R.drawable.ic_happyimage
-    "ic_tibio_healthy"   -> R.drawable.ic_happyimage
-    "ic_tibio_smart"     -> R.drawable.ic_happyimage
-    "ic_tibio_calm"      -> R.drawable.ic_happyimage
-    "ic_tibio_thoughtfull"-> R.drawable.ic_happyimage
-    "ic_tibio_kind"      -> R.drawable.ic_happyimage
-    "ic_tibio_energetic" -> R.drawable.ic_happyimage
-    "ic_tibio_happy"     -> R.drawable.ic_happyimage
-    else                 -> R.drawable.ic_happyimage
+    "ic_tibio_happy"            -> R.drawable.ic_tibio_happy
+    "ic_tibio_energetic"        -> R.drawable .ic_tibio_energetic
+    "ic_tibio_curious"          -> R.drawable.ic_tibio_curious
+    "ic_tibio_relaxed"          -> R.drawable.ic_tibio_relaxed
+    "ic_tibio_thirsty"          -> R.drawable.ic_tibio_thirsty
+    "ic_tibio_joyful"           -> R.drawable.ic_tibio_joyful
+    "ic_tibio_grateful"         -> R.drawable.ic_tibio_grateful
+    "ic_tibio_connected"        -> R.drawable.ic_tibio_connected
+    "ic_tibio_sleepy"           -> R.drawable.ic_tibio_sleepy
+    "ic_tibio_healthy"          -> R.drawable.ic_tibio_healthy
+    "ic_tibio_smart"            -> R.drawable.ic_tibio_smart
+    "ic_tibio_calm"             -> R.drawable.ic_tibio_calm
+    "ic_tibio_thoughtful"       -> R.drawable.ic_tibio_thoughtful
+    "ic_tibio_kind"             -> R.drawable.ic_tibio_kind
+    else                        -> R.drawable.ic_happyimage
 }
