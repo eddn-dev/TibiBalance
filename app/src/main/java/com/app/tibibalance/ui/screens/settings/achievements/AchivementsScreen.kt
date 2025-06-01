@@ -22,9 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 
 
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
-import com.app.tibibalance.ui.screens.settings.achievements.AchievementsViewModel
 import androidx.compose.runtime.getValue
 
 
@@ -80,7 +78,7 @@ fun AchievementsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 AchievementContainer(
-                    iconRes = R.drawable.camera,
+                    iconRes = R.drawable.ic_tibio_camera,
                     title = "Un placer conocernos",
                     description = "Cambia tu foto de perfil.",
                     percent = 70, // progreso  de logro
@@ -88,7 +86,7 @@ fun AchievementsScreen(
                 )
 
                 AchievementContainer(
-                    iconRes = R.drawable.medalla,
+                    iconRes = R.drawable.ic_tibio_medalla,
                     title = "Siete en línea",
                     description = "Cumplir un hábito por siete días consecutivos.",
                     percent = 70, // progreso  de logro
@@ -96,7 +94,7 @@ fun AchievementsScreen(
                 )
 
                 AchievementContainer(
-                    iconRes = R.drawable.salud,
+                    iconRes = R.drawable.ic_tibio_salud,
                     title = "Tibio saludable",
                     description = "Agrega un hábito de salud.",
                     percent = 70, // progreso  de logro
@@ -104,7 +102,7 @@ fun AchievementsScreen(
                 )
 
                 AchievementContainer(
-                    iconRes = R.drawable.productivo,
+                    iconRes = R.drawable.ic_tibio_productivo,
                     title = "Tibio productivo",
                     description = "Agrega un hábito de productividad.",
                     percent = 70, // progreso  de logro
@@ -115,7 +113,7 @@ fun AchievementsScreen(
                 val tibio = logros["tibio_bienestar"]
 
                 AchievementContainer(
-                    iconRes = R.drawable.bienestar,
+                    iconRes = R.drawable.ic_tibio_bienestar,
                     title = "Tibio del bienestar",
                     description = "Agrega un hábito de bienestar.",
                     percent = tibio?.progress ?: 0,
@@ -131,7 +129,7 @@ fun AchievementsScreen(
                 )*/
 
                 AchievementContainer(
-                    iconRes = R.drawable.explorer,
+                    iconRes = R.drawable.ic_tibio_explorer,
                     title = "El inicio del sendero",
                     description = "Agrega tu primer hábito personalizado.",
                     percent = 70, // progreso  de logro
@@ -139,7 +137,7 @@ fun AchievementsScreen(
                 )
 
                 AchievementContainer(
-                    iconRes = R.drawable.arquitecto,
+                    iconRes = R.drawable.ic_tibiio_arquitecto,
                     title = "Arquitecto profesional",
                     description = "Agrega cinco hábitos personalizados.",
                     percent = 70, // progreso  de logro
@@ -147,7 +145,7 @@ fun AchievementsScreen(
                 )
 
                 AchievementContainer(
-                    iconRes = R.drawable.calendar,
+                    iconRes = R.drawable.ic_tibio_calendar,
                     title = "Todo en su lugar",
                     description = "Registra un estado de ánimo “feliz” por siete días consecutivos.",
                     percent = 70, // progreso  de logro
@@ -155,7 +153,7 @@ fun AchievementsScreen(
                 )
 
                 AchievementContainer(
-                    iconRes = R.drawable.reloj,
+                    iconRes = R.drawable.ic_tibio_reloj,
                     title = "¡Ya es hora!",
                     description = "Personaliza la notificación de un hábito.",
                     percent = 70, // progreso  de logro
