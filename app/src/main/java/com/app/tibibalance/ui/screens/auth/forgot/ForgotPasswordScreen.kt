@@ -63,7 +63,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordUiState
 import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordViewModel
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
  /**
  * @brief Composable que define la interfaz de usuario para la pantalla de recuperación de contraseña.

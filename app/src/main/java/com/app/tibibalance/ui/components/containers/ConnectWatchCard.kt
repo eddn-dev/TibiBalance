@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.R
-import com.app.tibibalance.ui.theme.Tips            // color Tips
-import com.app.tibibalance.ui.theme.LinkText       // color LinkText
 
 @Composable
 fun ConnectWatchCard(
@@ -26,7 +24,7 @@ fun ConnectWatchCard(
     Box(
         modifier
             .fillMaxWidth()
-            .background(Tips, shape = MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.large)
             .clickable(onClick = onClick)
             .padding(16.dp)
     ) {
@@ -46,7 +44,7 @@ fun ConnectWatchCard(
                 )
                 Text(
                     "(Toca para conectar)",
-                    style = MaterialTheme.typography.labelLarge.copy(color = LinkText)
+                    style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                 )
             }
         }

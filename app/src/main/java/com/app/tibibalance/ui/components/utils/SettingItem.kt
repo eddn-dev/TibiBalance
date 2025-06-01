@@ -72,7 +72,7 @@ fun SettingItem(
     text          : String,                  // Texto principal
     trailing      : (@Composable () -> Unit)? = null, // Contenido opcional al final
     onClick       : (() -> Unit)? = null,    // Acción de clic opcional para toda la fila
-    containerColor: Color = Color.White,     // Color de fondo por defecto
+    containerColor: Color = MaterialTheme.colorScheme.surface, // Color de fondo por defecto
     cornerRadius  : Dp = 16.dp,              // Radio de esquina por defecto
     modifier      : Modifier = Modifier      // Modificador estándar
 ) {
@@ -82,7 +82,6 @@ fun SettingItem(
         shadowElevation = 1.dp, // Pequeña elevación para efecto de tarjeta
         modifier = modifier
             .fillMaxWidth() // Ocupa el ancho disponible
-            // Hace que toda la superficie sea clicable si onClick no es null
             .let { if (onClick != null) it.clickable { onClick() } else it }
     ) {
         // Fila para disponer los elementos horizontalmente
@@ -99,6 +98,7 @@ fun SettingItem(
                     .size(24.dp) // Tamaño fijo para el icono
                     .clip(CircleShape), // Recorte circular (aunque el icono puede no serlo)
                 contentAlignment = Alignment.Center // Centra el icono dentro del Box
+                // Color del icono principal (leading)
             ) {
                 leadingIcon() // Renderiza el icono proporcionado
             }

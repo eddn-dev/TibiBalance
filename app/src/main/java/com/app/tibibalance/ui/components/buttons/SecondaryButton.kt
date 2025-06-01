@@ -86,14 +86,12 @@ fun SecondaryButton(
         shape  = RoundedCornerShape(12.dp), // Bordes redondeados
         colors = ButtonDefaults.outlinedButtonColors( // Colores para OutlinedButton
             // Estado normal
-            containerColor         = DefaultTint, // Fondo blanco
-            contentColor           = Text, // Texto negro
+            containerColor         = MaterialTheme.colorScheme.secondary, // Fondo blanco
+            contentColor           = MaterialTheme.colorScheme.onSecondary, // Texto negro
             // Estado deshabilitado
-            disabledContainerColor = DefaultTint.copy(alpha = 0.5f), // Fondo blanco semitransparente
-            disabledContentColor   = Text.copy(alpha = 0.5f) // Texto negro semitransparente
+            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f), // Fondo gris claro semitransparente
+            disabledContentColor   = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f) // Texto gris claro semitransparente
         ),
-        // Define el borde del botón
-        border = BorderStroke(1.dp, if (enabled) Border else Border.copy(alpha = 0.5f)) // Borde gris claro (más tenue si está deshabilitado)
     ) {
         // Contenido del botón (el texto)
         Text(

@@ -3,7 +3,6 @@ package com.app.data.repository
 
 import android.util.Log
 import com.app.data.local.dao.DailyTipDao
-import com.app.data.local.entities.DailyTipEntity
 import com.app.data.mappers.toDomain
 import com.app.data.mappers.toEntity
 import com.app.data.remote.datasource.DailyTipsRemoteDataSource
@@ -32,20 +31,19 @@ class DailyTipsRepositoryImpl @Inject constructor(
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
         // ¿Ya existe tip fijado?
-        var entity =/* dao.currentTip(today)*/ dao.pickRandomEligible(today)
-
+        var entity = dao.currentTip(today)
 
         // Si no, busca uno elegible y márcalo
-        /*if (entity == null) {
+        if (entity == null) {
             entity = dao.pickRandomEligible(today)
-            //entity?.let { dao.markShown(it.id, today) }
+            entity?.let { dao.markShown(it.id, today) }
             // Si tampoco hay ⇒ refrescamos remoto
-            /*if (entity == null) {
+            if (entity == null) {
                 refresh()
                 entity = dao.pickRandomEligible(today)
                 entity?.let { dao.markShown(it.id, today) }
-            }*/
-        }*/
+            }
+        }
 
         emit(entity?.toDomain())          // puede ser null si BD sigue vacía
     }.flowOn(dispatcher)

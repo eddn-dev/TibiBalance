@@ -53,11 +53,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.AccountSettings
-import com.app.tibibalance.ui.theme.BluePrimaryLight
-import com.app.tibibalance.ui.theme.LegalSettings
-import com.app.tibibalance.ui.theme.PreferencesSettings
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 

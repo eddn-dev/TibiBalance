@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview // Importar Preview
 import androidx.compose.ui.unit.dp // Para previews
 import androidx.compose.ui.unit.sp
-import com.app.tibibalance.ui.theme.Text
 
 /**
  * @brief Un [Composable] que muestra texto con el estilo estándar de cuerpo o descripción.
@@ -65,7 +64,7 @@ fun Description(
     text: String,
     modifier: Modifier = Modifier,
     // Color por defecto: color 'onBackground' del tema (texto principal sobre fondo)
-    color: Color = Text,
+    color: Color = MaterialTheme.colorScheme.onBackground,
     textAlign: TextAlign? = null, // Alineación opcional
     maxLines: Int = Int.MAX_VALUE, // Sin límite de líneas por defecto
     overflow: TextOverflow = TextOverflow.Clip, // Corta el texto por defecto si excede

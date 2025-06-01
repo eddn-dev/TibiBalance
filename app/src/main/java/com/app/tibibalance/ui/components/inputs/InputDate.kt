@@ -42,7 +42,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview // Importar para Preview
 import androidx.compose.ui.unit.dp
-import com.app.tibibalance.ui.theme.DefaultTint
 
 /**
  * @brief Un [Composable] que funciona como un campo de entrada de fecha de solo lectura

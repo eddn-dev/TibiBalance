@@ -38,7 +38,7 @@ import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.utils.SettingItem
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -129,9 +129,10 @@ private fun HabitListSection(
                         icon = if (habit.enabled) Icons.Default.NotificationsActive
                                else Icons.Default.NotificationsOff,
                         modifier = Modifier.size(32.dp),
+                        iconTint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.padding(bottom = 12.dp),
                 onClick =  { vm.selectHabit(habit) }
             )

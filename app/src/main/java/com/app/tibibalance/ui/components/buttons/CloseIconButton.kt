@@ -15,11 +15,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.app.tibibalance.ui.theme.Tint
 
 /**
  * @brief Un [Composable] que muestra un [IconButton] con el icono de cierre ([Icons.Default.'Close]).
@@ -55,7 +55,7 @@ fun CloseIconButton(
             // TODO: Considerar usar stringResource(R.string.close_button_description)
             contentDescription = "Cerrar", // Texto para accesibilidad
             // TODO: Considerar usar MaterialTheme.colorScheme.onSurface o similar
-            tint = Tint // Tinte del icono (actualmente negro fijo)
+            tint = MaterialTheme.colorScheme.onSurface
         )
     }
 }

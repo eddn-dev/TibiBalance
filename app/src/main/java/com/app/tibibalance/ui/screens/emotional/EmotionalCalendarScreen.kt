@@ -45,7 +45,7 @@ import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.CalendarGrid
 import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.EmotionDay
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale

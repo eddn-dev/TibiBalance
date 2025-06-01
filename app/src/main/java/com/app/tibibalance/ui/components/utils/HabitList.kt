@@ -35,13 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.domain.enums.HabitCategory
 import com.app.tibibalance.ui.components.buttons.RoundedIconButton
+import com.app.tibibalance.ui.components.containers.IconContainer
 import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
-import com.app.tibibalance.ui.theme.BluePrimaryLight
-import com.app.tibibalance.ui.theme.DefaultTint
 
 
 /* ────────────────────────────────────────────────────────────────── */
@@ -70,8 +69,6 @@ internal fun HabitList(
         HabitCategory.BIENESTAR,
         HabitCategory.PERSONALIZADA
     )
-
-
 
     /* Agrupa por categoría (clave String) */
     val grouped: Map<String, List<HabitUi>> =
@@ -141,11 +138,10 @@ private fun Category(
         SettingItem(
             // Icono principal (leading)
             leadingIcon = {
-                Icon(
-                    // Selecciona el icono basado en el nombre guardado en HabitUi
-                    imageVector = iconByName(h.icon),
-                    contentDescription = null, // Icono decorativo dentro de un item con texto
-                    tint = MaterialTheme.colorScheme.primary // Tinte primario del tema
+                IconContainer(
+                    icon = iconByName(h.icon),
+                    contentDescription = h.name,
+                    modifier = Modifier.size(24.dp)
                 )
             },
             // Texto principal (nombre del hábito)
@@ -157,6 +153,7 @@ private fun Category(
                     onCheckedChange = { isChecked -> onCheck(h, isChecked) } // Llama al callback al cambiar
                 )
             },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
             // Acción al hacer clic en toda la fila (excepto el checkbox)
             onClick = { onEdit(h) }
         )

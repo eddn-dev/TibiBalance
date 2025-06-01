@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.*
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 // Eliminar importaciones de accompanist.pager
 // import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch

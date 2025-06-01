@@ -32,8 +32,6 @@ import com.app.domain.entities.Text
 import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
-import com.app.tibibalance.ui.theme.LinkText
-import com.app.tibibalance.ui.theme.DailyTip as DailyTipColor
 import androidx.core.net.toUri
 import com.app.tibibalance.ui.components.texts.Description
 import androidx.compose.ui.text.TextStyle
@@ -55,7 +53,7 @@ fun DailyTip(
         /* Card principal */
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors   = CardDefaults.cardColors(containerColor = DailyTipColor),
+            colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape    = CardDefaults.shape
         ) {
             Column(
@@ -138,7 +136,7 @@ private fun ClickableLink(link: Link) {
 
     Text(
         text  = link.text,
-        style = MaterialTheme.typography.bodyMedium.copy(color = LinkText),
+        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
         modifier = Modifier.clickable {
             val intent = Intent(Intent.ACTION_VIEW, link.target.toUri())
             context.startActivity(intent)

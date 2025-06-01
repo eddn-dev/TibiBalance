@@ -76,9 +76,7 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
-import com.app.tibibalance.ui.theme.BluePrimaryLight
-import com.app.tibibalance.ui.theme.White
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 /**
  * @brief Composable principal para la pantalla de verificación de correo electrónico.
@@ -177,7 +175,7 @@ fun VerifyEmailScreen(
             showBackButton = false, // No se muestra botón de retroceso.
             modifier       = Modifier
                 .fillMaxWidth()
-                .background(White) // Fondo blanco para el Header.
+                .background(MaterialTheme.colorScheme.surface) // Fondo blanco para el Header.
                 .height(56.dp) // Altura estándar para la barra de aplicación.
                 .align(Alignment.TopCenter) // Alinea el Header en la parte superior.
         )
@@ -235,7 +233,6 @@ fun VerifyEmailScreen(
             /* Botón: Ya lo verifiqué */
             PrimaryButton(
                 text = "Ya lo verifiqué",
-                container = BluePrimaryLight,
                 onClick = vm::verify, // Llama al método del ViewModel para verificar.
                 modifier = Modifier
                     .fillMaxWidth()

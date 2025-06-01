@@ -58,13 +58,12 @@ import com.app.tibibalance.ui.components.inputs.InputPassword
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.White
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 private const val WEB_CLIENT_ID =
     "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com"

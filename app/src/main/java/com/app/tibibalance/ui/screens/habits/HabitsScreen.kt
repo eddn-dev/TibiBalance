@@ -20,7 +20,7 @@ import com.app.tibibalance.ui.components.utils.EmptyState
 import com.app.tibibalance.ui.components.utils.HabitList
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.AddHabitModal
 import com.app.tibibalance.ui.screens.habits.editHabitWizard.EditHabitModal
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

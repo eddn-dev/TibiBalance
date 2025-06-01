@@ -26,9 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.ui.components.utils.ProgressBar
-import com.app.tibibalance.ui.theme.Container
-import com.app.tibibalance.ui.theme.Text
-import com.app.tibibalance.ui.theme.TextLight
 
 @Composable
 fun AchievementContainer(
@@ -41,7 +38,7 @@ fun AchievementContainer(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Container, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -53,13 +50,13 @@ fun AchievementContainer(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = Text
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             ProgressBar(

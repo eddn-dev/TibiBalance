@@ -39,7 +39,7 @@ import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 @Composable
 fun LaunchScreen(

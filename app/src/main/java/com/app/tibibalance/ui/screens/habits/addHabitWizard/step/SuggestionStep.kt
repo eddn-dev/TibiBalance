@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import com.app.domain.entities.Habit
 import com.app.tibibalance.ui.components.buttons.RoundedIconButton
+import com.app.tibibalance.ui.components.containers.IconContainer
 import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.texts.Title
+import com.app.tibibalance.ui.components.utils.SettingItem
 
 /**
  * Paso 0 — Biblioteca de sugerencias.
@@ -37,8 +39,7 @@ fun SuggestionStep(
     Column(
         Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .padding(12.dp),
+            .windowInsetsPadding(WindowInsets.safeDrawing),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
@@ -63,39 +64,11 @@ fun SuggestionStep(
                     .weight(1f)            // Deja espacio para el botón inferior
             ) {
                 items(suggestions, key = { it.id.raw }) { tpl ->
-                    Card(
-                        onClick = { onSuggestion(tpl) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        )
-                        ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            /* --- icono + nombre --- */
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    painter = rememberVectorPainter(iconByName(tpl.icon)),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Text(tpl.name, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.inverseOnSurface)
-                            }
-
-                            /* --- botón “añadir” --- */
-                            RoundedIconButton(
-                                onClick = { onSuggestion(tpl) },
-                                icon = Icons.Default.Add
-                            )
-                        }
-                    }
+                    SettingItem(
+                        leadingIcon = { Icon(painter = rememberVectorPainter(iconByName(tpl.icon)), contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                        text = tpl.name,
+                        trailing = { RoundedIconButton(icon = Icons.Default.Add, onClick = { onSuggestion(tpl) }, modifier = Modifier.size(32.dp)) },
+                    )
                 }
             }
         }

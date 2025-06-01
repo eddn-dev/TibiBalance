@@ -45,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.tibibalance.R
-import com.app.tibibalance.ui.theme.Text
 
 /**
  * @brief Un [Composable] que muestra un botón estándar para "Iniciar sesión con Google".
@@ -71,13 +70,12 @@ fun GoogleSignButton(
     OutlinedButton(
         onClick = onClick, // Acción al pulsar
         modifier = modifier
-            .width(250.dp) // Ancho fijo
             .height(48.dp), // Altura fija (ajustada a 48dp)
         shape = RoundedCornerShape(12.dp), // Bordes redondeados (ajustado a 12dp)
         border = BorderStroke(1.dp, Color.Black), // Borde gris (más suave que negro)
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.Transparent, // Fondo transparente
-            contentColor = Text // Color del contenido (texto)
+            contentColor = Color.Black, // Color del texto a negro
+            containerColor = Color.White // Fondo transparente
         )
     ) {
         // Fila para alinear icono y texto

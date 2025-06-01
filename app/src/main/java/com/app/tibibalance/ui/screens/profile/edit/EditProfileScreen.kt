@@ -61,7 +61,7 @@ import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 import kotlinx.datetime.LocalDate
 import java.util.Calendar
 
