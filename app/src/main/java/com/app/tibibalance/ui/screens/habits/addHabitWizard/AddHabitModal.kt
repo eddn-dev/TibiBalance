@@ -170,11 +170,11 @@ fun AddHabitModal(
 
     showAchievement?.let { logro ->
         val iconRes = when (logro.id) {
-            "tibio_salud"         -> R.drawable.salud
-            "tibio_productividad" -> R.drawable.productivo
-            "tibio_bienestar"     -> R.drawable.bienestar
-            "primer_habito"       -> R.drawable.explorer
-            "cinco_habitos"        -> R.drawable.arquitecto
+            "tibio_salud"         -> R.drawable.ic_tibio_salud
+            "tibio_productividad" -> R.drawable.ic_tibio_productivo
+            "tibio_bienestar"     -> R.drawable.ic_tibio_bienestar
+            "primer_habito"       -> R.drawable.ic_tibio_explorer
+            "cinco_habitos"       -> R.drawable.ic_tibio_arquitecto
             else                  -> R.drawable.avatar_placeholder
         }
         ModalAchievementDialog(

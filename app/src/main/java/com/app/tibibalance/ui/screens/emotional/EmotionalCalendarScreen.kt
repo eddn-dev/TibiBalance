@@ -133,7 +133,7 @@ fun EmotionalCalendarScreen(
         val logroFeliz by vm.logroFeliz.collectAsState()
         logroFeliz?.let { logro ->
             val iconRes = when (logro.id) {
-                "feliz_7_dias"         -> R.drawable.calendar
+                "feliz_7_dias"         -> R.drawable.ic_tibio_calendar
                 "emociones_30_dias" -> R.drawable.emocional
                 else                  -> R.drawable.avatar_placeholder
             }

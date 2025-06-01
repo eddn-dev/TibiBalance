@@ -89,7 +89,7 @@ fun AchievementsScreen(
 
                 val fotoPerfil = logros["foto_perfil"]
                 AchievementContainer(
-                    iconRes = R.drawable.camera,
+                    iconRes = R.drawable.ic_tibio_camera,
                     title = "Un placer conocernos",
                     description = "Cambia tu foto de perfil.",
                     percent = fotoPerfil?.progress ?: 0,
@@ -98,7 +98,7 @@ fun AchievementsScreen(
 
                 val tibioSalud = logros["tibio_salud"]
                 AchievementContainer(
-                    iconRes = R.drawable.salud,
+                    iconRes = R.drawable.ic_tibio_salud,
                     title = "Tibio saludable",
                     description = "Agrega un hábito de salud.",
                     percent = tibioSalud?.progress ?: 0,
@@ -107,7 +107,7 @@ fun AchievementsScreen(
 
                 val tibioProductivo = logros["tibio_productividad"]
                 AchievementContainer(
-                    iconRes = R.drawable.productivo,
+                    iconRes = R.drawable.ic_tibio_productivo,
                     title = "Tibio productivo",
                     description = "Agrega un hábito de productividad.",
                     percent = tibioProductivo?.progress ?: 0,
@@ -116,7 +116,7 @@ fun AchievementsScreen(
 
                 val tibioBienestar = logros["tibio_bienestar"]
                 AchievementContainer(
-                    iconRes = R.drawable.bienestar,
+                    iconRes = R.drawable.ic_tibio_bienestar,
                     title = "Tibio del bienestar",
                     description = "Agrega un hábito de bienestar.",
                     percent = tibioBienestar?.progress ?: 0,
@@ -125,7 +125,7 @@ fun AchievementsScreen(
 
                 val primerHabito = logros["primer_habito"]
                 AchievementContainer(
-                    iconRes = R.drawable.explorer,
+                    iconRes = R.drawable.ic_tibio_explorer,
                     title = "El inicio del reto",
                     description = "Agrega tu primer hábito con modo reto activado.",
                     percent = primerHabito?.progress ?: 0,
@@ -134,7 +134,7 @@ fun AchievementsScreen(
 
                 val cincoHabitos = logros["cinco_habitos"]
                 AchievementContainer(
-                    iconRes = R.drawable.arquitecto,
+                    iconRes = R.drawable.ic_tibio_arquitecto,
                     title = "La sendera del reto",
                     description = "Agrega cinco hábitos con modo reto activado.",
                     percent = cincoHabitos?.progress ?: 0,
@@ -143,7 +143,7 @@ fun AchievementsScreen(
 
                 val feliz7Dias = logros["feliz_7_dias"]
                 AchievementContainer(
-                    iconRes = R.drawable.calendar,
+                    iconRes = R.drawable.ic_tibio_calendar,
                     title = "Todo en su lugar",
                     description = "Registra un estado de ánimo “feliz” por siete días consecutivos.",
                     percent = feliz7Dias?.progress ?: 0,
@@ -161,7 +161,7 @@ fun AchievementsScreen(
 
                 val notiPersonalizada = logros["noti_personalizada"]
                 AchievementContainer(
-                    iconRes = R.drawable.reloj,
+                    iconRes = R.drawable.ic_tibio_reloj,
                     title = "¡Ya es hora!",
                     description = "Descubriste la personalización de notificaciones desde configuración.",
                     percent = notiPersonalizada?.progress ?: 0,

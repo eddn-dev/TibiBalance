@@ -237,7 +237,7 @@ fun EditProfileScreen(
     logroDesbloqueado?.let { logro ->
         ModalAchievementDialog(
             visible = true,
-            iconResId = R.drawable.camera, // ícono del logro (usa el que corresponda)
+            iconResId = R.drawable.ic_tibio_camera, // ícono del logro (usa el que corresponda)
             title = "¡Logro desbloqueado!",
             message = "${logro.name}\n${logro.description}",
             primaryButton = DialogButton("Aceptar") {

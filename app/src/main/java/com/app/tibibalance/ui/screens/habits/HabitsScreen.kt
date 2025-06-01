@@ -214,7 +214,7 @@ fun HabitsScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ImageContainer(
-                    resId = R.drawable.arquitecto,
+                    resId = R.drawable.ic_tibio_arquitecto,
                     contentDescription = "Tibio Reto",
                     modifier = Modifier.size(60.dp)
                 )
