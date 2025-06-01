@@ -5,11 +5,13 @@
  */
 package com.app.data.di
 
+import com.app.data.repository.AchievementsRepositoryImpl
 import com.app.data.repository.EmotionRepositoryImpl
 import com.app.domain.repository.HabitRepository
 import com.app.data.repository.HabitRepositoryImpl
 import com.app.data.repository.LocalDataRepositoryImpl
 import com.app.data.repository.OnboardingRepositoryImpl
+import com.app.domain.repository.AchievementsRepository
 import com.app.domain.repository.EmotionRepository
 import com.app.domain.repository.LocalDataRepository
 import com.app.domain.repository.OnboardingRepository
@@ -43,5 +45,11 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindLocalRepo(impl: LocalDataRepositoryImpl): LocalDataRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAchievementsRepository(
+        impl: AchievementsRepositoryImpl
+    ): AchievementsRepository
 
 }

@@ -54,6 +54,7 @@ import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
+import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputDate
 import com.app.tibibalance.ui.components.inputs.InputEmail
@@ -92,8 +93,12 @@ fun EditProfileScreen(
         icon = Icons.Default.Check,
         message = "Cambios guardados",
         primaryButton = DialogButton("Cerrar") {
-            vm.consumeSuccess()
-            nav.popBackStack()
+            if (vm.shouldPopAfterSuccess()) {
+                vm.consumeSuccess()
+                nav.popBackStack()
+            } else {
+                vm.onSuccessClosed() // aquí se mostrará el modal del logro
+            }
         }
     )
 
@@ -225,6 +230,21 @@ fun EditProfileScreen(
                 )
             }
         }
+    }
+
+    val logroDesbloqueado by vm.logroDesbloqueado.collectAsState()
+
+    logroDesbloqueado?.let { logro ->
+        ModalAchievementDialog(
+            visible = true,
+            iconResId = R.drawable.camera, // ícono del logro (usa el que corresponda)
+            title = "¡Logro desbloqueado!",
+            message = "${logro.name}\n${logro.description}",
+            primaryButton = DialogButton("Aceptar") {
+                vm.dismissAchievementModal()
+                nav.popBackStack()
+            }
+        )
     }
 }
 

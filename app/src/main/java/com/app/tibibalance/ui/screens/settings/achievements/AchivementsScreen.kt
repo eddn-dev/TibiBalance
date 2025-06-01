@@ -39,8 +39,6 @@ fun AchievementsScreen(
     val vm: AchievementsViewModel = hiltViewModel()
     val logros by vm.logros.collectAsState()
 
-
-
     // Contenedor principal que ocupa toda la pantalla.
     Box(
         modifier = Modifier
@@ -77,89 +75,97 @@ fun AchievementsScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                //Spacer(modifier = Modifier.height(20.dp))
 
+                Text(
+                    text = "⬇\uFE0F Desplazate hacia abajo⬇\uFE0F\npara ver el resto de los logros.",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                //Spacer(modifier = Modifier.height(20.dp))
+
+                val fotoPerfil = logros["foto_perfil"]
                 AchievementContainer(
                     iconRes = R.drawable.camera,
                     title = "Un placer conocernos",
                     description = "Cambia tu foto de perfil.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    percent = fotoPerfil?.progress ?: 0,
+                    isUnlocked = fotoPerfil?.unlocked == true
                 )
 
-                AchievementContainer(
-                    iconRes = R.drawable.medalla,
-                    title = "Siete en línea",
-                    description = "Cumplir un hábito por siete días consecutivos.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
-                )
-
+                val tibioSalud = logros["tibio_salud"]
                 AchievementContainer(
                     iconRes = R.drawable.salud,
                     title = "Tibio saludable",
                     description = "Agrega un hábito de salud.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    percent = tibioSalud?.progress ?: 0,
+                    isUnlocked = tibioSalud?.unlocked == true
                 )
 
+                val tibioProductivo = logros["tibio_productividad"]
                 AchievementContainer(
                     iconRes = R.drawable.productivo,
                     title = "Tibio productivo",
                     description = "Agrega un hábito de productividad.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    percent = tibioProductivo?.progress ?: 0,
+                    isUnlocked = tibioProductivo?.unlocked == true
                 )
 
-
-                val tibio = logros["tibio_bienestar"]
-
+                val tibioBienestar = logros["tibio_bienestar"]
                 AchievementContainer(
                     iconRes = R.drawable.bienestar,
                     title = "Tibio del bienestar",
                     description = "Agrega un hábito de bienestar.",
-                    percent = tibio?.progress ?: 0,
-                    isUnlocked = tibio?.unlocked == true
+                    percent = tibioBienestar?.progress ?: 0,
+                    isUnlocked = tibioBienestar?.unlocked == true
                 )
 
-                /*AchievementContainer(
-                    iconRes = R.drawable.bienestar,
-                    title = "Tibio del bienestar",
-                    description = "Agrega un hábito de bienestar.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
-                )*/
-
+                val primerHabito = logros["primer_habito"]
                 AchievementContainer(
                     iconRes = R.drawable.explorer,
-                    title = "El inicio del sendero",
-                    description = "Agrega tu primer hábito personalizado.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    title = "El inicio del reto",
+                    description = "Agrega tu primer hábito con modo reto activado.",
+                    percent = primerHabito?.progress ?: 0,
+                    isUnlocked = primerHabito?.unlocked == true
                 )
 
+                val cincoHabitos = logros["cinco_habitos"]
                 AchievementContainer(
                     iconRes = R.drawable.arquitecto,
-                    title = "Arquitecto profesional",
-                    description = "Agrega cinco hábitos personalizados.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    title = "La sendera del reto",
+                    description = "Agrega cinco hábitos con modo reto activado.",
+                    percent = cincoHabitos?.progress ?: 0,
+                    isUnlocked = cincoHabitos?.unlocked == true
                 )
 
+                val feliz7Dias = logros["feliz_7_dias"]
                 AchievementContainer(
                     iconRes = R.drawable.calendar,
                     title = "Todo en su lugar",
                     description = "Registra un estado de ánimo “feliz” por siete días consecutivos.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    percent = feliz7Dias?.progress ?: 0,
+                    isUnlocked = feliz7Dias?.unlocked == true
                 )
 
+                val emotions30 = logros["emociones_30_dias"]
+                AchievementContainer(
+                    iconRes = R.drawable.emocional,
+                    title = "Un tibio emocional",
+                    description = "Registra tus emociones por 30 días consecutivos.",
+                    percent = emotions30?.progress ?: 0,
+                    isUnlocked = emotions30?.unlocked == true
+                )
+
+                val notiPersonalizada = logros["noti_personalizada"]
                 AchievementContainer(
                     iconRes = R.drawable.reloj,
                     title = "¡Ya es hora!",
-                    description = "Personaliza la notificación de un hábito.",
-                    percent = 70, // progreso  de logro
-                    isUnlocked = true // <- Este aparecerá como bloqueado
+                    description = "Descubriste la personalización de notificaciones desde configuración.",
+                    percent = notiPersonalizada?.progress ?: 0,
+                    isUnlocked = notiPersonalizada?.unlocked == true
                 )
 
                 //Spacer(modifier = Modifier.height(120.dp))
