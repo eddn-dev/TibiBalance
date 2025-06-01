@@ -25,7 +25,6 @@ import androidx.work.WorkManager
 import com.app.domain.repository.AuthRepository
 import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.domain.usecase.user.UnlockAchievementUseCase
-import com.app.tibibalance.sync.EvaluarLogrosWorker
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 
 
@@ -185,11 +184,6 @@ class AddHabitViewModel @Inject constructor(
                         }
                     }
                 }
-
-            // Lanza Worker (si sigue siendo necesario)
-            val work = EvaluarLogrosWorker.oneTime(uid)
-            WorkManager.getInstance(context).enqueue(work)
-
             // Notifica éxito
             _ui.value = AddHabitUiState(savedOk = true)
         }.onFailure { ex ->

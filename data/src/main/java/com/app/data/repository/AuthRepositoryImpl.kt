@@ -281,4 +281,15 @@ class AuthRepositoryImpl @Inject constructor(
             ?.providerData                   // lista de UserInfo (incluye “firebase”)
             ?.firstOrNull { it.providerId != FirebaseAuthProvider.PROVIDER_ID }  // omite entry “firebase”
             ?.providerId
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        val user = FirebaseAuth.getInstance().currentUser
+        return try {
+            user?.delete()?.await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }
