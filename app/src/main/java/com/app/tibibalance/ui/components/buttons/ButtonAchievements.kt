@@ -27,8 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.tibibalance.ui.theme.DefaultTint
-import com.app.tibibalance.ui.theme.Text
 import com.app.tibibalance.R
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -53,7 +51,7 @@ fun AchievementAccessItem(
             .height(48.dp)
             .shadow(1.dp, shape = RoundedCornerShape(12.dp))
             .background(
-                color = DefaultTint,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onClick() },
@@ -75,7 +73,7 @@ fun AchievementAccessItem(
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Text
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
         }
