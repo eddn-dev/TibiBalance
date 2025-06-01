@@ -179,9 +179,9 @@ fun NotificationStep(
 
     /* ------ diálogos ayuda ------ */
     when (dlg) {
-        "hora"     -> infoDlg("Añade una o más horas para recibir recordatorios.") { dlg = null }
-        "mensaje"  -> infoDlg("Este texto aparecerá en la notificación.")          { dlg = null }
-        "adelanto" -> infoDlg("Minutos antes del recordatorio para que te prepares.") { dlg = null }
+        "hora"     -> infoDlg("Añade una o más horas para recibir recordatorios.\uD83D\uDD14") { dlg = null }
+        "mensaje"  -> infoDlg("✨ Este texto es lo que aparecerá en tus notificaciones.")          { dlg = null }
+        "adelanto" -> infoDlg("⏰ Recibe una notificación X minutos antes del recordatorio principal para que tengas tiempo de prepararte.") { dlg = null }
     }
 }
 

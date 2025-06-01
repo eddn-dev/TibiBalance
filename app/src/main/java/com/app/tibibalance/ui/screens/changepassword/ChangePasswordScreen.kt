@@ -106,7 +106,7 @@ fun ChangePasswordScreen(
                     .fillMaxWidth()
                     .padding(20.dp)
                     .shadow(8.dp, RoundedCornerShape(16.dp), clip = false)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

@@ -1,3 +1,4 @@
+/* ui/screens/auth/signup/SignUpScreen.kt */
 package com.app.tibibalance.ui.screens.auth.signup
 
 import android.app.Activity
@@ -57,51 +58,74 @@ import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputPassword
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.layout.Header
+import com.app.tibibalance.ui.components.texts.Caption
+import com.app.tibibalance.ui.components.utils.gradient
 import com.app.tibibalance.ui.navigation.Screen
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import com.app.tibibalance.ui.components.utils.gradient
 
 private const val WEB_CLIENT_ID =
     "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com"
 
+/**
+ * @file    SignUpScreen.kt
+ * @ingroup ui_screens_auth_signup
+ * @brief   Composable para la pantalla de registro de nuevos usuarios.
+ *
+ * @details
+ * - Recibe entrada de nombre de usuario, fecha de nacimiento, correo y contraseñas.
+ * - Permite registro vía Google One-Tap.
+ * - Observa [SignUpViewModel] para estados de UI ([SignUpUiState]).
+ * - Muestra:
+ *   • Validaciones de campo en línea dentro de [FormContainer].
+ *   • [ModalInfoDialog] para Loading, Error y Éxito (verificación de correo).
+ *   • [Snackbar] para mensajes globales.
+ *   • Navegación reactiva según el estado (éxito o GoogleSuccess).
+ *
+ * @see SignUpViewModel ViewModel que gestiona la lógica de negocio.
+ * @see SignUpUiState  Estados posibles de la UI para esta pantalla.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
     nav: NavController,
-    vm : SignUpViewModel = hiltViewModel()
+    vm: SignUpViewModel = hiltViewModel()
 ) {
     /* ----- estado local ----- */
-    var username  by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf<LocalDate?>(null) }
-    var email     by remember { mutableStateOf("") }
-    var pass1     by remember { mutableStateOf("") }
-    var pass2     by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var pass1 by remember { mutableStateOf("") }
+    var pass2 by remember { mutableStateOf("") }
 
-    /* ----- colecta de estado global ----- */
-    val uiState  by vm.ui.collectAsState()
+    /* ----- captura de estado global ----- */
+    val uiState by vm.ui.collectAsState()
     val snackbar = remember { SnackbarHostState() }
-    val scope    = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     /* ----- Credential-Manager y helpers ----- */
-    val ctx      = LocalContext.current
+    val ctx = LocalContext.current
     val activity = ctx as Activity
-    val cm       = remember(activity) { CredentialManager.create(activity) }
+    val cm = remember(activity) { CredentialManager.create(activity) }
 
     fun launchGoogle() = scope.launch {
         try {
-            val res   = cm.getCredential(activity, vm.buildGoogleRequest(WEB_CLIENT_ID))
+            val res = cm.getCredential(activity, vm.buildGoogleRequest(WEB_CLIENT_ID))
             val token = GoogleIdTokenCredential.createFrom(res.credential.data).idToken
-            if (token.isNullOrBlank()) snackbar.showSnackbar("Token vacío"); else vm.finishGoogleSignUp(token)
+            if (token.isNullOrBlank()) {
+                snackbar.showSnackbar("Token vacío")
+            } else {
+                vm.finishGoogleSignUp(token)
+            }
         } catch (e: Exception) {
             snackbar.showSnackbar(e.message ?: "Google cancelado")
         }
     }
 
-    /* ----- navegación reactiva ----- */
+    /* ----- navegación reactiva según uiState ----- */
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is SignUpUiState.VerificationEmailSent -> {
@@ -116,47 +140,47 @@ fun SignUpScreen(
                 }
             }
             is SignUpUiState.Error -> {
+                // Mostrar Snackbar con mensaje de error (con emojis)
                 scope.launch { snackbar.showSnackbar(state.message) }
+                vm.consumeError()
             }
             else -> Unit
         }
     }
 
-
     /* ----- flags de diálogo ----- */
     val loading = uiState is SignUpUiState.Loading
     val fieldErr = uiState as? SignUpUiState.FieldError
-
     val isError = uiState is SignUpUiState.Error
     val isSuccess = uiState is SignUpUiState.VerificationEmailSent
 
     ModalInfoDialog(
-        visible  = loading || isError || isSuccess,
-        loading  = loading,
-        icon     = when {
+        visible = loading || isError || isSuccess,
+        loading = loading,
+        icon = when {
             isSuccess -> Icons.Default.Check
-            isError   -> Icons.Default.Error
-            else      -> null
+            isError -> Icons.Default.Error
+            else -> null
         },
         iconColor = when {
             isSuccess -> MaterialTheme.colorScheme.onPrimaryContainer
-            isError   -> MaterialTheme.colorScheme.error
-            else      -> MaterialTheme.colorScheme.onPrimary
+            isError -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.onPrimary
         },
         iconBgColor = when {
             isSuccess -> MaterialTheme.colorScheme.primaryContainer
-            isError   -> MaterialTheme.colorScheme.errorContainer
-            else      -> MaterialTheme.colorScheme.primaryContainer
+            isError -> MaterialTheme.colorScheme.errorContainer
+            else -> MaterialTheme.colorScheme.primaryContainer
         },
         title = when {
             isSuccess -> "Cuenta creada"
-            isError   -> "Error"
-            else      -> null
+            isError -> "Error"
+            else -> null
         },
         message = when {
             isSuccess -> "Te enviamos un enlace para verificar tu correo."
-            isError   -> (uiState as SignUpUiState.Error).message
-            else      -> null
+            isError -> (uiState as SignUpUiState.Error).message
+            else -> null
         },
         primaryButton = when {
             isSuccess -> DialogButton("Continuar") {
@@ -174,26 +198,31 @@ fun SignUpScreen(
         dismissOnClickOutside = !loading
     )
 
-
     /* ----- UI principal ----- */
-    /* val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), MaterialTheme.colorScheme.background)
-    ) */
+    val gradient = gradient()
 
     Box(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient())
+            .background(gradient)
     ) {
-        /* scrollable column */
+        /* Scrollable column con inputs y botones */
         Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(top = 80.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ImageContainer(R.drawable.img_signup, null,
-                Modifier.fillMaxWidth().height(220.dp).padding(bottom = 24.dp))
+            ImageContainer(
+                resId = R.drawable.img_signup,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .padding(bottom = 24.dp)
+            )
 
             FormContainer {
                 InputText(
@@ -211,7 +240,10 @@ fun SignUpScreen(
                         val c = Calendar.getInstance()
                         DatePickerDialog(
                             ctx,
-                            { _, y, m, d -> birthDate = LocalDate.of(y, m + 1, d); vm.consumeFieldError() },
+                            { _, y, m, d ->
+                                birthDate = LocalDate.of(y, m + 1, d)
+                                vm.consumeFieldError()
+                            },
                             c[Calendar.YEAR], c[Calendar.MONTH], c[Calendar.DAY_OF_MONTH]
                         ).show()
                     },
@@ -254,36 +286,38 @@ fun SignUpScreen(
                         birthDate = birthDate,
                         email = email,
                         password = pass1,
-                        confirm = pass2,
-                        onSuccess = {
-                            nav.navigate(Screen.VerifyEmail.route) {
-                                popUpTo(Screen.SignUp.route) { inclusive = true }
-                            }
-                        },
-                        onError = { error ->
-                            scope.launch { snackbar.showSnackbar(error) }
-                        }
+                        confirm = pass2
+                        // Se remueven onSuccess y onError:
+                        // el LaunchedEffect(uiState) manejará navegación y errores.
                     )
 
+                    // Intento de guardar credenciales localmente
                     scope.launch {
-                        try { cm.createCredential(activity, CreatePasswordRequest(username, pass1)) }
-                        catch (_: Exception) {}
+                        try {
+                            cm.createCredential(
+                                activity,
+                                CreatePasswordRequest(username, pass1)
+                            )
+                        } catch (_: Exception) {
+                        }
                     }
                 }
             )
 
             Spacer(Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                HorizontalDivider(Modifier.weight(1f)); Text("  •  "); HorizontalDivider(Modifier.weight(1f))
+                HorizontalDivider(Modifier.weight(1f))
+                Text("  •  ")
+                HorizontalDivider(Modifier.weight(1f))
             }
             Spacer(Modifier.height(8.dp))
             GoogleSignButton(onClick = ::launchGoogle)
             Spacer(Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("¿Ya tienes cuenta? ")
+                Caption("¿Ya tienes cuenta? ")
                 TextButtonLink(
                     text = stringResource(R.string.btn_sign_in),
-                    onClick = { nav.navigate(Screen.SignIn.route)}
+                    onClick = { nav.navigate(Screen.SignIn.route) }
                 )
             }
             Spacer(Modifier.height(24.dp))

@@ -25,12 +25,15 @@ import com.app.domain.usecase.emotions.ObserveEmotions
 import com.app.domain.usecase.emotions.SaveEmotion
 import com.app.tibibalance.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Clock
-import java.time.ZoneId
+import javax.inject.Inject
 
 /* ────────────────────────────────────────────────────────────────── */
 /* 1 ▸ diálogos                                                        */
@@ -89,9 +92,9 @@ class EmotionalCalendarViewModel @Inject constructor(
             dayUi.day == today.dayOfMonth ->
                 DialogState.Register(today)
             dayUi.day  > today.dayOfMonth ->
-                DialogState.Info("No puedes registrar emociones de días futuros.")
+                DialogState.Info("¡Alto ahí, viajero del tiempo! 🚀\n Solo puedes registrar la emoción de hoy.")
             else ->
-                DialogState.Info("Sólo puedes registrar la emoción de hoy.")
+                DialogState.Info("No te preocupes por el pasado.\n ¡Regístra tu emoción de hoy!\n  dale voz a tu sentir del momento.✨ ")
         }
     }
 
@@ -126,6 +129,12 @@ class EmotionalCalendarViewModel @Inject constructor(
                 isRegistered = entry != null
             )
         }
+    }
+
+
+    /** Muestra un diálogo de tipo INFO con el mensaje dado */
+    fun showInfoDialog(msg: String) {
+        _dialog.value = DialogState.Info(msg)
     }
 
     /** Convierte el id “FELICIDAD” → R.drawable.ic_happyimage. */
