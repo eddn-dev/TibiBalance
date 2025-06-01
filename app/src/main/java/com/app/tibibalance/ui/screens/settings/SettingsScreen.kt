@@ -120,7 +120,7 @@ private fun SettingsContent(
         SettingsBody(
             user                 = user,
             onEditPersonal       = onEditPersonal,
-            onDevices            = { /* TODO */ },
+            onDevices            = { navController.navigate(Screen.ManageDevices.route) },
             onAchievements       = { /* TODO */ },
             onConfigureNotis     = onConfigureNotis,
             onChangeTheme        = onChangeTheme,

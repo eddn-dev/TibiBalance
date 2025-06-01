@@ -18,6 +18,7 @@ import com.app.tibibalance.ui.screens.emotional.EmotionalCalendarScreen
 import com.app.tibibalance.ui.screens.habits.HabitsScreen
 import com.app.tibibalance.ui.screens.profile.show.ViewProfileScreen
 import com.app.tibibalance.ui.screens.settings.SettingsScreen
+import com.app.tibibalance.ui.screens.settings.devices.ManageDevicesScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -53,9 +54,13 @@ fun MainScreen(rootNav: NavHostController) {
             composable(Screen.Habits.route)   { HabitsScreen() }
             composable(Screen.Profile.route)  { ViewProfileScreen(rootNav) }
             composable(Screen.Settings.route) {
-
                 SettingsScreen(
                     navController = rootNav,               // usa nav raíz para flows externos
+                )
+            }
+            composable(Screen.ManageDevices.route) {
+                ManageDevicesScreen(
+                    navController = rootNav
                 )
             }
         }

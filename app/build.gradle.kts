@@ -51,6 +51,7 @@ dependencies {
     /* ── UI (Compose) ───────────────────────────────── */
     implementation(libs.bundles.compose)
     implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.google.play.services.wearable)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.material.icons.extended)
 

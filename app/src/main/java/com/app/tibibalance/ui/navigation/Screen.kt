@@ -72,6 +72,7 @@ data object Habits              : Screen("main/habits")
     data object Settings        : Screen("main/settings")
 
     data object EditProfile     : Screen("edit_profile")
+    data object ManageDevices   : Screen("main/manage_devices")
     data object ChangePassword  : Screen("change_password")
     data object ConfigureNotif  : Screen("configure_notif")
 }

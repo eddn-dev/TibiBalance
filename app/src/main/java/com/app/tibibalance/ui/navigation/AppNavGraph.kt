@@ -20,6 +20,7 @@ import com.app.tibibalance.ui.screens.main.MainScreen
 import com.app.tibibalance.ui.screens.onboarding.OnboardingPage
 import com.app.tibibalance.ui.screens.onboarding.OnboardingRoute
 import com.app.tibibalance.ui.screens.profile.edit.EditProfileScreen
+import com.app.tibibalance.ui.screens.settings.devices.ManageDevicesScreen
 import com.app.tibibalance.ui.screens.settings.notification.ConfigureNotificationScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -48,5 +49,6 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         composable(Screen.EditProfile.route) { EditProfileScreen(navController) }
         composable(Screen.ChangePassword.route) { ChangePasswordScreen(navController)}
         composable(Screen.ConfigureNotif.route) { ConfigureNotificationScreen(navController) }
+        composable(Screen.ManageDevices.route) { ManageDevicesScreen(navController = navController) }
     }
 }
