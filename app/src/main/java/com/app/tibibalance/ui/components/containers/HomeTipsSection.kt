@@ -40,7 +40,6 @@ import com.app.tibibalance.ui.theme.Tips
 
 @Composable
 fun HomeTipsSection(
-    onConnectClick: () -> Unit
 ) {
     Spacer(modifier = Modifier.height(50.dp))
     Column(
@@ -54,7 +53,6 @@ fun HomeTipsSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = Tips, shape = RoundedCornerShape(20.dp))
-                .clickable { onConnectClick() }
                 .padding(16.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

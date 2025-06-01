@@ -1,5 +1,6 @@
 package com.app.data.remote.di
 
+import com.app.domain.auth.AuthUidProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -21,7 +22,7 @@ object AuthModule {
     fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
 
     @Provides
-    fun provideUidProvider(auth: FirebaseAuth): () -> String = {
-        auth.currentUser?.uid.orEmpty()
-    }
+    @Singleton
+    fun provideUidProvider(auth: FirebaseAuth): AuthUidProvider =
+        AuthUidProvider { auth.currentUser?.uid.orEmpty() }
 }

@@ -83,11 +83,11 @@ dependencies {
     implementation(libs.bundles.auth)
 
     /* ── Coroutines Play Svc helpers ────────────────── */
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.collections.immutable)
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation("org.json:json:20231013")  // Última versión disponible hasta 2024
+    implementation(libs.json)  // Última versión disponible hasta 2024
 
     /* ── Coroutines ─────────────────────────────────── */
     implementation(libs.kotlinx.coroutines.core)

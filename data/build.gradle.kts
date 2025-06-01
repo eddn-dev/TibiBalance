@@ -43,6 +43,7 @@ dependencies {
 
     /* ─── Inyección de dependencias ────────────────────────────────────── */
     implementation(libs.hilt.android)
+    implementation(libs.google.play.services.wearable)
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
