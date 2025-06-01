@@ -32,7 +32,7 @@ val inversePrimaryDark     = Color(0xFF3EA8FE)   ///< Re-usa tu azul claro
 /* ─────────── Secundarios / Terciarios (tono sutil) ────────── */
 val secondaryDark          = Color(0xFFB8B5BC)   ///< Neutro frío
 val onSecondaryDark        = Color(0xFF201F24)
-val secondaryContainerDark = Color(0xFF414049)
+val secondaryContainerDark = Color(0xFF6C6C6C)
 val onSecondaryContainerDark = Color(0xFFDCD9E0)
 
 val tertiaryDark           = Color(0xFF7BA5C4)

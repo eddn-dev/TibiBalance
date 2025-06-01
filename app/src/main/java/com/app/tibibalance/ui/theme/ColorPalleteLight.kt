@@ -25,7 +25,7 @@ val inversePrimaryLight     = Color(0xFFD0BCFF)   ///< Sugerido por M3 (Ton-80 d
 /* ───────────────────────── secundarios / terciarios ─────────────── */
 val secondaryLight          = Color(0xFFD0CDCD)
 val onSecondaryLight        = Color(0xFF000000)
-val secondaryContainerLight = Color(0xFF4392D7)
+val secondaryContainerLight = Color(0xFFF5FBFF)
 val onSecondaryContainerLight = Color(0xFF000000)
 
 val tertiaryLight           = Color(0xFF314954)

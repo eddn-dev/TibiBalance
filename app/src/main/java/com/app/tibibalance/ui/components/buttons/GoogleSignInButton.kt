@@ -29,6 +29,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -70,9 +71,9 @@ fun GoogleSignButton(
     OutlinedButton(
         onClick = onClick, // Acción al pulsar
         modifier = modifier
-            .height(48.dp), // Altura fija (ajustada a 48dp)
+            .height(48.dp) // Altura fija (ajustada a 48dp)
+            .fillMaxWidth(), // Ocupa el ancho disponible
         shape = RoundedCornerShape(12.dp), // Bordes redondeados (ajustado a 12dp)
-        border = BorderStroke(1.dp, Color.Black), // Borde gris (más suave que negro)
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = Color.Black, // Color del texto a negro
             containerColor = Color.White // Fondo transparente
