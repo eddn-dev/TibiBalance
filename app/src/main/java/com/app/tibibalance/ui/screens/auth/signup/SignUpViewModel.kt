@@ -130,9 +130,6 @@ class SignUpViewModel @Inject constructor(
             ) {
                 is AuthResult.Success -> {
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
-                    if (userId != null) {
-                        initializeAchievementsUseCase(userId)
-                    }
 
                     val emailSent = sendEmailUseCase(email)
                     _ui.value = SignUpUiState.VerificationEmailSent(email)
@@ -152,9 +149,6 @@ class SignUpViewModel @Inject constructor(
         when (val r = googleUseCase(idToken)) {
             is AuthResult.Success -> {
                 val userId = FirebaseAuth.getInstance().currentUser?.uid
-                if (userId != null) {
-                    initializeAchievementsUseCase(userId)
-                }
                 _ui.value = SignUpUiState.GoogleSuccess
             }
             is AuthResult.Error   -> _ui.value = mapError(r.error)

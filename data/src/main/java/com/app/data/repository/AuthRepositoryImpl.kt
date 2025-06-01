@@ -34,11 +34,13 @@ import java.net.HttpURLConnection
 import java.net.URL
 import org.json.JSONObject
 import android.util.Log
+import com.app.domain.usecase.user.InitializeAchievementsUseCase
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val initAchievements: InitializeAchievementsUseCase
 ) : AuthRepository {
 
     /* ── Estado de sesión ───────────────────────────────────────── */
@@ -201,6 +203,7 @@ class AuthRepositoryImpl @Inject constructor(
         ).toFirestoreMap()
 
         docRef.set(newUser, SetOptions.merge()).await()
+        initAchievements(uid)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -240,6 +243,7 @@ class AuthRepositoryImpl @Inject constructor(
         ).toFirestoreMap()
 
         doc.set(newUser, SetOptions.merge()).await()
+        initAchievements(user.uid)
     }
 
     /* Función para enviar el correo desde el backend de Node.js */
