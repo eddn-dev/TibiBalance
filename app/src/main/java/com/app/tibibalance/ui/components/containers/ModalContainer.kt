@@ -81,7 +81,7 @@ fun ModalContainer(
     contentColor: Color = contentColorFor(containerColor), // Color de contenido acorde al fondo
     properties: DialogProperties = DialogProperties(), // Propiedades del diálogo (e.g., dismiss)
     closeButtonEnabled: Boolean = true, // Mostrar botón 'X' por defecto
-    closeButtonBackgroundColor: Color = DefaultTint, // Fondo blanco para el botón 'X'
+    closeButtonBackgroundColor: Color = MaterialTheme.colorScheme.surface, // Fondo blanco para el botón 'X'
     closeButtonContentColor: Color = MaterialTheme.colorScheme.onSurface, // Color del icono 'X'
     content: @Composable ColumnScope.() -> Unit // Slot para el contenido principal
 ) {

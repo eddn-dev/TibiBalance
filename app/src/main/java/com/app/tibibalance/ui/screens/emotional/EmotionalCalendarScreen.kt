@@ -15,10 +15,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
@@ -30,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tibibalance.R
@@ -37,6 +41,7 @@ import com.app.tibibalance.ui.components.containers.HabitContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
+import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.CalendarGrid
 import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.EmotionDay
@@ -62,7 +67,7 @@ fun EmotionalCalendarScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient),
+            .background(gradient()),
         contentAlignment = Alignment.TopCenter
     ) {
 
@@ -120,12 +125,12 @@ private fun CalendarContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(16.dp)
     ) {
         /* Título mes */
-        Text(monthTitle, style = MaterialTheme.typography.titleLarge)
-
+        HeaderBox("Calendario emocional")
+        Spacer(modifier = Modifier.height(35.dp))
+        Text(monthTitle, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.align(Alignment.CenterHorizontally))
         /* Calendario */
         CalendarGrid(
             month = "",          // título ya se muestra arriba
@@ -139,7 +144,7 @@ private fun CalendarContent(
             },
             modifier = Modifier.fillMaxWidth()
         )
-
+        Spacer(modifier = Modifier.height(35.dp))
         /* Estadística rápida */
         EmotionStats(days)
     }
@@ -214,4 +219,16 @@ private fun emotionName(@DrawableRes resId: Int?): String = when (resId) {
     R.drawable.ic_disgustingimage   -> "Disgustado"
     R.drawable.ic_fearimage         -> "Asustado"
     else                            -> ""
+}
+
+@Composable
+private fun HeaderBox(text: String) = Box(
+    modifier = Modifier
+        .fillMaxWidth() // Ocupa todo el ancho
+        // Fondo con color específico y esquinas redondeadas
+        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(15.dp))
+        .padding(vertical = 12.dp), // Padding vertical interno
+    contentAlignment = Alignment.Center // Centra el contenido (el Title)
+) {
+    Title(text, Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface)
 }

@@ -39,6 +39,7 @@ import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.navigation.Screen
+import com.app.tibibalance.ui.theme.gradient
 
 @Composable
 fun LaunchScreen(
@@ -81,17 +82,17 @@ fun LaunchScreen(
     if (session!!.loggedIn) return
 
     /* ── 3 ▸ fondo degradado ──────────────────────────────────────────── */
-    val bg = Brush.verticalGradient(
+    /* val bg = Brush.verticalGradient(
         0f to MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
         1f to MaterialTheme.colorScheme.background
-    )
+    ) */
 
     /* ── 4 ▸ UI principal ─────────────────────────────────────────────── */
     Column(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(bg)
+            .background(gradient())
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

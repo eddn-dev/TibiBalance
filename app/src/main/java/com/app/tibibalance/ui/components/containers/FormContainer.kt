@@ -59,7 +59,7 @@ import com.app.tibibalance.ui.theme.Form
 @Composable
 fun FormContainer(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Form,    // Azul suave por defecto
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     cornerRadiusDp: Int = 16, // Radio de esquina por defecto
     tonalElevation: Dp = 3.dp, // Elevación por defecto
     contentPadding: PaddingValues = PaddingValues(16.dp), // Padding interno por defecto

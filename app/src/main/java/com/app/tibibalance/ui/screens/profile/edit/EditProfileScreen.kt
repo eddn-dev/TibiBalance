@@ -128,7 +128,7 @@ fun EditProfileScreen(
             Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .background(gradient)
+                .background(gradient())
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -168,7 +168,7 @@ fun EditProfileScreen(
             }
 
             /* ---------- formulario ---------- */
-            FormContainer(backgroundColor = Color(0xFFDEEDF4)) {
+            FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
 
                 InputText(
                     value         = name,

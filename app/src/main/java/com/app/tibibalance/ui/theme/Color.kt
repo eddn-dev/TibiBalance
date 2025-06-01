@@ -1,5 +1,8 @@
 package com.app.tibibalance.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
@@ -18,9 +21,22 @@ val White = Color(0xFFFFFFFF)
 val SurfaceDark = Color(0xFF000B4D)
 
 /** Gradiente de fondo*/
-val gradient = Brush.verticalGradient(
-    listOf(Color(0xFF3EA8FE).copy(alpha = .25f), White)
-)
+/* val gradient = Brush.verticalGradient(
+    listOf(MaterialTheme.colorScheme.primary.copy(alpha = .25f), MaterialTheme.colorScheme.background)
+) */
+
+@Composable
+fun gradient(): Brush {
+    return if (isSystemInDarkTheme()) {
+        Brush.verticalGradient(
+            listOf(DarkPrimary, White)
+        )
+    } else {
+        Brush.verticalGradient(
+            listOf(BluePrimaryLight.copy(alpha = 0.25f), White)
+        )
+    }
+}
 
 /** Colores de botones*/
 val Alert = Color(0xFFFF3333)
@@ -56,3 +72,10 @@ val Metrics =  Color(0xFFE0E0E0)
 val AccountSettings = Color(0xFFD8EAF1)
 val PreferencesSettings = Color(0xFFE8F2F8)
 val LegalSettings = Color(0xFFF3F6F8)
+
+
+val DarkPrimary = Color(0xFF20304A)
+val DarkPrimaryContainer = Color(0xFF8E90A7)
+val DarkSurface = Color(0xFF546586)
+val DarkOnSurface = Color(0xFFE0D9E0)
+val DarkError = Color(0xFFFF4D4D)

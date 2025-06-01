@@ -79,7 +79,7 @@ fun ChangePasswordScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .background(gradient)
+                .background(gradient())
                 .verticalScroll(rememberScrollState())
                 .padding(top = 100.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally

@@ -78,9 +78,9 @@ fun InputDate(
     // Define los colores personalizados para el TextField, considerando el estado de error
     val colors = OutlinedTextFieldDefaults.colors(
         // Colores de fondo (siempre blanco para mantener consistencia visual)
-        focusedContainerColor   = DefaultTint,
-        unfocusedContainerColor = DefaultTint,
-        disabledContainerColor  = DefaultTint, // Clave para el estado deshabilitado
+        focusedContainerColor   = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        disabledContainerColor  = MaterialTheme.colorScheme.surface, // Clave para el estado deshabilitado
 
         /* Colores de Bordes */
         focusedBorderColor      = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,

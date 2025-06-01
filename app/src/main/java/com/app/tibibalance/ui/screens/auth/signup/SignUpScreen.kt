@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import com.app.tibibalance.ui.theme.gradient
 
 private const val WEB_CLIENT_ID =
     "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com"
@@ -176,15 +177,15 @@ fun SignUpScreen(
 
 
     /* ----- UI principal ----- */
-    val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), White)
-    )
+    /* val gradient = Brush.verticalGradient(
+        listOf(MaterialTheme.colorScheme.primary.copy(.25f), MaterialTheme.colorScheme.background)
+    ) */
 
     Box(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient)
+            .background(gradient())
     ) {
         /* scrollable column */
         Column(

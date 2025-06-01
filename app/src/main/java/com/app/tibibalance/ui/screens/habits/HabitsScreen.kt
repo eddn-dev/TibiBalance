@@ -44,7 +44,7 @@ fun HabitsScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(gradient())
     ) {
         when (val s = ui) {
             HabitsUiState.Loading -> Centered("Cargando…")

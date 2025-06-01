@@ -61,7 +61,7 @@ fun RoundedIconButton(
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String? = null,
-    backgroundColor: Color = RoundedButton, // Color de fondo azul por defecto
+    backgroundColor: Color = MaterialTheme.colorScheme.primary, // Color primario del tema de la app
     iconTint: Color = DefaultTint // Tinte blanco por defecto para el icono
 ) {
     Box(

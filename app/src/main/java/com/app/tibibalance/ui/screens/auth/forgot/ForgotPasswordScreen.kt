@@ -63,8 +63,9 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordUiState
 import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordViewModel
+import com.app.tibibalance.ui.theme.gradient
 
-/**
+ /**
  * @brief Composable que define la interfaz de usuario para la pantalla de recuperación de contraseña.
  *
  * @details Muestra una imagen, un texto instructivo, un campo para ingresar el correo electrónico
@@ -134,11 +135,6 @@ fun ForgotPasswordScreen(
         dismissOnClickOutside = uiState !is ForgotPasswordUiState.Loading
     )
 
-    /* ---- Fondo degradado ---- */
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
-
     // Contenedor principal que ocupa toda la pantalla.
     Box(
         Modifier
@@ -151,7 +147,7 @@ fun ForgotPasswordScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(gradient) // Aplica el fondo degradado.
+                .background(gradient()) // Aplica el fondo degradado.
                 .verticalScroll(rememberScrollState()) // Permite el desplazamiento vertical.
                 // Padding para el contenido, especialmente para dejar espacio al Header flotante.
                 .padding(top = 100.dp, start = 24.dp, end = 24.dp),

@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import com.app.domain.entities.Habit
@@ -44,7 +45,8 @@ fun SuggestionStep(
         /* ---------- Encabezado ---------- */
         Title(
             text = "Hábitos sugeridos",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         /* ---------- Lista ---------- */
@@ -63,8 +65,11 @@ fun SuggestionStep(
                 items(suggestions, key = { it.id.raw }) { tpl ->
                     Card(
                         onClick = { onSuggestion(tpl) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        )
+                        ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -77,10 +82,11 @@ fun SuggestionStep(
                                 Icon(
                                     painter = rememberVectorPainter(iconByName(tpl.icon)),
                                     contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(32.dp)
                                 )
                                 Spacer(Modifier.width(12.dp))
-                                Text(tpl.name, style = MaterialTheme.typography.bodyLarge)
+                                Text(tpl.name, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.inverseOnSurface)
                             }
 
                             /* --- botón “añadir” --- */

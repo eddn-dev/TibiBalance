@@ -74,7 +74,7 @@ fun GoogleSignButton(
             .width(250.dp) // Ancho fijo
             .height(48.dp), // Altura fija (ajustada a 48dp)
         shape = RoundedCornerShape(12.dp), // Bordes redondeados (ajustado a 12dp)
-        border = BorderStroke(1.dp, Color.Gray), // Borde gris (más suave que negro)
+        border = BorderStroke(1.dp, Color.Black), // Borde gris (más suave que negro)
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent, // Fondo transparente
             contentColor = Text // Color del contenido (texto)

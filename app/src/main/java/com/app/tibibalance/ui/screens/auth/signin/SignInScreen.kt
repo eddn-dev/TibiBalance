@@ -33,7 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -53,7 +53,7 @@ import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputPassword
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.White
+import com.app.tibibalance.ui.theme.*
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 
@@ -131,15 +131,15 @@ fun SignInScreen(
     val fieldErr = uiState as? SignInUiState.FieldError
 
     /* --- UI principal --- */
-    val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), White)
-    )
+    /* val gradient = Brush.verticalGradient(
+        listOf(MaterialTheme.colorScheme.primary.copy(.25f), MaterialTheme.colorScheme.background)
+    ) */
 
     Box(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient)
+            .background(gradient())
     ) {
         Column(
             Modifier
@@ -193,8 +193,8 @@ fun SignInScreen(
             GoogleSignButton(onClick = ::launchGoogleSignIn)
 
             Spacer(Modifier.height(24.dp))
-            Row {
-                Text("¿Aún no tienes cuenta? ")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("¿Aún no tienes cuenta? ", color = Color.Black)
                 TextButtonLink(text = "Regístrate", onClick = { nav.navigate(Screen.SignUp.route) })
             }
             Spacer(Modifier.height(24.dp))

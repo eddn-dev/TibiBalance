@@ -14,17 +14,20 @@ import androidx.compose.ui.platform.LocalContext
 import com.app.domain.enums.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimaryDark,
-    onPrimary = White,
-    primaryContainer = BluePrimaryLight,
-    onPrimaryContainer = White,
-    background = SurfaceDark,
-    surface = SurfaceDark,
-    onBackground = White,
-    onSurface = White,
-    secondary = BluePrimaryLight,
-    tertiary = BluePrimaryDark,
-    error = Alert
+    primary = SurfaceDark,
+    onPrimary = DarkOnSurface, // Texto en botones primarios
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnSurface,
+    background = DarkPrimary, // Fondo principal
+    surface = DarkSurface, // Este es el color del modal de hábitos sugeridos
+    onBackground = DarkOnSurface,
+    onSurface = DarkOnSurface,
+    secondary = DarkPrimaryContainer,
+    tertiary = DarkPrimary,
+    error = DarkError,
+    surfaceVariant = Color(0xFF8E90A7),
+    tertiaryContainer = SurfaceDark, // Para contenedor de títulos
+    inverseOnSurface = SurfaceDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -39,6 +42,9 @@ private val LightColorScheme = lightColorScheme(
     secondary = BluePrimaryLight,
     tertiary = BluePrimaryDark,
     error = Alert,
+    surfaceVariant = Color(0xFFC8DEFA),
+    tertiaryContainer = Color(0xFFAED3E3),
+    inverseOnSurface     = Color.Black
 )
 
 @Composable

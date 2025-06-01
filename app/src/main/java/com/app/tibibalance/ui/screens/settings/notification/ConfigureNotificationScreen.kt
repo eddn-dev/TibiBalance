@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +38,7 @@ import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.utils.SettingItem
+import com.app.tibibalance.ui.theme.gradient
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -44,10 +46,6 @@ fun ConfigureNotificationScreen(
     navController: NavHostController,
     viewModel   : ConfigureNotificationViewModel = hiltViewModel()
 ) {
-    /* ---------- fondo ---------- */
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
 
     /* ---------- UI-state ---------- */
     val ui by viewModel.ui.collectAsState()
@@ -62,7 +60,7 @@ fun ConfigureNotificationScreen(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient)
+            .background(gradient())
     ) {
         when (ui) {
             ConfigureNotifUiState.Loading -> Centered("Cargando…")
@@ -104,11 +102,12 @@ private fun HabitListSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         /* encabezado */
-        FormContainer(backgroundColor = Color(0xFFAED3E3)) {
+        FormContainer(backgroundColor = MaterialTheme.colorScheme.tertiaryContainer) {
             Subtitle(
                 text = "Hábitos",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -120,7 +119,7 @@ private fun HabitListSection(
                     IconContainer(
                         icon = iconByName(habit.icon),
                         contentDescription = habit.name,
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 text = habit.name,

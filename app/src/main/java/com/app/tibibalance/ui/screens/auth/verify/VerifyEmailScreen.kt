@@ -167,7 +167,7 @@ fun VerifyEmailScreen(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient)
+            .background(gradient())
     ) {
 
         /* ---------- Header ---------- */
