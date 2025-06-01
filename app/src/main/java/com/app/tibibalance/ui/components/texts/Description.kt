@@ -68,14 +68,15 @@ fun Description(
     color: Color = Text,
     textAlign: TextAlign? = null, // Alineación opcional
     maxLines: Int = Int.MAX_VALUE, // Sin límite de líneas por defecto
-    overflow: TextOverflow = TextOverflow.Clip // Corta el texto por defecto si excede
+    overflow: TextOverflow = TextOverflow.Clip, // Corta el texto por defecto si excede
+    style: TextStyle? = null
 ) {
     Text(
         text = text, // Texto a mostrar
         modifier = modifier, // Modificador externo
         color = color, // Color del texto
         // Estilo de texto específico para Description/Body
-        style = TextStyle(
+        style = style ?: TextStyle(
             fontFamily = FontFamily.Default,  // Fuente estándar (Roboto en Android)
             fontWeight = FontWeight.Normal, // Peso de fuente normal (estándar)
             fontSize = 16.sp, // Tamaño de fuente estándar para cuerpo

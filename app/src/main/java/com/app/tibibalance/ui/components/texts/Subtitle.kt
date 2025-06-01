@@ -68,14 +68,15 @@ fun Subtitle(
     color: Color = Text,
     textAlign: TextAlign? = null, // Alineación opcional
     maxLines: Int = Int.MAX_VALUE, // Sin límite de líneas por defecto
-    overflow: TextOverflow = TextOverflow.Clip // Corta el texto por defecto si excede
+    overflow: TextOverflow = TextOverflow.Clip, // Corta el texto por defecto si excede
+    style: TextStyle? = null // Estilo opcional
 ) {
     Text(
         text = text, // Texto a mostrar
         modifier = modifier, // Modificador externo
         color = color, // Color del texto
         // Estilo de texto específico para Subtitle
-        style = TextStyle(
+        style = style ?: TextStyle(
             fontFamily = FontFamily.Default,  // Fuente estándar
             fontWeight = FontWeight.SemiBold, // Peso semi-negrita
             fontSize = 20.sp, // Tamaño de fuente para subtítulo

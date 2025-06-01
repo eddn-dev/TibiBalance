@@ -3,7 +3,9 @@ package com.app.tibibalance.ui.components.containers
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.app.domain.entities.Challenge
 import com.app.domain.entities.DailyTip
 import com.app.domain.entities.DailyTipItem
@@ -31,8 +35,11 @@ import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.theme.LinkText
 import com.app.tibibalance.ui.theme.DailyTip as DailyTipColor
 import androidx.core.net.toUri
+import com.app.tibibalance.ui.components.texts.Description
+import androidx.compose.ui.text.TextStyle
 
 /** Tarjeta que muestra el “Tip del día” completo. */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DailyTip(
     tip: DailyTip,
@@ -51,35 +58,47 @@ fun DailyTip(
             colors   = CardDefaults.cardColors(containerColor = DailyTipColor),
             shape    = CardDefaults.shape
         ) {
-            Row(
+            Column(
                 Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 /* Columna de texto ocupa todo el espacio restante */
-                Column(
+                Row (
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp),          // separa del icono
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+
+                        .fillMaxWidth()
+                        .padding(end = 8.dp, bottom = 12.dp),          // separa del icono
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+
                 ) {
-                    Subtitle(tip.title)
-                    Text(tip.subtitle, style = MaterialTheme.typography.bodyMedium)
+                    Column(
+                        // ocupa 2 fracciones de 3
+                        modifier = Modifier.weight(7f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
 
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(tip.content) { item -> TipRow(item) }
+                    ) {
+                       Subtitle(tip.title)
+                       Description(tip.subtitle, style = TextStyle(
+                           fontFamily = FontFamily.Default,
+                           fontWeight = FontWeight.Normal,
+                           fontSize = 18.sp,
+                           lineHeight = 18.sp))
                     }
-                }
 
-                /* Icono principal (72 dp), alineado arriba-derecha */
-                val tipIcon = iconForName(tip.icon)
-                Image(
-                    painter = painterResource(tipIcon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(72.dp)
-                        .align(Alignment.Top)
-                )
+                    val tipIcon = iconForName(tip.icon)
+                    Image(
+                        painter = painterResource(tipIcon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(3f)
+                            .align(Alignment.Top)
+                    )
+
+                }
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(tip.content) { item -> TipRow(item) }
+                }
             }
         }
     }
@@ -87,10 +106,7 @@ fun DailyTip(
 
 /* Ítems individuales ---------------------------------------------------------------- */
 @Composable
-private fun TipRow(item2: DailyTipItem) {
-    var item = item2
-    if(item is Text)
-        item = Challenge(item.text)
+private fun TipRow(item: DailyTipItem) {
     Row(verticalAlignment = Alignment.CenterVertically) {
 
         when (item) {
@@ -103,9 +119,9 @@ private fun TipRow(item2: DailyTipItem) {
                         .padding(end = 8.dp)
                 )
             }
-            is Text -> Spacer(Modifier.width(32.dp))
-            is Link ->  Spacer(Modifier.width(32.dp))
-            is Challenge -> Spacer(Modifier.width(32.dp))
+            is Text -> Spacer(Modifier.width(12.dp))
+            is Link ->  Spacer(Modifier.width(12.dp))
+            is Challenge -> Spacer(Modifier.width(12.dp))
         }
 
         when (item) {
