@@ -80,7 +80,7 @@ fun ModalConfigNotification(
     logro?.let {
         ModalAchievementDialog(
             visible = true,
-            iconResId = R.drawable.reloj,
+            iconResId = R.drawable.ic_tibio_reloj,
             title = "¡Logro desbloqueado!",
             message = "${it.name}\n${it.description}",
             primaryButton = DialogButton("Aceptar") {
