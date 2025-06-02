@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.ksp)
+
 }
 
 android {
@@ -84,4 +85,8 @@ dependencies {
     /* ─── WorkManager (para SyncWorker) ───────────── */
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
+
+    // Librería de JSON para kotlinx.serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
 }

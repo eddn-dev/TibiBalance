@@ -1,3 +1,4 @@
+// data/src/main/java/com/app/data/local/dao/DailyMetricsDao.kt
 package com.app.data.local.dao
 
 import androidx.room.*
@@ -20,6 +21,9 @@ interface DailyMetricsDao {
 
     @Upsert
     suspend fun upsertAll(metrics: List<DailyMetricsEntity>)
+
+    @Query("SELECT * FROM daily_metrics WHERE date = :date")
+    suspend fun getOneByDate(date: String): DailyMetricsEntity?
 
     //Borra todos los registros de la tabla
     @Query("DELETE FROM daily_metrics")

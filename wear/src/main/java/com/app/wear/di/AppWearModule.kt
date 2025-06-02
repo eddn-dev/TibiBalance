@@ -1,3 +1,4 @@
+/*AppWearModule.kt*/
 package com.app.wear.di
 
 import android.content.Context
@@ -48,6 +49,14 @@ object AppWearModule { // Renombrado para mayor claridad
     @Provides
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+/*
+    Hilt está incluyendo automáticamente otro módulo (“SerializationModule”) que ya provee un
+    binding para Json. Por eso, a pesar de que solo se ve un único provideJson() en  AppWearModule,
+    Hilt en tiempo de compilación “insertó” un módulo adicional (el SerializationModule generado) que
+    también hace un @Provides fun provideJson(): Json. El resultado es que hay dos bindings para el mismo
+    tipo Json con el mismo scope @Singleton, y Dagger no sabe cuál escoger.
+
+    Por eso comentamos esto.
 
     // --- Serialización ---
     @Provides
@@ -57,7 +66,7 @@ object AppWearModule { // Renombrado para mayor claridad
         isLenient = true
         prettyPrint = false // Para producción, no necesitas pretty print
     }
-
+*/
     // --- DataSources ---
     @Provides
     @Singleton

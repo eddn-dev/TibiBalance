@@ -4,6 +4,14 @@
     <selectionStates>
       <SelectionState runConfigName="TibiBalance.app">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-06-02T07:49:05.839502300Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\isaac\.android\avd\Pixel_8_Pro.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="TibiBalance.wear">
         <option name="selectionMode" value="DROPDOWN" />

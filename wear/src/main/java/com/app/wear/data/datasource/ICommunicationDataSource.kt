@@ -1,6 +1,7 @@
 package com.app.wear.data.datasource
 
-import com.app.wear.data.model.DailyMetricsPayload
+
+import com.app.data.remote.model.DailyMetricsPayload
 import com.app.wear.data.model.HabitUpdatePayload
 
 interface ICommunicationDataSource {

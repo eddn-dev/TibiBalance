@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    package="com.app.tibibalance"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:name=".TibiBalanceApp"
@@ -13,9 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TibiBalance"
         tools:targetApi="31" >
+
         <receiver
             android:name="com.app.data.alert.HabitAlertReceiver"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,10 +26,24 @@
             android:theme="@style/Theme.TibiBalance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".wear.MobileWearDataReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+
+                <!-- Quedarnos solo con scheme y pathPrefix -->
+                <data
+                    android:scheme="wear"
+                    android:pathPrefix="/tibibalance" />
+            </intent-filter>
+        </service>
+
+
     </application>
 
 </manifest>

@@ -1,8 +1,10 @@
+/*AppDb.kt*/
 package com.app.data.local.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+
 import com.app.data.local.converters.DateTimeConverters
 import com.app.data.local.converters.EnumConverters
 import com.app.data.local.converters.IdConverters
@@ -19,6 +21,9 @@ import com.app.data.local.entities.HabitActivityEntity
 import com.app.data.local.entities.HabitEntity
 import com.app.data.local.entities.OnboardingStatusEntity
 import com.app.data.local.entities.UserEntity
+import android.content.Context
+import androidx.room.Room
+
 
 @Database(
     entities = [
@@ -40,5 +45,23 @@ abstract class AppDb : RoomDatabase() {
     abstract fun emotionDao()       : EmotionEntryDao
     abstract fun metricsDao()       : DailyMetricsDao
     abstract fun onboardingDao()    : OnboardingStatusDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDb? = null
+
+        fun getInstance(context: Context): AppDb {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDb::class.java,
+                    "tibibalance_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+
 }
 

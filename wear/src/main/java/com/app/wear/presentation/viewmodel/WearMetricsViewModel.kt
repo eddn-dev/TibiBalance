@@ -29,6 +29,7 @@ class WearMetricsViewModel @Inject constructor(
     private var currentHeartRate: Int? = null
     private var currentSteps: Int = 0
 
+
     companion object {
         private const val TAG = "WearMetricsVM"
     }
@@ -91,7 +92,7 @@ class WearMetricsViewModel @Inject constructor(
             val userId = "wear_user_placeholder" // Placeholder
 
             // Ensure we have some data to send, especially steps.
-            // Heart rate can be null.
+            /*// Heart rate can be null.
             if (currentSteps == 0 && currentHeartRate == null) {
                  _uiState.value = WearMetricsUiState.Success(
                     heartRate = currentHeartRate,
@@ -100,14 +101,24 @@ class WearMetricsViewModel @Inject constructor(
                 )
                 Log.d(TAG, "No data to send.")
                 return@launch
-            }
+            }*/
 
-            val metricsData = WearableDailyMetrics(
+            /*val metricsData = WearableDailyMetrics(
                 steps = currentSteps,
                 heartRate = currentHeartRate?.toFloat(),
                 caloriesBurned = calculateCaloriesBurned(currentSteps), // Ejemplo de lógica
                 activeMinutes = calculateActiveMinutes(currentSteps), // Ejemplo
                 distanceMeters = calculateDistance(currentSteps), // Ejemplo
+                timestamp = System.currentTimeMillis(),
+                userId = userId
+            )*/
+
+            val metricsData = WearableDailyMetrics(
+                steps = 123,
+                heartRate = 70f,
+                caloriesBurned = calculateCaloriesBurned(123),
+                activeMinutes = calculateActiveMinutes(123),
+                distanceMeters = calculateDistance(123),
                 timestamp = System.currentTimeMillis(),
                 userId = userId
             )

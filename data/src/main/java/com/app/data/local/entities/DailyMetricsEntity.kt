@@ -6,6 +6,7 @@ import com.app.domain.common.SyncMeta
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 
+
 @Entity(tableName = "daily_metrics")
 @TypeConverters(DateTimeConverters::class)
 data class DailyMetricsEntity(

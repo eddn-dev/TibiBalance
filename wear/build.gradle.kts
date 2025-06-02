@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     // Google Services para procesar google-services.json
-    alias(libs.plugins.google.services)
+    //alias(libs.plugins.google.services)
 
     // Hilt
     alias(libs.plugins.hilt.android)
@@ -19,7 +19,8 @@ android {
     compileSdk  = 35
 
     defaultConfig {
-        applicationId    = "com.app.wear"
+        //applicationId    = "com.app.wear"
+        applicationId = "com.app.tibibalance"
         minSdk           = 30
         targetSdk        = 35
         versionCode      = 1
@@ -105,5 +106,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
+
+    implementation(project(":data"))
 }
 
