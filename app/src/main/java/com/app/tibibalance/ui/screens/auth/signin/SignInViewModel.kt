@@ -9,6 +9,7 @@ import com.app.domain.model.UserCredentials
 import com.app.domain.usecase.auth.GoogleSignInUseCase
 import com.app.domain.usecase.auth.SignInUseCase
 import com.app.tibibalance.ui.components.utils.mapAuthErrorToMessage
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -99,6 +100,10 @@ class SignInViewModel @Inject constructor(
         when (val res = googleUseCase(idToken)) {
             is AuthResult.Success -> {
                 // Se asume que toda autenticación con Google implica usuario verificado
+                val userId = FirebaseAuth.getInstance().currentUser?.uid
+                if (userId != null) {
+                    //initializeAchievementsUseCase(userId)
+                }
                 _ui.value = SignInUiState.Success(true)
             }
             is AuthResult.Error -> {

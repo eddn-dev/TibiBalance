@@ -45,7 +45,7 @@ fun AchievementContainer(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFF5FBFD), shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(16.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp) // reduce padding
             .alpha(alphaValue),
         verticalAlignment = Alignment.CenterVertically
@@ -66,14 +66,14 @@ fun AchievementContainer(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1
             )
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2
             )
 

@@ -50,6 +50,7 @@ import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.utils.SettingItem
+import com.app.tibibalance.ui.components.utils.gradient
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -57,11 +58,6 @@ fun ConfigureNotificationScreen(
     navController: NavHostController,
     viewModel: ConfigureNotificationViewModel = hiltViewModel()
 ) {
-    /* ---------- fondo ---------- */
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
-
     /* ---------- UI-state ---------- */
     val ui by viewModel.ui.collectAsState()
     val selectedHabit by viewModel.selectedHabit.collectAsState()
@@ -76,7 +72,7 @@ fun ConfigureNotificationScreen(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient)
+            .background(gradient())
     ) {
         when (ui) {
             ConfigureNotifUiState.Loading -> Centered("Cargando…")
@@ -120,7 +116,8 @@ private fun HabitListSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         /* encabezado */
-        FormContainer(backgroundColor = Color(0xFFAED3E3)) {
+        FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant)
+        {
             Subtitle(
                 text = "Hábitos",
                 modifier = Modifier.fillMaxWidth(),
@@ -150,7 +147,7 @@ private fun HabitListSection(
                         modifier = Modifier.size(32.dp),
                     )
                 },
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { vm.selectHabit(habit) }
             )

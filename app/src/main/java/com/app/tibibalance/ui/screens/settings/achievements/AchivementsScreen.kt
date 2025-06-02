@@ -50,7 +50,7 @@ fun AchievementsScreen(
 
 
             FormContainer (
-                backgroundColor = Color(0xFFAED3E3),
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -63,7 +63,7 @@ fun AchievementsScreen(
                     Text(
                         text = "Tus logros",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -73,7 +73,7 @@ fun AchievementsScreen(
                 Text(
                     text = "⬇\uFE0F Desplazate hacia abajo⬇\uFE0F\npara ver el resto de los logros.",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
