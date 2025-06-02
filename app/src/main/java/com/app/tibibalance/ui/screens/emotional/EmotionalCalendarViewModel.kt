@@ -139,9 +139,10 @@ class EmotionalCalendarViewModel @Inject constructor(
             dayUi.day == today.dayOfMonth ->
                 DialogState.Register(today)
             dayUi.day  > today.dayOfMonth ->
-                DialogState.Info("No puedes registrar emociones de días futuros.")
+                DialogState.Info("\uD83D\uDE80Alto ahí viajero del tiempo \uD83D\uDD2E\n" +
+                        "Solo puedes registrar \nla emoción de hoy.\uD83D\uDCC5")
             else ->
-                DialogState.Info("Sólo puedes registrar la emoción de hoy.")
+                DialogState.Info("No te preocupes por el pasado\uD83D\uDDDD\uFE0F\n ¡Registra tu emoción de hoy!✨")
         }
     }
 
