@@ -204,7 +204,6 @@ private fun mapToNotif(raw: Map<String,Any>?): NotifConfig {
         enabled     = raw["enabled"] as? Boolean ?: true,
         message     = raw["message"] as? String ?: "¡Es hora!",
         times       = times,
-        pattern     = pattern,
         advanceMin  = (raw["advanceMin"] as? Number ?: 0).toInt(),
         snoozeMin   = (raw["snoozeMin"]  as? Number ?: 10).toInt(),
         mode        = runCatching { NotifMode.valueOf(raw["mode"] as? String ?: "SILENT") }
@@ -224,7 +223,6 @@ private fun notifToMap(cfg: NotifConfig): Map<String,Any> {
         put("enabled",    cfg.enabled)
         put("message",    cfg.message)
         put("times",      cfg.times.map { it.toJavaLocalTime().format(fmt) })
-        put("pattern",    repeatToMap(cfg.pattern))
         put("advanceMin", cfg.advanceMin)
         put("snoozeMin",  cfg.snoozeMin)
         put("mode",       cfg.mode.name)

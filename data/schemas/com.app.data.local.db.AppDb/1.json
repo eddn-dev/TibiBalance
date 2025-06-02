@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0713e8ea3ce5aadb96f3ed91b0b79ccd",
+    "identityHash": "46350480ae39aae61b68b6179c9ac633",
     "entities": [
       {
         "tableName": "habits",
@@ -116,7 +116,7 @@
       },
       {
         "tableName": "activities",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `habitId` TEXT NOT NULL, `completedAt` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`habitId`) REFERENCES `habits`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `habitId` TEXT NOT NULL, `activityDate` TEXT NOT NULL, `scheduledTime` TEXT, `status` TEXT NOT NULL, `targetQty` INTEGER, `recordedQty` INTEGER, `sessionUnit` TEXT, `loggedAt` INTEGER, `generatedAt` INTEGER NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`habitId`) REFERENCES `habits`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -131,31 +131,68 @@
             "notNull": true
           },
           {
-            "fieldPath": "completedAt",
-            "columnName": "completedAt",
+            "fieldPath": "activityDate",
+            "columnName": "activityDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduledTime",
+            "columnName": "scheduledTime",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetQty",
+            "columnName": "targetQty",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "recordedQty",
+            "columnName": "recordedQty",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sessionUnit",
+            "columnName": "sessionUnit",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "loggedAt",
+            "columnName": "loggedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "generatedAt",
+            "columnName": "generatedAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.createdAt",
-            "columnName": "meta_createdAt",
+            "columnName": "m_createdAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.updatedAt",
-            "columnName": "meta_updatedAt",
+            "columnName": "m_updatedAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "meta.deletedAt",
-            "columnName": "meta_deletedAt",
+            "columnName": "m_deletedAt",
             "affinity": "INTEGER"
           },
           {
             "fieldPath": "meta.pendingSync",
-            "columnName": "meta_pendingSync",
+            "columnName": "m_pendingSync",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -514,7 +551,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0713e8ea3ce5aadb96f3ed91b0b79ccd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '46350480ae39aae61b68b6179c9ac633')"
     ]
   }
 }

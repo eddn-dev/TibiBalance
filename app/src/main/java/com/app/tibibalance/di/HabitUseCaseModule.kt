@@ -22,5 +22,4 @@ object HabitUseCaseModule {
         getHabit = GetHabitById(repo)
     )
     @Provides fun provideDeleteHabit(repo: HabitRepository)       = DeleteHabit(repo)
-    @Provides fun provideMarkCompleted(repo: HabitRepository)     = MarkCompleted(repo)
 }

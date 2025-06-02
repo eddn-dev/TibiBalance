@@ -23,9 +23,16 @@ import javax.inject.Inject
 import android.content.Context
 import androidx.work.WorkManager
 import com.app.domain.repository.AuthRepository
+import com.app.domain.usecase.activity.GenerateActivitiesForHabit
 import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.domain.usecase.user.UnlockAchievementUseCase
+import com.app.tibibalance.ui.common.validation.HabitFormValidator
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 
 
 @HiltViewModel
@@ -34,7 +41,8 @@ class AddHabitViewModel @Inject constructor(
     getSuggested           : GetSuggestedHabits,
     private val unlockAchievement: UnlockAchievementUseCase,
     private val auth: AuthRepository,
-    private val getHabitsFlow: GetHabitsFlow
+    private val getHabitsFlow: GetHabitsFlow,
+    private val genForHabit: GenerateActivitiesForHabit
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(AddHabitUiState())
@@ -51,6 +59,7 @@ class AddHabitViewModel @Inject constructor(
     private fun resetState() { _ui.value = AddHabitUiState() }
 
     /* ---------- navegación ---------- */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun next() = _ui.update {
         if (isStepValid(it.currentStep, it.form))
             it.copy(currentStep = (it.currentStep + 1).coerceAtMost(3))
@@ -99,21 +108,6 @@ class AddHabitViewModel @Inject constructor(
         currentStep = 1
     )
 
-    /* ---------- guardado ---------- */
-    /*@RequiresApi(Build.VERSION_CODES.O)
-    fun save() = viewModelScope.launch {
-        val state = _ui.updateAndGet { it.copy(saving = true) }
-        runCatching { createHabit(state.form.toHabit()) }
-            .onSuccess {
-                /* mostramos diálogo de éxito */
-                _ui.value = AddHabitUiState(savedOk = true)
-
-            }
-            .onFailure { ex ->
-                _ui.update { it.copy(saving = false, errorMsg = ex.message) }
-            }
-    }*/
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun save(context: Context) = viewModelScope.launch {
         val uid = auth.authState().first() ?: return@launch
@@ -122,6 +116,14 @@ class AddHabitViewModel @Inject constructor(
         runCatching {
             val habit = state.form.toHabit()
             createHabit(habit)
+
+            /* 2️⃣  Si es reto ⇒ generar actividades de hoy/mañana */
+            if (habit.challenge != null) {
+                withContext(Dispatchers.IO) {        // decide el dispatcher aquí
+                    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                    genForHabit(habit, today)
+                }
+            }
 
             // --- Lógica de desbloqueo según categoría ---
             val logro = when (habit.category.name.lowercase()) {
@@ -195,33 +197,9 @@ class AddHabitViewModel @Inject constructor(
 
 
     /* ---------- validaciones ---------- */
-    fun isStepValid(step: Int, f: HabitForm): Boolean = when (step) {
-        /* Paso 1 – nombre obligatorio */
-        1 -> f.name.isNotBlank()
-
-        /* Paso 2 – seguimiento */
-        2 -> when {
-            /* reto exige periodo definido */
-            f.challenge &&
-                    (f.periodUnit == PeriodUnit.INDEFINIDO || f.periodQty == null)          -> false
-
-            /* repetición personalizada exige días */
-            f.repeatPreset == RepeatPreset.PERSONALIZADO && f.weekDays.isEmpty()        -> false
-
-            /* si el usuario eligió unidad de periodo, debe poner cantidad */
-            f.periodUnit != PeriodUnit.INDEFINIDO && f.periodQty == null               -> false
-
-            /* si eligió unidad de sesión, debe poner cantidad */
-            f.sessionUnit != SessionUnit.INDEFINIDO && f.sessionQty == null            -> false
-
-            else -> true
-        }
-
-        /* Paso 3 – si “notificar” está activo, al menos una hora */
-        3 -> !f.notify || f.notifTimes.isNotEmpty()
-
-        else -> true
-    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun isStepValid(step: Int, f: HabitForm): Boolean =
+        HabitFormValidator.isStepValid(step, f)
 
     fun acknowledgeSaved() {
         resetState()                                // ← vuelve todo a paso 0

@@ -43,7 +43,7 @@ fun DailyTip(
     tip: DailyTip,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(24.dp)) {
+    Column{
 
         /* Encabezado global */
         Title("Tip del día")

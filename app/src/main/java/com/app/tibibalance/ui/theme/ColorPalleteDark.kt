@@ -5,7 +5,7 @@ package com.app.tibibalance.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /* ─────────── Color de marca (azules muy oscuros) ─────────── */
-val primaryDark            = Color(0xFF0D47A1)   // Índigo muy oscuro (antes: 0xFF1B71C9)
+val primaryDark            = Color(0xFF1957B2)   // Índigo muy oscuro (antes: 0xFF1B71C9)
 /* Texto sobre primary */
 val onPrimaryDark          = Color(0xFFFFFFFF)   // Blanco puro
 

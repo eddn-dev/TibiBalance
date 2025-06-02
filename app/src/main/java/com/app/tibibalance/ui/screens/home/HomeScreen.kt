@@ -1,6 +1,8 @@
 /* :app/ui/screens/home/HomeScreen.kt */
 package com.app.tibibalance.ui.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -15,11 +17,13 @@ import com.app.domain.entities.DailyTip
 import com.app.tibibalance.ui.components.containers.DailyTip
 import com.app.tibibalance.ui.components.texts.Title // drawables / colores
 import com.app.tibibalance.ui.components.containers.ConnectWatchCard
+import com.app.tibibalance.ui.components.feed.ActivityFeed
 import com.app.tibibalance.ui.components.utils.PagerIndicator
 
 private const val PAGES = 2     // Tip · Métricas
 
 /* :app/ui/screens/home/HomeScreen.kt */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
@@ -28,40 +32,50 @@ fun HomeScreen(
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
     Column(
-        modifier = Modifier
+        Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(horizontal = 24.dp)
+            .padding(top = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        /* ── Saludo siempre visible ─────────────────────────── */
-        val name = state.user?.displayName.orEmpty()
-        Title("¡Hola de nuevo! $name")
+        /* Saludo */
+        Title("¡Hola de nuevo! ${state.user?.displayName.orEmpty()}")
 
-        /* ── Pager con Tip / Métricas ───────────────────────── */
+        /* Pager reducido */
         HorizontalPager(
-            state   = pagerState,
+            state = pagerState,
+            pageSpacing = 16.dp,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) { page ->
             when (page) {
-                0 -> TipPage(
-                    tip       = state.dailyTip
-                )
+                0 -> TipPage(state.dailyTip)
                 1 -> MetricsPage()
             }
         }
 
-        /* ── Indicador inferior ─────────────────────────────── */
         PagerIndicator(
             pagerState = pagerState,
             pageCount  = 2,
             modifier   = Modifier.align(Alignment.CenterHorizontally)
         )
+
+        /* Feed de actividades — ocupa resto de la pantalla */
+        ActivityFeed(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            activities = state.activities,
+            onClickCard = { /* TODO: navegar al diálogo de registro */ },
+
+        )
     }
 }
 
+
 /* -------------- Página 0: Tip del día ---------------- */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TipPage(
     tip: DailyTip?
@@ -70,7 +84,7 @@ private fun TipPage(
         DailyTip(tip = tip)
     } else {
         // Fallback cuando no hay tip disponible (raro)
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
             Text("Sin tip disponible", style = MaterialTheme.typography.bodyLarge)
         }
     }
