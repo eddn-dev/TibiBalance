@@ -1,74 +1,71 @@
-/**
- * @file    ColorPaletteDark.kt
- * @ingroup ui_theme
- * @brief   Paleta *dark* para TibiBalance (Material 3 + branding azul).
- *
- * @details
- *  – Todos los valores están en formato ARGB 0xFFRRGGBB.
- *  – Los tonos siguen la escala de Material 3 (tone-based surfaces y roles).
- *  – Se procuró contraste AA y coherencia con la paleta *light* que ya generamos.
- *
- *  Referencias:
- *    • Roles y tonos   –  Material 3 docs :contentReference[oaicite:0]{index=0}
- *    • Dynamic/dark    –  Material 3 “Static & Dynamic color” :contentReference[oaicite:1]{index=1}
- *    • Design tokens   –  Material 3 tokens overview :contentReference[oaicite:2]{index=2}
- *    • Contraste AA    –  Dark-theme guidance :contentReference[oaicite:3]{index=3}
- *    • Scrim & sheets  –  Bottom-sheet spec (scrim) :contentReference[oaicite:4]{index=4}
- */
+// ColorPaletteDark.kt (versión ajustada)
 
 package com.app.tibibalance.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-/* ─────────── Color de marca (azules “mid-night”) ─────────── */
-val primaryDark            = Color(0xFF1B71C9)   ///< Tone 60 – azul principal
-val onPrimaryDark          = Color(0xFFFFFFFF)
-val primaryContainerDark   = Color(0xFF004B8E)   ///< Tone 30
-val onPrimaryContainerDark = Color(0xFFB9D9FF)   ///< Texto en contenedor
+/* ─────────── Color de marca (azules muy oscuros) ─────────── */
+val primaryDark            = Color(0xFF0D47A1)   // Índigo muy oscuro (antes: 0xFF1B71C9)
+/* Texto sobre primary */
+val onPrimaryDark          = Color(0xFFFFFFFF)   // Blanco puro
 
-/* El inverso de primary para *surface* elevadas */
-val inversePrimaryDark     = Color(0xFF3EA8FE)   ///< Re-usa tu azul claro
+/* Container del primary, un tono aún más oscuro */
+val primaryContainerDark   = Color(0xFF082E7B)   // Índigo/antracita, para botones secundarios o contenedores
+val onPrimaryContainerDark = Color(0xFFB9D9FF)   // Permanece claro para texto, funciona sobre primaryContainerDark
 
-/* ─────────── Secundarios / Terciarios (tono sutil) ────────── */
-val secondaryDark          = Color(0xFFB8B5BC)   ///< Neutro frío
-val onSecondaryDark        = Color(0xFF201F24)
-val secondaryContainerDark = Color(0xFF6C6C6C)
-val onSecondaryContainerDark = Color(0xFFDCD9E0)
+/* Inverso primario (antes era azul claro, ahora lo trasladamos al mismo tono índigo oscuro) */
+val inversePrimaryDark     = Color(0xFF0D47A1)   // Igual que primaryDark (no hay “azul claro”)
 
-val tertiaryDark           = Color(0xFF7BA5C4)
-val onTertiaryDark         = Color(0xFF002138)
-val tertiaryContainerDark  = Color(0xFF00395B)
-val onTertiaryContainerDark = Color(0xFFBFD9F3)
+/* ─────────── Secundarios / Terciarios (neutros/grises) ────────── */
+// He convertido el tono terciario a un gris oscuro, para evitar cualquier azul “vistoso”.
+val secondaryDark          = Color(0xFFB8B5BC)   // Neutro frío claro
+val onSecondaryDark        = Color(0xFF201F24)   // Texto sobre secondaryDark
+val secondaryContainerDark = Color(0xFF5E5C63)   // Gris antracita claro
+val onSecondaryContainerDark = Color(0xFFDCD9E0) // Texto sobre secondaryContainerDark
+
+/* En vez de un azul en tertiary, usamos gris humo oscuro */
+val tertiaryDark           = Color(0xFF5E5E5E)   // Gris medio/oscuro
+val onTertiaryDark         = Color(0xFFF1F1F1)   // Blanco sucio, para contraste
+val tertiaryContainerDark  = Color(0xFF424242)   // Gris oscuro (container)
+val onTertiaryContainerDark = Color(0xFFE0E0E0)  // Gris claro para texto
 
 /* ─────────── Neutrales (background & surfaces) ───────────── */
-val backgroundDark         = Color(0xFF151B2A)   ///< M3 tone 6
-val onBackgroundDark       = Color(0xFFE3E2E6)   ///< M3 tone 90
-val surfaceDark            = Color(0xFF1A1C1E)
-val onSurfaceDark          = Color(0xFFC7C6CA)
-val surfaceVariantDark     = Color(0xFF44464F)
-val onSurfaceVariantDark   = Color(0xFFC4C7CF)
+// Fondo degradado: gris-azulado medio → gris-oscuro, sin tonos azules vivos
+val backgroundDark         = Color(0xFF2E374D)   // Gris-azulado medio
+val onBackgroundDark       = Color(0xFFE3E2E6)   // Texto casi blanco
 
-/* Tint = primary para *elevation overlays* */
+val surfaceDark            = Color(0xFF23282F)   // Gris oscuro con ligero matiz frío
+val onSurfaceDark          = Color(0xFFC7C6CA)   // Texto blanco grisáceo
+
+val surfaceVariantDark     = Color(0xFF3A4050)   // Gris-pizarra medio
+val onSurfaceVariantDark   = Color(0xFFC4C7CF)   // Texto sobre la variante
+
+/* Tint para overlays de elevación: ahora el mismo índigo oscuro */
 val surfaceTintDark        = primaryDark
 
-/*  Inverse (para *snackbars*, *tooltips*, etc.)  */
-val inverseSurfaceDark     = Color(0xFFF4EFF4)   ///< tone 95 :contentReference[oaicite:5]{index=5}
-val inverseOnSurfaceDark   = Color(0xFF313033)
+/*  Inverse (snackbars, tooltips, etc.)  */
+val inverseSurfaceDark     = Color(0xFFF4EFF4)   // Gris muy claro
+val inverseOnSurfaceDark   = Color(0xFF313033)   // Texto sobre inverseSurfaceDark
 
 /* ─────────── Feedback (errores, outline, scrim) ──────────── */
-val errorDark            = Color(0xFFF2B8B5)   ///< baseline dark error :contentReference[oaicite:6]{index=6}
-val onErrorDark          = Color(0xFF601410)
-val errorContainerDark   = Color(0xFF8C1D18)   ///< tone 30 :contentReference[oaicite:7]{index=7}
-val onErrorContainerDark = Color(0xFFF9DEDC)
-val outlineDark          = Color(0xFF938F99)   ///< tone 60 :contentReference[oaicite:8]{index=8}
-val outlineVariantDark   = Color(0xFF44464F)   ///< tone 30
-val scrimDark            = Color(0xFF000000)   ///< 60 % alpha manejado por M3 :contentReference[oaicite:9]{index=9}
+// Error ahora es un rojo más apagado/muteado, no tan brillante
+val errorDark            = Color(0xFFB85F5B)   // Rojo “rojizo suave”
+// Texto sobre el error
+val onErrorDark          = Color(0xFFFFFFFF)   // Blanco puro
+
+// Container de error ligeramente más oscuro que errorDark
+val errorContainerDark   = Color(0xFF5F1F1E)   // Rojo muy oscuro/muteado
+val onErrorContainerDark = Color(0xFFF9DEDC)   // Texto semiblanco
+
+val outlineDark          = Color(0xFF938F99)   // Continúa siendo un gris frío neutro
+val outlineVariantDark   = Color(0xFF44464F)   // Bordes más oscuros
+val scrimDark            = Color(0xFF000000)   // Negro puro (con alfa aplicado dinámicamente)
 
 /* ──────── Surfaces jerárquicas (tone-based) ─────────────── */
-val surfaceBrightDark           = Color(0xFF35383B)   ///< tone 24
-val surfaceContainerDark        = Color(0xFF1F2326)   ///< tone 12
-val surfaceContainerHighDark    = Color(0xFF262A2D)   ///< tone 17
-val surfaceContainerHighestDark = Color(0xFF2F3336)   ///< tone 22
-val surfaceContainerLowDark     = Color(0xFF14171A)   ///< tone 8
-val surfaceContainerLowestDark  = Color(0xFF0D0E11)   ///< tone 4
-val surfaceDimDark              = Color(0xFF121316)   ///< tone 6
+val surfaceBrightDark           = Color(0xFF353A43)   // Un grado más claro que surfaceVariantDark
+val surfaceContainerDark        = Color(0xFF23282F)   // Igual que surfaceDark
+val surfaceContainerHighDark    = Color(0xFF2A2F38)   // Intermedio, para tarjetas elevadas
+val surfaceContainerHighestDark = Color(0xFF303743)   // Para bottom sheets o diálogos
+val surfaceContainerLowDark     = Color(0xFF1E2228)   // Un peldaño debajo de surfaceDark
+val surfaceContainerLowestDark  = Color(0xFF191C21)   // Muy oscuro, fondo de modal full-screen
+val surfaceDimDark              = Color(0xFF1C1F24)   // Gris casi negro con leve matiz frío
