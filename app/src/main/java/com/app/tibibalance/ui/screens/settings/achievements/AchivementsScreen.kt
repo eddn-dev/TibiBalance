@@ -152,7 +152,7 @@ fun AchievementsScreen(
 
                 val emotions30 = logros["emociones_30_dias"]
                 AchievementContainer(
-                    iconRes = R.drawable.emocional,
+                    iconRes = R.drawable.ic_emocional,
                     title = "Un tibio emocional",
                     description = "Registra tus emociones por 30 días consecutivos.",
                     percent = emotions30?.progress ?: 0,

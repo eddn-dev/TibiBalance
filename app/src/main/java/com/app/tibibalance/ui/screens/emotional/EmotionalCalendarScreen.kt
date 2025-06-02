@@ -134,7 +134,7 @@ fun EmotionalCalendarScreen(
         logroFeliz?.let { logro ->
             val iconRes = when (logro.id) {
                 "feliz_7_dias"         -> R.drawable.ic_tibio_calendar
-                "emociones_30_dias" -> R.drawable.emocional
+                "emociones_30_dias" -> R.drawable.ic_emocional
                 else                  -> R.drawable.avatar_placeholder
             }
             ModalAchievementDialog(
