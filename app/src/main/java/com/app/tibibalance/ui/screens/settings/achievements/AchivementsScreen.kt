@@ -19,23 +19,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Text
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontWeight
-
-
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
-import com.app.tibibalance.ui.screens.settings.achievements.AchievementsViewModel
 import androidx.compose.runtime.getValue
+import com.app.tibibalance.ui.components.utils.gradient
 
 
 @Composable
 fun AchievementsScreen(
     onNavigateUp: () -> Unit
 ) {
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
-
     val vm: AchievementsViewModel = hiltViewModel()
     val logros by vm.logros.collectAsState()
 
@@ -43,7 +36,7 @@ fun AchievementsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient) // Aplica el fondo degradado.
+            .background(gradient()) // Aplica el fondo degradado.
     ) {
         // Columna principal para el contenido, permite desplazamiento vertical.
         Column(
