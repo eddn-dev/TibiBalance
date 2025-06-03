@@ -10,12 +10,14 @@ import com.app.data.local.converters.EnumConverters
 import com.app.data.local.converters.IdConverters
 import com.app.data.local.converters.RepeatConverters
 import com.app.data.local.dao.DailyMetricsDao
+import com.app.data.local.dao.DailyTipDao
 import com.app.data.local.dao.EmotionEntryDao
 import com.app.data.local.dao.HabitActivityDao
 import com.app.data.local.dao.HabitDao
 import com.app.data.local.dao.OnboardingStatusDao
 import com.app.data.local.dao.UserDao
 import com.app.data.local.entities.DailyMetricsEntity
+import com.app.data.local.entities.DailyTipEntity
 import com.app.data.local.entities.EmotionEntryEntity
 import com.app.data.local.entities.HabitActivityEntity
 import com.app.data.local.entities.HabitEntity
@@ -29,7 +31,8 @@ import androidx.room.Room
     entities = [
         HabitEntity::class, HabitActivityEntity::class,
         UserEntity::class, EmotionEntryEntity::class,
-        DailyMetricsEntity::class, OnboardingStatusEntity::class
+        DailyMetricsEntity::class, OnboardingStatusEntity::class,
+        DailyTipEntity::class
     ],
     version = 1,
     exportSchema = true
@@ -45,7 +48,6 @@ abstract class AppDb : RoomDatabase() {
     abstract fun emotionDao()       : EmotionEntryDao
     abstract fun metricsDao()       : DailyMetricsDao
     abstract fun onboardingDao()    : OnboardingStatusDao
-
     companion object {
         @Volatile
         private var INSTANCE: AppDb? = null
@@ -62,6 +64,6 @@ abstract class AppDb : RoomDatabase() {
             }
         }
     }
-
+    abstract fun dailyTipDao()      : DailyTipDao
 }
 

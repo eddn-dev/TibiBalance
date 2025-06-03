@@ -4,7 +4,9 @@
 [versions]
 agp                   = "8.8.2"
 androidDatabaseSqlcipher = "4.5.4"
+json = "20231013"
 kotlin                = "2.0.21"
+kotlinxCollectionsImmutable = "0.3.5"
 ksp                   = "2.0.21-1.0.28"
 work                  = "2.9.0"
 gradleWrapper         = "8.12.1"
@@ -50,7 +52,6 @@ kotlin-android        = { id = "org.jetbrains.kotlin.android",        version.re
 kotlin-compose        = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization  = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm            = { id = "org.jetbrains.kotlin.jvm",            version.ref = "kotlin" }
-kotlin-kapt           = { id = "org.jetbrains.kotlin.kapt",           version.ref = "kotlin" }
 kotlin-ksp            = { id = "com.google.devtools.ksp",             version.ref = "ksp" }
 hilt-android          = { id = "com.google.dagger.hilt.android",      version.ref = "hilt" }
 google-services       = { id = "com.google.gms.google-services",      version = "4.4.2" }
@@ -62,6 +63,9 @@ dokka                 = { id = "org.jetbrains.dokka",                 version.re
 # --------------------------------------------------------
 [libraries]
 health-services-client      = { group = "androidx.health", name = "health-services-client", version.ref = "healthServices" }
+json = { module = "org.json:json", version.ref = "json" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
 org-jetbrains-kotlinx-kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
 wear-compose-foundation     = { group = "androidx.wear.compose", name = "compose-foundation",  version.ref = "wearCompose" }
 wear-compose-material       = { group = "androidx.wear.compose", name = "compose-material",    version.ref = "wearCompose" }

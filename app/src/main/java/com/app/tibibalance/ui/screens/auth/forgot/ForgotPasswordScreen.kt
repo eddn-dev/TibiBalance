@@ -1,4 +1,4 @@
- /**
+/**
  * @file    ForgotPasswordScreen.kt
  * @ingroup ui_screens_auth // Grupo para pantallas de autenticación
  * @brief   Define el [Composable] para la pantalla de recuperación de contraseña.
@@ -36,22 +36,37 @@
 package com.app.tibibalance.ui.screens.auth.forgot
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.tibibalance.R
-import com.app.tibibalance.ui.components.*
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
@@ -60,9 +75,8 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Description
+import com.app.tibibalance.ui.components.utils.gradient
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordUiState
-import com.app.tibibalance.ui.screens.auth.forgot.ForgotPasswordViewModel
 
 /**
  * @brief Composable que define la interfaz de usuario para la pantalla de recuperación de contraseña.
@@ -113,7 +127,10 @@ fun ForgotPasswordScreen(
         /* fase ÉXITO */
         icon = if (uiState is ForgotPasswordUiState.Success) Icons.Default.Check else null, // Icono de check para éxito.
         message = if (uiState is ForgotPasswordUiState.Success)
-            "Hemos enviado un enlace para restablecer tu contraseña.\nRevisa tu correo." // Mensaje de éxito.
+            "¡Listo! ✔\uFE0F \nSi ya tienes una cuenta en Tibibalance, te enviaremos un " +
+                    "\nenlace a tu correo para que \npuedas cambiar tu contraseña." +
+                    "\n\n Revisa tu \uD83D\uDCE7correo electrónico, recuerda que este vencerá \nen una hora ⏰" +
+                    " \n\nAsegúrate de revisar también \ntu carpeta de ⛔ spam."// Mensaje de éxito.
         else null,
 
         /* botón “Aceptar” sólo en éxito */
@@ -135,9 +152,7 @@ fun ForgotPasswordScreen(
     )
 
     /* ---- Fondo degradado ---- */
-    val gradient = Brush.verticalGradient(
-        listOf(Color(0xFF3EA8FE).copy(alpha = .25f), Color.White)
-    )
+    val gradient = gradient()
 
     // Contenedor principal que ocupa toda la pantalla.
     Box(
@@ -169,7 +184,7 @@ fun ForgotPasswordScreen(
 
             // Texto instructivo.
             Description(
-                text = "Ingresa tu correo electrónico y enviaremos un link para recuperar tu contraseña",
+                text = "¿Olvidaste tu contraseña? \nNo te preocupes, ingresa tu correo electrónico \ny te enviaremos un enlace para recuperarla.",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center // Texto centrado.
             )

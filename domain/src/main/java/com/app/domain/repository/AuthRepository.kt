@@ -30,5 +30,6 @@ interface AuthRepository {
     suspend fun reload(): AuthResult<Unit>
     suspend fun syncVerification(): AuthResult<Unit>
     fun currentProvider(): String?
+    suspend fun deleteAccount(): Result<Unit>
 }
 

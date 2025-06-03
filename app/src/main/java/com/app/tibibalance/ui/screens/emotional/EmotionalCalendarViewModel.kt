@@ -21,16 +21,20 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.domain.entities.EmotionEntry
+import com.app.domain.repository.AuthRepository
 import com.app.domain.usecase.emotions.ObserveEmotions
 import com.app.domain.usecase.emotions.SaveEmotion
+import com.app.domain.usecase.user.UnlockAchievementUseCase
 import com.app.tibibalance.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import kotlinx.datetime.Clock
-import java.time.ZoneId
+import kotlinx.datetime.DateTimeUnit
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 
 /* ────────────────────────────────────────────────────────────────── */
 /* 1 ▸ diálogos                                                        */
@@ -53,6 +57,8 @@ sealed interface DialogState {
 class EmotionalCalendarViewModel @Inject constructor(
     observeEmotions: ObserveEmotions,
     private val saveEmotion : SaveEmotion,
+    private val unlockAchievement: UnlockAchievementUseCase,
+    private val auth: AuthRepository
 ) : ViewModel() {
 
     /* ---------- UI State ---------- */
@@ -63,8 +69,52 @@ class EmotionalCalendarViewModel @Inject constructor(
     private val _dialog = MutableStateFlow<DialogState>(DialogState.None)
     val dialog: StateFlow<DialogState> = _dialog
 
+    private val _logroFeliz = MutableStateFlow<AchievementUnlocked?>(null)
+    val logroFeliz: StateFlow<AchievementUnlocked?> = _logroFeliz
+
     init {
         observeEmotions()
+            .onEach { entries ->  // aquí sí son EmotionEntry
+                val uid = auth.authState().firstOrNull() ?: return@onEach
+                val felicidadDates = entries
+                    .filter { it.emojiId == "FELICIDAD" }
+                    .map { it.date }
+                    .sorted()
+
+                val rachaFeliz = streakLength(felicidadDates)
+                val progresoFeliz = (rachaFeliz.coerceAtMost(7) * 100 / 7.0).toInt()
+
+                if (rachaFeliz >= 7) {
+                    val desbloqueado = unlockAchievement(uid, "feliz_7_dias")
+                    if (desbloqueado) {
+                        _logroFeliz.value = AchievementUnlocked(
+                            id = "feliz_7_dias",
+                            name = "Todo en su lugar",
+                            description = "Registra un estado de ánimo “feliz” por siete días consecutivos."
+                        )
+                    }
+                } else {
+                    unlockAchievement.updateProgress(uid, "feliz_7_dias", progresoFeliz)
+                }
+
+                // nuevo logro: emociones_30_dias
+                val fechasRegistradas = entries.map { it.date }.distinct().sorted()
+                val rachaTotal = streakLength(fechasRegistradas)
+                val progresoTotal = (rachaTotal.coerceAtMost(30) * 100 / 30.0).toInt()
+
+                if (rachaTotal >= 30) {
+                    val desbloqueado = unlockAchievement(uid, "emociones_30_dias")
+                    if (desbloqueado) {
+                        _logroFeliz.value = AchievementUnlocked(
+                            id = "emociones_30_dias",
+                            name = "Un tibio emocional",
+                            description = "Registra tus emociones por 30 días consecutivos."
+                        )
+                    }
+                } else {
+                    unlockAchievement.updateProgress(uid, "emociones_30_dias", progresoTotal)
+                }
+            }
             .map(::mapMonthToUi)
             .onEach { days ->
                 _ui.value = if (days.isEmpty())
@@ -73,7 +123,7 @@ class EmotionalCalendarViewModel @Inject constructor(
                     EmotionalUiState.Loaded(days)
             }
             .catch { e ->
-                _ui.value   = EmotionalUiState.Error(e.message ?: "Error")
+                _ui.value = EmotionalUiState.Error(e.message ?: "Error")
                 _dialog.value = DialogState.Error(e.message ?: "Error")
             }
             .launchIn(viewModelScope)
@@ -89,9 +139,10 @@ class EmotionalCalendarViewModel @Inject constructor(
             dayUi.day == today.dayOfMonth ->
                 DialogState.Register(today)
             dayUi.day  > today.dayOfMonth ->
-                DialogState.Info("No puedes registrar emociones de días futuros.")
+                DialogState.Info("\uD83D\uDE80Alto ahí viajero del tiempo \uD83D\uDD2E\n" +
+                        "Solo puedes registrar \nla emoción de hoy.\uD83D\uDCC5")
             else ->
-                DialogState.Info("Sólo puedes registrar la emoción de hoy.")
+                DialogState.Info("No te preocupes por el pasado\uD83D\uDDDD\uFE0F\n ¡Registra tu emoción de hoy!✨")
         }
     }
 
@@ -137,5 +188,52 @@ class EmotionalCalendarViewModel @Inject constructor(
         Emotion.DISGUSTO.name     -> R.drawable.ic_disgustingimage
         Emotion.MIEDO.name        -> R.drawable.ic_fearimage
         else                      -> 0
+    }
+
+    private fun has7ConsecutiveDays(dates: List<LocalDate>): Boolean {
+        val sortedDates = dates.sorted()
+        var streak = 1
+        for (i in 1 until sortedDates.size) {
+            if (sortedDates[i - 1].plus(1, DateTimeUnit.DAY) == sortedDates[i]) {
+                streak++
+                if (streak >= 7) return true
+            } else {
+                streak = 1
+            }
+        }
+        return false
+    }
+
+    private fun has30ConsecutiveDays(dates: List<LocalDate>): Boolean {
+        val sortedDates = dates.distinct().sorted()
+        var streak = 1
+        for (i in 1 until sortedDates.size) {
+            if (sortedDates[i - 1].plus(1, DateTimeUnit.DAY) == sortedDates[i]) {
+                streak++
+                if (streak >= 30) return true
+            } else {
+                streak = 1
+            }
+        }
+        return false
+    }
+
+    fun ocultarLogroFeliz() {
+        _logroFeliz.value = null
+    }
+
+    private fun streakLength(dates: List<LocalDate>): Int {
+        val sorted = dates.distinct().sorted()
+        var streak = 1
+        var maxStreak = 1
+        for (i in 1 until sorted.size) {
+            if (sorted[i - 1].plus(1, DateTimeUnit.DAY) == sorted[i]) {
+                streak++
+                maxStreak = maxOf(maxStreak, streak)
+            } else {
+                streak = 1
+            }
+        }
+        return maxStreak
     }
 }

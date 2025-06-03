@@ -75,8 +75,7 @@ fun BottomNavBar(
             .height(120.dp)
             .navigationBarsPadding(),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 8.dp,
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        shadowElevation = 8.dp
     ) {
         Row(
             Modifier

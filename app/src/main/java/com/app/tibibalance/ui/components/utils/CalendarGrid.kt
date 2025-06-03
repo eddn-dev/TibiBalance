@@ -51,9 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.containers.ImageContainer
-import com.app.tibibalance.ui.theme.DayContainerSelected
-import com.app.tibibalance.ui.theme.DayContainerUnSelected
-import com.app.tibibalance.ui.theme.NumberDay
 
 
 /**
@@ -130,9 +127,9 @@ fun CalendarGrid(
                             .clickable(enabled = dayItem.day != null) { dayItem.onClick() },
                         shape          = RoundedCornerShape(8.dp), // Bordes redondeados
                         // Color de fondo condicional: más oscuro si está seleccionado
-                        color          = if (dayItem.isSelected) DayContainerSelected else DayContainerUnSelected,
+                        color          = if (dayItem.isSelected) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceVariant,
                         // Borde condicional: solo visible si está seleccionado
-                        border         = if (dayItem.isSelected) BorderStroke(1.dp, DayContainerSelected) else null,
+                        border         = if (dayItem.isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null,
                         tonalElevation = 0.dp // Sin elevación adicional
                     ) {
                         // Contenedor para superponer icono y número del día
@@ -155,7 +152,7 @@ fun CalendarGrid(
                                     text      = dayNumber.toString(), // Número del día
                                     fontSize  = 16.sp, // Tamaño del texto
                                     // Color blanco semitransparente para que sea visible sobre el icono
-                                    color     = NumberDay,
+                                    color     = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                     textAlign = TextAlign.Center, // Centrado
                                     modifier  = Modifier.align(Alignment.Center) // Asegura alineación central
                                 )

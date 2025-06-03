@@ -1,0 +1,520 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 8,
+    "identityHash": "0713e8ea3ce5aadb96f3ed91b0b79ccd",
+    "entities": [
+      {
+        "tableName": "habits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `category` TEXT NOT NULL, `icon` TEXT NOT NULL, `repeat` TEXT NOT NULL, `notifConfig` TEXT NOT NULL, `challenge` TEXT, `isBuiltIn` INTEGER NOT NULL, `s_qty` INTEGER, `s_unit` TEXT NOT NULL, `p_qty` INTEGER, `p_unit` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "repeat",
+            "columnName": "repeat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notifConfig",
+            "columnName": "notifConfig",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "challenge",
+            "columnName": "challenge",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isBuiltIn",
+            "columnName": "isBuiltIn",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "session.qty",
+            "columnName": "s_qty",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "session.unit",
+            "columnName": "s_unit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "period.qty",
+            "columnName": "p_qty",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "period.unit",
+            "columnName": "p_unit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "m_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "m_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "m_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "m_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "activities",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `habitId` TEXT NOT NULL, `completedAt` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`habitId`) REFERENCES `habits`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "habitId",
+            "columnName": "habitId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completedAt",
+            "columnName": "completedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "meta_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "meta_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "meta_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "meta_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_activities_habitId",
+            "unique": false,
+            "columnNames": [
+              "habitId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_activities_habitId` ON `${TABLE_NAME}` (`habitId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "habits",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "habitId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `email` TEXT NOT NULL, `displayName` TEXT, `photoUrl` TEXT, `birthDate` TEXT NOT NULL, `settings_theme` TEXT NOT NULL, `settings_notif` INTEGER NOT NULL, `settings_lang` TEXT NOT NULL, `settings_tts` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "photoUrl",
+            "columnName": "photoUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "birthDate",
+            "columnName": "birthDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settingsTheme",
+            "columnName": "settings_theme",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settingsNotif",
+            "columnName": "settings_notif",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settingsLang",
+            "columnName": "settings_lang",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settingsTTS",
+            "columnName": "settings_tts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "meta_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "meta_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "meta_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "meta_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uid"
+          ]
+        }
+      },
+      {
+        "tableName": "emotions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `emojiId` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "emojiId",
+            "columnName": "emojiId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "m_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "m_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "m_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "m_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date"
+          ]
+        }
+      },
+      {
+        "tableName": "daily_metrics",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `avgHeart` INTEGER, `calories` INTEGER, `source` TEXT NOT NULL, `importedAt` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "steps",
+            "columnName": "steps",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avgHeart",
+            "columnName": "avgHeart",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "calories",
+            "columnName": "calories",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "importedAt",
+            "columnName": "importedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "meta_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "meta_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "meta_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "meta_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date"
+          ]
+        }
+      },
+      {
+        "tableName": "onboarding_status",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tutorialCompleted",
+            "columnName": "tutorialCompleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "legalAccepted",
+            "columnName": "legalAccepted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "permissionsAsked",
+            "columnName": "permissionsAsked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completedAt",
+            "columnName": "completedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "m_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "m_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "m_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "m_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uid"
+          ]
+        }
+      },
+      {
+        "tableName": "daily_tips",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT NOT NULL, `icon` TEXT NOT NULL, `content` TEXT NOT NULL, `active` INTEGER NOT NULL, `lastShown` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtitle",
+            "columnName": "subtitle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastShown",
+            "columnName": "lastShown",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0713e8ea3ce5aadb96f3ed91b0b79ccd')"
+    ]
+  }
+}

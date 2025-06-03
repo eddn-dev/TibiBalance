@@ -5,7 +5,11 @@
  */
 package com.app.data.di
 
+import com.app.data.remote.datasource.DailyTipsRemoteDataSource
+import com.app.data.remote.datasource.FirebaseDailyTipsRemoteDataSource
+import com.app.data.remote.datasource.FirebaseHabitActivityRemoteDataSource
 import com.app.data.remote.datasource.FirebaseHabitRemoteDataSource
+import com.app.data.remote.datasource.HabitActivityRemoteDataSource
 import com.app.data.remote.datasource.HabitRemoteDataSource
 import dagger.Binds
 import dagger.Module
@@ -20,4 +24,14 @@ abstract class RemoteModule {
     abstract fun bindHabitRemoteDataSource(
         impl: FirebaseHabitRemoteDataSource
     ): HabitRemoteDataSource
+
+    @Binds @Singleton
+    abstract fun bindDailyTipsRemoteDataSource(
+        impl: FirebaseDailyTipsRemoteDataSource
+    ): DailyTipsRemoteDataSource
+
+    @Binds @Singleton
+    abstract fun bindHabitActivityRemoteDataSource(
+        impl: FirebaseHabitActivityRemoteDataSource
+    ): HabitActivityRemoteDataSource
 }

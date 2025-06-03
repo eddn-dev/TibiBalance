@@ -7,22 +7,28 @@ import com.app.domain.entities.User
 import com.app.domain.entities.UserSettings
 import com.app.domain.enums.ThemeMode
 import com.app.domain.repository.AuthRepository
+import com.app.domain.usecase.auth.DeleteAccountUseCase
 import com.app.domain.usecase.auth.SignOutUseCase
 import com.app.domain.usecase.user.ObserveUser
 import com.app.domain.usecase.user.UpdateUserSettings        // ⬅️ nuevo
 import com.app.tibibalance.ui.theme.ThemeController
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     authRepo           : AuthRepository,
     observeUser        : ObserveUser,
     private val update : UpdateUserSettings,
     private val theme  : ThemeController,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase
 ) : ViewModel() {
 
     /* ---------- UI ---------- */
@@ -30,7 +36,8 @@ class SettingsViewModel @Inject constructor(
         val loading   : Boolean = true,
         val user      : User?   = null,
         val error     : String? = null,
-        val signingOut: Boolean = false
+        val signingOut: Boolean = false,
+        val navigatingToGoodbye: Boolean = false
     )
 
     /* logout one-shot */
@@ -97,5 +104,36 @@ class SettingsViewModel @Inject constructor(
         signOutUseCase()
         _ui.update { it.copy(signingOut = false) }
         /* authState() emitirá null → _loggedOut */
+    }
+
+    fun deleteAccount() = viewModelScope.launch {
+        _ui.update { it.copy(loading = true) }
+        val result = deleteAccountUseCase()
+        _ui.update { it.copy(loading = false) }
+
+        if (result.isSuccess) {
+            _loggedOut.tryEmit(Unit)  // navega a pantalla de inicio
+        } else {
+            _ui.update { it.copy(error = result.exceptionOrNull()?.message) }
+        }
+    }
+
+    fun reauthenticateAndDelete(password: String) = viewModelScope.launch {
+        val user = FirebaseAuth.getInstance().currentUser
+        val email = user?.email ?: return@launch
+
+        val credential = EmailAuthProvider.getCredential(email, password)
+
+        try {
+            user.reauthenticate(credential).await()
+            user.delete().await()
+            _ui.update { it.copy(navigatingToGoodbye = true) }
+        } catch (e: Exception) {
+            _ui.update { it.copy(error = e.message ?: "Error al eliminar cuenta") }
+        }
+    }
+
+    fun clearError() {
+        _ui.update { it.copy(error = null) }
     }
 }

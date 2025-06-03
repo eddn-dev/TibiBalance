@@ -39,7 +39,6 @@ import androidx.compose.ui.tooling.preview.Preview // Importar para Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.app.tibibalance.ui.theme.DefaultTint
 
 /**
  * @brief Un [Composable] que actúa como contenedor base para los diálogos modales de la aplicación.
@@ -77,11 +76,11 @@ fun ModalContainer(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier, // Modificador para el Card interno
     shape: Shape = RoundedCornerShape(16.dp), // Forma por defecto
-    containerColor: Color = MaterialTheme.colorScheme.surface, // Color de fondo del tema
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant, // Color de fondo del tema
     contentColor: Color = contentColorFor(containerColor), // Color de contenido acorde al fondo
     properties: DialogProperties = DialogProperties(), // Propiedades del diálogo (e.g., dismiss)
     closeButtonEnabled: Boolean = true, // Mostrar botón 'X' por defecto
-    closeButtonBackgroundColor: Color = DefaultTint, // Fondo blanco para el botón 'X'
+    closeButtonBackgroundColor: Color = MaterialTheme.colorScheme.surface, // Fondo blanco para el botón 'X'
     closeButtonContentColor: Color = MaterialTheme.colorScheme.onSurface, // Color del icono 'X'
     content: @Composable ColumnScope.() -> Unit // Slot para el contenido principal
 ) {

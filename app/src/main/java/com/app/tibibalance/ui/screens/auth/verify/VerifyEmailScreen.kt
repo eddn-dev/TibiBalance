@@ -60,11 +60,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.tibibalance.R
@@ -74,11 +74,9 @@ import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.layout.Header
+import com.app.tibibalance.ui.components.utils.gradient
 import com.app.tibibalance.ui.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
-import com.app.tibibalance.ui.theme.BluePrimaryLight
-import com.app.tibibalance.ui.theme.White
-import com.app.tibibalance.ui.theme.gradient
 
 /**
  * @brief Composable principal para la pantalla de verificación de correo electrónico.
@@ -146,7 +144,7 @@ fun VerifyEmailScreen(
             success != null -> DialogButton("Aceptar") {
                 vm.clear()
                 if (success.goHome) {
-                    nav.navigate(Screen.Launch.route) {          // 👈 cambia Main → Launch
+                    nav.navigate(Screen.Launch.route) {
                         popUpTo(Screen.Launch.route) { inclusive = true }
                     }
                 }
@@ -167,7 +165,7 @@ fun VerifyEmailScreen(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .background(gradient)
+            .background(gradient())
     ) {
 
         /* ---------- Header ---------- */
@@ -177,7 +175,7 @@ fun VerifyEmailScreen(
             showBackButton = false, // No se muestra botón de retroceso.
             modifier       = Modifier
                 .fillMaxWidth()
-                .background(White) // Fondo blanco para el Header.
+                .background(MaterialTheme.colorScheme.surface) // Fondo blanco para el Header.
                 .height(56.dp) // Altura estándar para la barra de aplicación.
                 .align(Alignment.TopCenter) // Alinea el Header en la parte superior.
         )
@@ -196,11 +194,13 @@ fun VerifyEmailScreen(
             /* Texto principal */
             Text(
                 "¡Revisa tu correo!",
+                fontWeight = FontWeight.SemiBold,
                 style     = MaterialTheme.typography.headlineSmall, // Estilo de texto prominente.
                 textAlign = TextAlign.Center // Texto centrado.
+
             )
 
-            Spacer(Modifier.height(8.dp)) // Espacio vertical.
+            Spacer(Modifier.height(5.dp)) // Espacio vertical.
 
             /* Ilustración */
             // Muestra una imagen relacionada con el envío de correos.
@@ -210,12 +210,14 @@ fun VerifyEmailScreen(
                 modifier = Modifier.size(300.dp) // Tamaño de la imagen.
             )
 
-            Spacer(Modifier.height(8.dp))
-
             /* Subtítulo/Instrucción */
             Text(
-                "Se ha enviado a tu correo un enlace\npara verificar tu cuenta",
-                style     = MaterialTheme.typography.bodyMedium, // Estilo de texto estándar.
+                " ✅ Te enviamos un enlace a tu correo \nelectrónico para verificar tu cuenta." +
+                        " \n\nRecuerda que expira en 1 hora ⏰ ," +
+                        " \npor favor, revisa también tu bandeja \nde spam si no lo encuentras. \uD83D\uDCE7",
+                style     = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 16.sp
+                ), // Estilo de texto estándar.
                 textAlign = TextAlign.Center
             )
 
@@ -235,7 +237,6 @@ fun VerifyEmailScreen(
             /* Botón: Ya lo verifiqué */
             PrimaryButton(
                 text = "Ya lo verifiqué",
-                container = BluePrimaryLight,
                 onClick = vm::verify, // Llama al método del ViewModel para verificar.
                 modifier = Modifier
                     .fillMaxWidth()

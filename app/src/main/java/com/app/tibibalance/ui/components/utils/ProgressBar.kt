@@ -36,9 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.app.tibibalance.ui.theme.Text
-import com.app.tibibalance.ui.theme.barColor
-import com.app.tibibalance.ui.theme.trackColor
 
 /**
  * @brief Un [Composable] que muestra una barra de progreso lineal con un texto de porcentaje debajo.
@@ -75,7 +72,7 @@ fun ProgressBar(
                 .width(160.dp) // Ancho fijo para la barra
                 .height(18.dp) // Altura fija
                 .clip(RoundedCornerShape(9.dp)) // Bordes redondeados (radio = altura / 2)
-                .background(trackColor) // Color de fondo del track
+                .background(MaterialTheme.colorScheme.secondary) // Color de fondo del track
 
         ) {
             // Box que representa el progreso actual, superpuesto al track
@@ -85,7 +82,7 @@ fun ProgressBar(
                     // Ancho fraccional basado en el porcentaje (asegurado entre 0 y 1)
                     .fillMaxWidth(percent.coerceIn(0, 100) / 100f)
                     .clip(RoundedCornerShape(9.dp)) // Mismos bordes redondeados
-                    .background(barColor) // Color de la barra de progreso
+                    .background(MaterialTheme.colorScheme.primary) // Color de la barra de progreso
             )
         }
         // Espacio entre la barra y el texto del porcentaje
@@ -95,7 +92,7 @@ fun ProgressBar(
             text = "$percent%", // Formatea el número con el símbolo '%'
             fontSize = 12.sp, // Tamaño de fuente pequeño
             fontWeight = FontWeight.Medium, // Peso de fuente medio
-            color = Text, // Color negro para el texto (podría usar MaterialTheme.colorScheme.onSurface)
+            color = MaterialTheme.colorScheme.onSurface, // Color negro para el texto (podría usar MaterialTheme.colorScheme.onSurface)
             textAlign = TextAlign.Center, // Texto centrado
             modifier = Modifier.fillMaxWidth() // Ocupa el ancho para el centrado
         )

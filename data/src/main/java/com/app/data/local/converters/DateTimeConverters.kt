@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.app.domain.enums.*
 import com.app.domain.ids.*
 import com.app.domain.config.Repeat
+import com.app.domain.entities.DailyTipItem
 import kotlinx.datetime.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -37,4 +38,19 @@ object DateTimeConverters {
     @TypeConverter
     fun stringToLocalTime(value: String?): LocalTime? =
         value?.let(LocalTime::parse)
+
+    private val json = Json {
+        classDiscriminator = "type"
+        encodeDefaults = true
+        ignoreUnknownKeys = true
+    }
+
+    /* List<DailyTipItem> ⇄ String (JSON) ---------------------------------- */
+    @TypeConverter
+    fun listToString(value: List<DailyTipItem>?): String? =
+        value?.let { json.encodeToString(it) }
+
+    @TypeConverter
+    fun stringToList(value: String?): List<DailyTipItem>? =
+        value?.let { json.decodeFromString(it) }
 }

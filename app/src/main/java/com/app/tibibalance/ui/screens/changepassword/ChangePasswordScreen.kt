@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,8 +39,7 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputPassword
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Description
-import com.app.tibibalance.ui.theme.Container
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 
 @Composable
 fun ChangePasswordScreen(
@@ -79,7 +79,7 @@ fun ChangePasswordScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .background(gradient)
+                .background(gradient())
                 .verticalScroll(rememberScrollState())
                 .padding(top = 100.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -106,7 +106,7 @@ fun ChangePasswordScreen(
                     .fillMaxWidth()
                     .padding(20.dp)
                     .shadow(8.dp, RoundedCornerShape(16.dp), clip = false)
-                    .background(Container, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp))
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

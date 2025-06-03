@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp // Para Preview
-import com.app.tibibalance.ui.theme.LinkText
 
 /**
  * @brief Un [Composable] que renderiza un [TextButton] con la apariencia de un hipervínculo.
@@ -61,7 +60,7 @@ fun TextButtonLink(
         // Texto interno del botón
         Text(
             text = text, // El texto a mostrar
-            color = LinkText, // Usa el color primario del tema
+            color = MaterialTheme.colorScheme.onSurfaceVariant, // Usa el color primario del tema
             // Usa el estilo bodySmall y aplica el subrayado condicionalmente
             style = MaterialTheme.typography.bodySmall.copy(
                 textDecoration = if (underline) TextDecoration.Underline else TextDecoration.None

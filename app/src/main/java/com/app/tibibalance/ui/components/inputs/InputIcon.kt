@@ -20,6 +20,7 @@
  */
 package com.app.tibibalance.ui.components.inputs
 
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid

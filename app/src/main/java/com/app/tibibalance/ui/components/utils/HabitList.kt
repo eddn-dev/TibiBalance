@@ -15,6 +15,7 @@
 package com.app.tibibalance.ui.components.utils
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,13 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.domain.enums.HabitCategory
 import com.app.tibibalance.ui.components.buttons.RoundedIconButton
+import com.app.tibibalance.ui.components.containers.IconContainer
 import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
-import com.app.tibibalance.ui.theme.BluePrimaryLight
-import com.app.tibibalance.ui.theme.DefaultTint
+
 
 /* ────────────────────────────────────────────────────────────────── */
 /* Sección pública                                                   */
@@ -68,8 +69,6 @@ internal fun HabitList(
         HabitCategory.BIENESTAR,
         HabitCategory.PERSONALIZADA
     )
-
-
 
     /* Agrupa por categoría (clave String) */
     val grouped: Map<String, List<HabitUi>> =
@@ -99,8 +98,8 @@ internal fun HabitList(
                 onClick            = onAdd,
                 icon               = Icons.Default.Add,
                 contentDescription = "Agregar hábito",
-                backgroundColor    = BluePrimaryLight,
-                iconTint           = DefaultTint
+                backgroundColor    = MaterialTheme.colorScheme.primary,
+                iconTint           = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -139,11 +138,10 @@ private fun Category(
         SettingItem(
             // Icono principal (leading)
             leadingIcon = {
-                Icon(
-                    // Selecciona el icono basado en el nombre guardado en HabitUi
-                    imageVector = iconByName(h.icon),
-                    contentDescription = null, // Icono decorativo dentro de un item con texto
-                    tint = MaterialTheme.colorScheme.primary // Tinte primario del tema
+                IconContainer(
+                    icon = iconByName(h.icon),
+                    contentDescription = h.name,
+                    modifier = Modifier.size(24.dp)
                 )
             },
             // Texto principal (nombre del hábito)
@@ -155,6 +153,7 @@ private fun Category(
                     onCheckedChange = { isChecked -> onCheck(h, isChecked) } // Llama al callback al cambiar
                 )
             },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
             // Acción al hacer clic en toda la fila (excepto el checkbox)
             onClick = { onEdit(h) }
         )
@@ -214,11 +213,11 @@ private fun HeaderBox(text: String) = Box(
     modifier = Modifier
         .fillMaxWidth() // Ocupa todo el ancho
         // Fondo con color específico y esquinas redondeadas
-        .background(Color(0xFF85C3DE), RoundedCornerShape(15.dp))
-        .padding(vertical = 8.dp), // Padding vertical interno
+        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(15.dp))
+        .padding(vertical = 12.dp), // Padding vertical interno
     contentAlignment = Alignment.Center // Centra el contenido (el Title)
 ) {
-    Title(text, Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+    Title(text, Modifier.fillMaxWidth(), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface)
 }
 
 /**

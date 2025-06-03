@@ -54,6 +54,7 @@ import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
+import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputDate
 import com.app.tibibalance.ui.components.inputs.InputEmail
@@ -61,7 +62,7 @@ import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.gradient
+import com.app.tibibalance.ui.components.utils.gradient
 import kotlinx.datetime.LocalDate
 import java.util.Calendar
 
@@ -92,8 +93,12 @@ fun EditProfileScreen(
         icon = Icons.Default.Check,
         message = "Cambios guardados",
         primaryButton = DialogButton("Cerrar") {
-            vm.consumeSuccess()
-            nav.popBackStack()
+            if (vm.shouldPopAfterSuccess()) {
+                vm.consumeSuccess()
+                nav.popBackStack()
+            } else {
+                vm.onSuccessClosed() // aquí se mostrará el modal del logro
+            }
         }
     )
 
@@ -128,7 +133,7 @@ fun EditProfileScreen(
             Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .background(gradient)
+                .background(gradient())
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -168,7 +173,7 @@ fun EditProfileScreen(
             }
 
             /* ---------- formulario ---------- */
-            FormContainer(backgroundColor = Color(0xFFDEEDF4)) {
+            FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
 
                 InputText(
                     value         = name,
@@ -225,6 +230,21 @@ fun EditProfileScreen(
                 )
             }
         }
+    }
+
+    val logroDesbloqueado by vm.logroDesbloqueado.collectAsState()
+
+    logroDesbloqueado?.let { logro ->
+        ModalAchievementDialog(
+            visible = true,
+            iconResId = R.drawable.ic_tibio_camera, // ícono del logro (usa el que corresponda)
+            title = "¡Logro desbloqueado!",
+            message = "${logro.name}\n${logro.description}",
+            primaryButton = DialogButton("Aceptar") {
+                vm.dismissAchievementModal()
+                nav.popBackStack()
+            }
+        )
     }
 }
 
