@@ -20,6 +20,7 @@ import javax.inject.Singleton
 class DailyMetricsRepository @Inject constructor(
     private val dailyMetricsDao: DailyMetricsDao
 ) {
+    // 1) Guardar en Room a partir de un payload Wear (DailyMetricsPayload)
     suspend fun saveFromPayload(payload: DailyMetricsPayload) {
         val dataInstant: Instant =
             Instant.fromEpochMilliseconds(payload.timestamp)
@@ -43,6 +44,7 @@ class DailyMetricsRepository @Inject constructor(
         dailyMetricsDao.upsertAll(listOf(entity))
     }
 
+    // 2) Obtener solo las entidades pendientes de sincronizar (meta.pendingSync = true)
     suspend fun getPendingSyncEntities(): List<DailyMetricsEntity> {
         val today: LocalDate =
             Clock.System.now()
@@ -54,7 +56,7 @@ class DailyMetricsRepository @Inject constructor(
         return allInRange.filter { it.meta.pendingSync }
     }
 
-
+    // 3) Marcar como sincronizadas (pendingSync = false) ciertas fechas
     suspend fun markAsSynced(dates: List<LocalDate>) {
         val now = Clock.System.now()  // <— aquí definimos “now”
         val toUpsert = dates.mapNotNull { date ->
@@ -72,6 +74,7 @@ class DailyMetricsRepository @Inject constructor(
         }
     }
 
+    // 4) Metodo para observar métricas en un rango (para UI)
     fun observeRange(from: String, to: String): Flow<List<DailyMetricsEntity>> {
         return dailyMetricsDao.observeRange(from, to)
     }

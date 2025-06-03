@@ -32,6 +32,13 @@ class MobileWearDataReceiver : WearableListenerService() {
     }
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
+        // 1) Log “creado” y “onDataChanged” al inicio
+        // 2) Iterar por cada DataEvent
+        // 3) Si path == "/tibibalance/metrics", extraer String JSON del DataMap ["payload_json"]
+        // 4) Deserializarlo a DailyMetricsPayload
+        // 5) Invocar DailyMetricsRepository.saveFromPayload(payload)
+        // 6) Log “Métricas guardadas en Room [timestamp=…]”
+
         Log.d(TAG, "onDataChanged ► se invocó con ${dataEvents.count()} evento(s)")
         for (event in dataEvents) {
             if (event.type != DataEvent.TYPE_CHANGED) continue
