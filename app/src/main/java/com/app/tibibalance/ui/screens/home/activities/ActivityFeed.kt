@@ -1,189 +1,162 @@
-/*
+/**
  * @file    ActivityFeed.kt
- * @ingroup ui_component_feed
- * @brief   Lista dinámica de tarjetas de actividades de hábitos-reto.
- *
- *  • Agrupa automáticamente en:
- *      1) Por registrar
- *      2) Próximamente
- *      3) Completadas
- *  • Cada tarjeta usa SettingItem para aspecto consistente.
- *  • Colores se toman de MaterialTheme y cambian con light/dark.
+ * @brief   Feed de actividades agrupado en: Próximamente ▸ Por registrar ▸
+ *          Vencidas ▸ Completadas.
  */
-
-package com.app.tibibalance.ui.components.feed
+package com.app.tibibalance.ui.screens.home.activities
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Pix
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.app.domain.entities.HabitActivity
 import com.app.domain.enums.ActivityStatus
-import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.utils.SettingItem
-import java.time.format.DateTimeFormatter
+import com.app.tibibalance.ui.theme.Green
 import kotlinx.datetime.*
+import java.time.format.DateTimeFormatter
 
-/* ──────────────── MODELO AUXILIAR ──────────────── */
+/* ─────────────  Modelo auxiliar  ───────────── */
 
-/**
- * Agrupa la actividad con la información de su hábito.
- */
 data class ActivityUi(
-    val act: HabitActivity,
-    val name: String,      // habit.name
-    val icon: ImageVector        // drawable id del icono del hábito
+    val act  : HabitActivity,
+    val name : String,
+    val icon : ImageVector,
 )
 
-/* ──────────────── COMPOSABLE PRINCIPAL ──────────────── */
+/* ─────────────  Feed principal  ───────────── */
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActivityFeed(
     modifier   : Modifier = Modifier,
     activities : List<ActivityUi>,
-    now        : LocalDateTime = Clock.System.now().toLocalDateTime(
-        TimeZone.currentSystemDefault()
-    ),
-    onClickCard: (ActivityUi) -> Unit,
-
+    now        : Instant = Clock.System.now(),
+    onClickCard: (ActivityUi) -> Unit
 ) {
-    /* 1. Clasificar */
-    val (ready, upcomingTmp) = activities.partition { it.isReady(now) }
-    val (upcoming, done)     = upcomingTmp.partition { it.act.status == ActivityStatus.PENDING }
+    val grouped = activities.groupBy { it.bucket(now) }
 
     LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        if (ready.isNotEmpty())   section("Por registrar", ready, onClickCard)
-        if (upcoming.isNotEmpty()) section("Próximamente", upcoming, onClickCard)
-        if (done.isNotEmpty())    section("Completadas", done,  onClickCard)
+        grouped[Bucket.READY   ]?.let { section("Por registrar", it,  true,  onClickCard) }
+        grouped[Bucket.UPCOMING]?.let { section("Próximamente", it, false, onClickCard) }
+        grouped[Bucket.OVERDUE ]?.let { section("Vencidas",      it, false, onClickCard) }
+        grouped[Bucket.DONE    ]?.let { section("Completadas",   it, false, onClickCard) }
     }
 }
 
-/* ──────────────── HELPERS UI ──────────────── */
+/* ─────────────  Sección con título  ───────────── */
 
 @RequiresApi(Build.VERSION_CODES.O)
 private fun LazyListScope.section(
-    title : String,
-    items : List<ActivityUi>,
-    onClick: (ActivityUi) -> Unit
+    title     : String,
+    items     : List<ActivityUi>,
+    clickable : Boolean,
+    onClick   : (ActivityUi) -> Unit
 ) {
     item {
         Text(
-            title,
+            text  = title,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
             modifier = Modifier.padding(bottom = 4.dp)
         )
     }
-    items(
-        items = items,
-        key   = { it.act.id.raw }
-    ) { ui ->
-        ActivityCard(ui, onClick)
+    items(items, key = { it.act.id.raw }) { ui ->
+        ActivityCard(ui, clickable, onClick)
     }
 }
 
-/* Tarjeta individual (envuelta en SettingItem) */
+/* ─────────────  Tarjeta individual  ───────────── */
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun ActivityCard(
-    ui      : ActivityUi,
-    onClick : (ActivityUi) -> Unit
+    ui        : ActivityUi,
+    clickable : Boolean,
+    onClick   : (ActivityUi) -> Unit
 ) {
-
-
-    /* Colores según estado */
-    val colors = MaterialTheme.colorScheme
+    /* fondo según estado */
     val bg = when (ui.act.status) {
-        ActivityStatus.PENDING,
-        ActivityStatus.AVAILABLE_FOR_LOGGING -> colors.surfaceVariant
-        ActivityStatus.COMPLETED            -> colors.tertiaryContainer
-        ActivityStatus.PARTIALLY_COMPLETED  -> colors.secondaryContainer
-        ActivityStatus.MISSED               -> colors.errorContainer
+        ActivityStatus.COMPLETED            -> Green
+        ActivityStatus.PARTIALLY_COMPLETED  -> MaterialTheme.colorScheme.surfaceVariant
+        ActivityStatus.MISSED               -> MaterialTheme.colorScheme.errorContainer
+        else                                -> MaterialTheme.colorScheme.secondaryContainer
     }
 
-    /* Trailing – icono o progreso */
+    /* trailing (icono / progreso) */
     val trailing: @Composable () -> Unit = when (ui.act.status) {
-        ActivityStatus.PENDING,
-        ActivityStatus.AVAILABLE_FOR_LOGGING -> {
-            {
-                Icon(
-                    imageVector = Icons.Default.Schedule,
-                    contentDescription = "Programado"
-                )
-            }
-        }
-        ActivityStatus.COMPLETED -> {
-            { Icon(Icons.Default.CheckCircle, contentDescription = "Completado") }
-        }
+        ActivityStatus.COMPLETED -> { {Icon(Icons.Default.CheckCircle, null) } }
         ActivityStatus.PARTIALLY_COMPLETED -> {
             {
-                val target = ui.act.targetQty ?: 0
-                val rec    = ui.act.recordedQty ?: 0
-                Text("$rec/$target")
+                val r = ui.act.recordedQty ?: 0
+                val t = ui.act.targetQty   ?: 0
+                Text("$r/$t")
             }
         }
-        ActivityStatus.MISSED -> { { Text("—") } }
+        ActivityStatus.MISSED -> { { Icon(Icons.Default.Pix, null) } }
+        ActivityStatus.PENDING -> { { Icon(Icons.Default.Schedule, null) } }
+        ActivityStatus.AVAILABLE_FOR_LOGGING -> { { Icon(Icons.AutoMirrored.Filled.Assignment, null) } }
     }
 
-    /* Texto hora / “Cualquier momento” */
-    val desc = buildString {
-        append(ui.name)
-        val lt = ui.act.scheduledTime
-        append(" • ")
-        append(
-            lt?.let { DateTimeFormatter.ofPattern("HH:mm").format(it.toJavaLocalTime()) }
-                ?: "Cualquier momento"
-        )
-    }
+    /* label “Hoy / Mañana – HH:mm | Sin hora” */
+    val tz        = TimeZone.currentSystemDefault()
+    val todayDate = Clock.System.now().toLocalDateTime(tz).date
+    val labelDay  = if (ui.act.activityDate == todayDate) "Hoy" else "Mañana"
+    val labelTime = ui.act.scheduledTime?.timeFmt() ?: "Cualquier momento"
+    val desc      = "${ui.name}\n$labelDay, $labelTime"
 
     SettingItem(
         leadingIcon = {
-            Icon(
-                imageVector = ui.icon,          // ⬅️ usa el vector directamente
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Icon(ui.icon, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary)
         },
         text          = desc,
         trailing      = trailing,
-        onClick       = { onClick(ui) },
+        onClick       = if (clickable) { { onClick(ui) } } else null,
         containerColor= bg,
         cornerRadius  = 12.dp
     )
 }
 
-/* ──────────────── LÓGICA DE ESTADO ──────────────── */
+/* ─────────────  Clasificación (bucket)  ───────────── */
 
-private fun ActivityUi.isReady(now: LocalDateTime): Boolean {
-    val statusReady = when (act.status) {
-        ActivityStatus.PENDING                -> false    // aún no
-        ActivityStatus.AVAILABLE_FOR_LOGGING  -> true
-        ActivityStatus.COMPLETED,
-        ActivityStatus.PARTIALLY_COMPLETED,
-        ActivityStatus.MISSED                 -> false
+private enum class Bucket { UPCOMING, READY, OVERDUE, DONE }
+
+private fun ActivityUi.bucket(now: Instant): Bucket = when (act.status) {
+    ActivityStatus.COMPLETED,
+    ActivityStatus.PARTIALLY_COMPLETED        -> Bucket.DONE
+
+    ActivityStatus.PENDING,
+    ActivityStatus.AVAILABLE_FOR_LOGGING      -> {
+        val open  = act.opensAt   ?: Instant.DISTANT_PAST
+        val close = act.expiresAt ?: Instant.DISTANT_FUTURE
+        when {
+            now <  open -> Bucket.UPCOMING
+            now >  close -> Bucket.OVERDUE
+            else -> Bucket.READY
+        }
     }
-    val timeReady  = act.scheduledTime?.let { lt ->
-        now.hour == lt.hour && now.minute >= lt.minute
-    } ?: true
-    return statusReady || timeReady
+
+    ActivityStatus.MISSED                    -> Bucket.OVERDUE
 }
 
-/* util rápido */
+/* ─────────────  Formato HH:mm  ───────────── */
+
 @RequiresApi(Build.VERSION_CODES.O)
-private fun LocalTime.toJavaLocalTime(): java.time.LocalTime =
-    java.time.LocalTime.of(hour, minute)
+private fun LocalTime.timeFmt(): String =
+    DateTimeFormatter.ofPattern("HH:mm")
+        .format(java.time.LocalTime.of(hour, minute))

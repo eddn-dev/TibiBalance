@@ -49,8 +49,8 @@ val inverseOnSurfaceLight   = Color(0xFFF4EFF4)   ///< ← el que faltaba
 /* ───────────────────────── errores & feedback ───────────────────── */
 val errorLight            = Color(0xFFB3261E)
 val onErrorLight          = Color(0xFFFFFFFF)
-val errorContainerLight   = Color(0xFFF9DEDC)
-val onErrorContainerLight = Color(0xFF410E0B)
+val errorContainerLight   = Color(0xFFF5352B)
+val onErrorContainerLight = Color(0xFF2D0907)
 val outlineLight          = Color(0xFF79747E)
 val outlineVariantLight   = Color(0xFFC4C7CF)
 val scrimLight            = Color(0xFF000000)

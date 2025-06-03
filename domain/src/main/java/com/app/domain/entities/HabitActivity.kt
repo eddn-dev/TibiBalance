@@ -31,7 +31,17 @@ data class HabitActivity(
      * Proviene de uno de los `LocalTime` en `Habit.notifConfig.times`.
      * Es crucial porque un hábito puede tener múltiples ocurrencias en un mismo día.
      */
-    val scheduledTime: LocalTime,
+    val scheduledTime: LocalTime? = null,
+
+    /**
+     * Inicio de la ventana para registrar el progreso de esta actividad.
+     */
+    val opensAt : Instant? = null,
+
+    /**
+     * Fin de la ventana para registrar el progreso de esta actividad.
+     */
+    val expiresAt: Instant? = null,
 
     /** Estado actual del progreso de esta actividad. Mutable. */
     var status: ActivityStatus = ActivityStatus.PENDING,

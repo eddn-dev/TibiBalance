@@ -54,7 +54,7 @@ val errorDark            = Color(0xFFB85F5B)   // Rojo “rojizo suave”
 val onErrorDark          = Color(0xFFFFFFFF)   // Blanco puro
 
 // Container de error ligeramente más oscuro que errorDark
-val errorContainerDark   = Color(0xFF5F1F1E)   // Rojo muy oscuro/muteado
+val errorContainerDark   = Color(0xFF5E0D0A)   // Rojo muy oscuro/muteado
 val onErrorContainerDark = Color(0xFFF9DEDC)   // Texto semiblanco
 
 val outlineDark          = Color(0xFF938F99)   // Continúa siendo un gris frío neutro

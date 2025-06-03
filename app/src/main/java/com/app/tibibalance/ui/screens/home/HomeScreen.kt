@@ -17,8 +17,9 @@ import com.app.domain.entities.DailyTip
 import com.app.tibibalance.ui.components.containers.DailyTip
 import com.app.tibibalance.ui.components.texts.Title // drawables / colores
 import com.app.tibibalance.ui.components.containers.ConnectWatchCard
-import com.app.tibibalance.ui.components.feed.ActivityFeed
+import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.components.utils.PagerIndicator
+import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
 
 private const val PAGES = 2     // Tip · Métricas
 
@@ -61,15 +62,24 @@ fun HomeScreen(
             modifier   = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        /* Feed de actividades — ocupa resto de la pantalla */
+        /* -------- Feed de actividades -------- */
         ActivityFeed(
-            modifier = Modifier
+            modifier   = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
             activities = state.activities,
-            onClickCard = { /* TODO: navegar al diálogo de registro */ },
-
+            onClickCard = viewModel::openLog            // ✅ abre el modal
         )
+
+
+        /* -------- diálogo de registro -------- */
+        state.selectedActivity?.let { sel ->
+            ActivityLogDialog(
+                ui        = sel,
+                onDismiss = { viewModel.dismissLog() },
+                onConfirm = { qty, st -> viewModel.saveProgress(sel.act.id, qty, st) }
+            )
+        }
     }
 }
 

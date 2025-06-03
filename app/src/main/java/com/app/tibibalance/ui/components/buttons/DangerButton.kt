@@ -56,7 +56,7 @@ fun DangerButton(
     enabled     : Boolean  = true, // Habilitado por defecto
     isLoading   : Boolean  = false, // No cargando por defecto
     container   : Color    = MaterialTheme.colorScheme.errorContainer, // Color rojo por defecto
-    contentColor: Color    = MaterialTheme.colorScheme.error // Color blanco por defecto
+    contentColor: Color    = MaterialTheme.colorScheme.onErrorContainer // Color blanco por defecto
 ) {
     // El botón solo está realmente habilitado si el parámetro 'enabled' es true
     // Y si no está en estado de carga 'isLoading'.
