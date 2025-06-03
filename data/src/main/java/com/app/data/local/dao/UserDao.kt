@@ -29,6 +29,7 @@ interface UserDao {
         UPDATE users
         SET settings_theme = :theme,
             settings_notif = :notif,
+            settings_notif = :notifE,
             settings_lang  = :lang,
             settings_tts   = :tts,
             meta_updatedAt = :updatedAt,
@@ -40,6 +41,7 @@ interface UserDao {
         uid: String,
         theme: String,
         notif: Boolean,
+        notifE : Boolean,
         lang: String,
         tts: Boolean,
         updatedAt: Long

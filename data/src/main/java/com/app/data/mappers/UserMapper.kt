@@ -38,6 +38,7 @@ object UserMappers {
         settingsNotif = settings.notifGlobal,
         settingsLang  = settings.language,
         settingsTTS   = settings.accessibilityTTS,
+        settingsEmotion =settings.notifEmotion,
         meta          = meta
     )
 }
