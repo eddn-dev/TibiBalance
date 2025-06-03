@@ -1,36 +1,88 @@
 /**
  * @file    HabitActivityDao.kt
  * @ingroup data_local_dao
- * @brief   CRUD para la tabla `activities`.
+ * @brief   CRUD + flujos reactivos para la tabla `activities`.
+ *
+ *  ▸  Conversores Room permiten LocalDate / LocalTime.
+ *  ▸  “NULL LAST” con `CASE …`.
+ *  ▸  Nuevos helpers usados por el repositorio:
+ *        • insertAll()
+ *        • findById()
+ *        • pendingToSync()
+ *        • delete(id)
  */
 package com.app.data.local.dao
 
 import androidx.room.*
 import com.app.data.local.entities.HabitActivityEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
 
 @Dao
 interface HabitActivityDao {
 
-    @Query("""
+    /* ─────────── OBSERVACIÓN ─────────── */
+
+    @Query(
+        """
         SELECT * FROM activities
         WHERE habitId = :habitId
-        ORDER BY completedAt DESC
-    """)
+        ORDER BY activityDate DESC,
+                 CASE WHEN scheduledTime IS NULL THEN 1 ELSE 0 END,
+                 scheduledTime
+        """
+    )
     fun observeByHabit(habitId: String): Flow<List<HabitActivityEntity>>
+
+    @Query(
+        """
+        SELECT * FROM activities
+        WHERE activityDate = :date
+        ORDER BY CASE WHEN scheduledTime IS NULL THEN 1 ELSE 0 END,
+                 scheduledTime
+        """
+    )
+    fun observeByDate(date: LocalDate): Flow<List<HabitActivityEntity>>
+
+    /* ────────────── CRUD ────────────── */
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(entity: HabitActivityEntity)
 
-    /** Limpia tombstones o filas ya sincronizadas. */
-    @Query("""
+    /** Inserta en lote (IGNORE).  */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(entities: List<HabitActivityEntity>)
+
+    /** REPLACE (upsert) una sola fila. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(entity: HabitActivityEntity)
+
+    @Update
+    suspend fun update(entity: HabitActivityEntity)
+
+    /** Borrar una fila por ID (soft-delete ya aplicado en dominio si procede). */
+    @Query("DELETE FROM activities WHERE id = :id")
+    suspend fun delete(id: String)
+
+    /** Devuelve la fila (o null) según ID. */
+    @Query("SELECT * FROM activities WHERE id = :id LIMIT 1")
+    suspend fun findById(id: String): HabitActivityEntity?
+
+    /** Filas pendientes de sincronizar (`pendingSync = 1`). */
+    @Query("SELECT * FROM activities WHERE m_pendingSync = 1")
+    suspend fun pendingToSync(): List<HabitActivityEntity>
+
+    /* ────────── MANTENIMIENTO ────────── */
+
+    @Query(
+        """
         DELETE FROM activities
-        WHERE meta_deletedAt IS NOT NULL
-           OR meta_pendingSync = 0
-    """)
+        WHERE m_deletedAt IS NOT NULL
+           OR m_pendingSync = 0
+        """
+    )
     suspend fun purgeSyncedOrDeleted()
 
-    //Borra todos los registros de la tabla
     @Query("DELETE FROM activities")
     suspend fun clear()
 }

@@ -282,13 +282,25 @@ fun TrackingStep(
         "reto" -> ModalInfoDialog(
             visible       = true,
             title         = "Modo reto",
-            message       = "Para activar el modo reto debes definir repetición y periodo.",
+            message       = "Para activar el modo reto, \nprimero define la frecuencia y el periodo de tu hábito. ¡Así te aseguras de mantener tu compromiso sin cambios! 💪",
             icon          = Icons.Default.Info,
             primaryButton = DialogButton("Entendido") { dlg = null }
         )
-        "duracion" -> infoDialog("Duración de la actividad") { dlg = null }
-        "repeat"   -> infoDialog("Repetir hábito")           { dlg = null }
-        "periodo"  -> infoDialog("Periodo del hábito")       { dlg = null }
+        "duracion" -> infoDialog(
+            title = "Duración de la actividad",
+            message = "⏱️ Indica cuánto tiempo \n(minutos/horas) o cuántas veces al día le dedicarás a este hábito. ¡Sé realista para mantenerte constante! 💪",
+            onDismiss = { dlg = null }
+        )
+        "repeat"   -> infoDialog(
+            title = "Repetir hábito",
+            message = "🗓️ Elige con qué regularidad quieres repetir este hábito.",
+            onDismiss = { dlg = null }
+        )
+        "periodo"  -> infoDialog(
+            title = "Periodo del hábito",
+            message = "🗓️ Establece el rango de fechas en el que quieres que este hábito esté activo. ¿Hasta cuándo quieres mantenerlo? ¡Define tu meta! 🎯",
+            onDismiss = { dlg = null }
+        )
     }
 }
 
@@ -315,12 +327,12 @@ private fun LabeledSection(
 }
 
 @Composable
-private fun infoDialog(title: String, onDismiss: () -> Unit) {
+private fun infoDialog(title: String, message: String, onDismiss: () -> Unit) { // Modificado para aceptar 'message'
     ModalInfoDialog(
         visible       = true,
         icon          = Icons.Default.Info,
         title         = title,
-        message       = "",
+        message       = message, // Usar el mensaje pasado como parámetro
         primaryButton = DialogButton("Entendido", onDismiss)
     )
 }

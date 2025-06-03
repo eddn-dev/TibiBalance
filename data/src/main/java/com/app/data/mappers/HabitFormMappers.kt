@@ -56,14 +56,14 @@ fun HabitForm.toHabit(
         enabled     = notify,                               // ← sólo se conmuta el flag
         message     = notifMessage.ifBlank { "¡Es hora!" },
         times       = notifTimes.map(LocalTime::parse),
-        pattern     = repeat,
         advanceMin  = notifAdvanceMin,
+        snoozeMin   = notifSnoozeMin,
+        repeatQty   = notifRepeatQty,
         mode        = notifMode,
         vibrate     = notifVibrate,
         startsAt    = notifStartsAt?.let(LocalDate::parse),
         expiresAt   = expiresAt,
         channel     = NotifChannel.HABITS,                  // o tu valor por defecto
-        snoozeMin   = 10                                    // idem
     )
 
     return Habit(
@@ -130,6 +130,8 @@ fun Habit.toForm(): HabitForm = HabitForm(
     notifMessage    = notifConfig.message,
     notifTimes      = notifConfig.times.map { it.toString() }.toSet(),
     notifAdvanceMin = notifConfig.advanceMin,
+    notifRepeatQty  = notifConfig.repeatQty,
+    notifSnoozeMin  = notifConfig.snoozeMin,
     notifMode       = notifConfig.mode,
     notifVibrate    = notifConfig.vibrate,
     notifStartsAt   = notifConfig.startsAt?.toString(),

@@ -7,15 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.data.mappers.toForm
 import com.app.data.mappers.toHabit
-import com.app.domain.config.ChallengeConfig
-import com.app.domain.config.RepeatPreset
-import com.app.domain.enums.PeriodUnit
-import com.app.domain.enums.SessionUnit
 import com.app.domain.ids.HabitId
 import com.app.domain.model.HabitForm
 import com.app.domain.usecase.habit.DeleteHabit
 import com.app.domain.usecase.habit.GetHabitById
 import com.app.domain.usecase.habit.UpdateHabit
+import com.app.tibibalance.ui.common.validation.HabitFormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -168,19 +165,8 @@ class EditHabitViewModel @Inject constructor(
     }
 
     /* --- validaciones idénticas al wizard de alta --- */
-    fun isStepValid(step: Int, f: HabitForm): Boolean = when (step) {
-        1 -> f.name.isNotBlank()
-        2 -> when {
-            f.challenge &&
-                    (f.periodUnit == PeriodUnit.INDEFINIDO || f.periodQty == null) -> false
-            f.repeatPreset == RepeatPreset.PERSONALIZADO && f.weekDays.isEmpty()   -> false
-            f.periodUnit != PeriodUnit.INDEFINIDO && f.periodQty == null          -> false
-            f.sessionUnit != SessionUnit.INDEFINIDO && f.sessionQty == null       -> false
-            else -> true
-        }
-        3 -> !f.notify || f.notifTimes.isNotEmpty()
-        else -> true
-    }
+    fun isStepValid(step: Int, f: HabitForm): Boolean =
+        HabitFormValidator.isStepValid(step, f)
 
     fun acknowledgeSaved() = viewModelScope.launch { _events.send(EditEvent.Dismiss) }
 

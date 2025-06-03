@@ -75,4 +75,6 @@ data object Habits              : Screen("main/habits")
     data object ManageDevices   : Screen("main/manage_devices")
     data object ChangePassword  : Screen("change_password")
     data object ConfigureNotif  : Screen("configure_notif")
+    data object Achievements : Screen("achievements")
+    data object Goodbye : Screen("goodbye")
 }

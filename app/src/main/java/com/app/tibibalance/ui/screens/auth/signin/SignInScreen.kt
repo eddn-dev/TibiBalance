@@ -3,6 +3,7 @@ package com.app.tibibalance.ui.screens.auth.signin
 
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,8 +53,9 @@ import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputPassword
 import com.app.tibibalance.ui.components.layout.Header
+import com.app.tibibalance.ui.components.texts.Caption
+import com.app.tibibalance.ui.components.utils.gradient
 import com.app.tibibalance.ui.navigation.Screen
-import com.app.tibibalance.ui.theme.White
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 
@@ -131,9 +133,7 @@ fun SignInScreen(
     val fieldErr = uiState as? SignInUiState.FieldError
 
     /* --- UI principal --- */
-    val gradient = Brush.verticalGradient(
-        listOf(MaterialTheme.colorScheme.primary.copy(.25f), White)
-    )
+    val gradient = gradient()
 
     Box(
         Modifier
@@ -173,10 +173,10 @@ fun SignInScreen(
                 )
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(6.dp))
             TextButtonLink(
                 text = "¿Olvidaste tu contraseña?", onClick = { nav.navigate(Screen.Forgot.route) })
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(12.dp))
 
             PrimaryButton(
                 text    = stringResource(R.string.btn_sign_in),
@@ -184,7 +184,7 @@ fun SignInScreen(
                 onClick = { vm.signIn(email, pass) }
             )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 HorizontalDivider(Modifier.weight(1f)); Text("  •  "); HorizontalDivider(Modifier.weight(1f))
             }
@@ -192,12 +192,16 @@ fun SignInScreen(
 
             GoogleSignButton(onClick = ::launchGoogleSignIn)
 
-            Spacer(Modifier.height(24.dp))
-            Row {
-                Text("¿Aún no tienes cuenta? ")
+            Spacer(Modifier.height(10.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center, // Esto centra la fila completa horizontalmente
+                verticalAlignment = Alignment.CenterVertically, // ¡Esto alinea verticalmente los elementos dentro de la fila!
+                modifier = Modifier.fillMaxWidth() // Asegura que el Row ocupe todo el ancho para que el centrado horizontal sea visible
+            ) {
+                Caption("¿Aún no tienes una cuenta?")
                 TextButtonLink(text = "Regístrate", onClick = { nav.navigate(Screen.SignUp.route) })
             }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(14.dp))
         }
 
         Header(

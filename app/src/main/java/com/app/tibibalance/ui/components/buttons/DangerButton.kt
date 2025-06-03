@@ -55,8 +55,8 @@ fun DangerButton(
     modifier    : Modifier = Modifier.fillMaxWidth(), // Default a ancho completo
     enabled     : Boolean  = true, // Habilitado por defecto
     isLoading   : Boolean  = false, // No cargando por defecto
-    container   : Color    = Alert, // Color rojo por defecto
-    contentColor: Color    = Color.White // Color blanco por defecto
+    container   : Color    = MaterialTheme.colorScheme.errorContainer, // Color rojo por defecto
+    contentColor: Color    = MaterialTheme.colorScheme.error // Color blanco por defecto
 ) {
     // El botón solo está realmente habilitado si el parámetro 'enabled' es true
     // Y si no está en estado de carga 'isLoading'.

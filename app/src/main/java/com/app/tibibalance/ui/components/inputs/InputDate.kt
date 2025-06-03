@@ -42,7 +42,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview // Importar para Preview
 import androidx.compose.ui.unit.dp
-import com.app.tibibalance.ui.theme.DefaultTint
 
 /**
  * @brief Un [Composable] que funciona como un campo de entrada de fecha de solo lectura
@@ -78,9 +77,9 @@ fun InputDate(
     // Define los colores personalizados para el TextField, considerando el estado de error
     val colors = OutlinedTextFieldDefaults.colors(
         // Colores de fondo (siempre blanco para mantener consistencia visual)
-        focusedContainerColor   = DefaultTint,
-        unfocusedContainerColor = DefaultTint,
-        disabledContainerColor  = DefaultTint, // Clave para el estado deshabilitado
+        focusedContainerColor   = MaterialTheme.colorScheme.surface,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        disabledContainerColor  = MaterialTheme.colorScheme.surface, // Clave para el estado deshabilitado
 
         /* Colores de Bordes */
         focusedBorderColor      = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,

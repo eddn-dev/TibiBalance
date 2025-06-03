@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme // Para previews
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.app.tibibalance.ui.theme.themedImageAlpha
 
 /**
  * @brief Un [Composable] que muestra una imagen desde un recurso drawable dentro de un [Box] contenedor.
@@ -67,6 +69,7 @@ fun ImageContainer(
     contentScale: ContentScale = ContentScale.Fit, // Escala por defecto: Fit (sin recorte)
     cornerRadius: Dp = 0.dp // Sin esquinas redondeadas por defecto
 ) {
+    val alpha = themedImageAlpha()
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(cornerRadius)) // Aplica el recorte con el radio especificado
@@ -76,7 +79,9 @@ fun ImageContainer(
             painter = painterResource(id = resId), // Carga la imagen desde el recurso
             contentDescription = contentDescription, // Descripción para accesibilidad
             contentScale = contentScale, // Aplica el modo de escalado
-            modifier = Modifier.fillMaxSize() // La imagen intenta llenar el Box contenedor
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(alpha) // La imagen intenta llenar el Box contenedor
         )
     }
 }

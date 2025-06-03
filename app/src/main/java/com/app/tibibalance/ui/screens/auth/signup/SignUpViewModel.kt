@@ -1,6 +1,7 @@
 package com.app.tibibalance.ui.screens.auth.signup
 
 import android.os.Build
+import android.util.Log
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,13 +20,16 @@ import javax.inject.Inject
 import android.util.Patterns                                         // :contentReference[oaicite:0]{index=0}
 import androidx.annotation.RequiresApi
 import com.app.domain.usecase.auth.SendVerificationEmailUseCase
+import com.app.domain.usecase.user.InitializeAchievementsUseCase
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.datetime.toKotlinLocalDate
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase : SignUpUseCase,
     private val googleUseCase : GoogleSignInUseCase,
-    private val sendEmailUseCase: SendVerificationEmailUseCase
+    private val sendEmailUseCase: SendVerificationEmailUseCase,
+    private val initializeAchievementsUseCase: InitializeAchievementsUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow<SignUpUiState>(SignUpUiState.Idle)
@@ -125,6 +129,8 @@ class SignUpViewModel @Inject constructor(
                 )
             ) {
                 is AuthResult.Success -> {
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
                     val emailSent = sendEmailUseCase(email)
                     _ui.value = SignUpUiState.VerificationEmailSent(email)
                     onSuccess()
@@ -141,7 +147,10 @@ class SignUpViewModel @Inject constructor(
     fun finishGoogleSignUp(idToken: String) = viewModelScope.launch {
         _ui.value = SignUpUiState.Loading
         when (val r = googleUseCase(idToken)) {
-            is AuthResult.Success -> _ui.value = SignUpUiState.GoogleSuccess
+            is AuthResult.Success -> {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid
+                _ui.value = SignUpUiState.GoogleSuccess
+            }
             is AuthResult.Error   -> _ui.value = mapError(r.error)
         }
     }

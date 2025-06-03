@@ -48,5 +48,7 @@ data class HabitForm(
     val notifAdvanceMin  : Int        = 0,
     val notifMode        : NotifMode  = NotifMode.SILENT,
     val notifVibrate     : Boolean    = false,
+    val notifRepeatQty   : Int        = 0,
+    val notifSnoozeMin    : Int = 10,
     val notifStartsAt    : String?    = null                // “yyyy-MM-dd”
 )

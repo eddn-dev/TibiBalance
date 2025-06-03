@@ -16,7 +16,6 @@ package com.app.data.repository
 
 import com.app.data.local.dao.HabitDao
 import com.app.data.local.entities.*
-import com.app.data.mappers.HabitActivityMappers.toEntity
 import com.app.data.mappers.toDomain
 import com.app.data.mappers.toEntity
 import com.app.data.remote.datasource.HabitRemoteDataSource
@@ -34,6 +33,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+
+import android.util.Log
+
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.Timestamp
+import kotlinx.coroutines.tasks.await
+
 
 @Singleton
 class HabitRepositoryImpl @Inject constructor(
@@ -114,24 +121,6 @@ class HabitRepositoryImpl @Inject constructor(
         try { remote.deleteHabit(uid, id) } catch (_: Exception) { /* ignorar, worker */ }
     }
 
-    /* ──────────────── registrar actividad / completado ───────── */
-
-    override suspend fun markCompleted(id: HabitId, at: Instant) = withContext(io) {
-        val uid = currentUid() ?: return@withContext
-        val act = HabitActivity(
-            id        = ActivityId("${id.raw}@$at"),
-            habitId   = id,
-            completedAt = at,
-            meta      = SyncMeta(pendingSync = true)
-        )
-
-        dao.insertActivity(act.toEntity())
-
-        try {
-            remote.pushActivity(uid, act)
-            dao.insertActivity(act.copy(meta = act.meta.copy(pendingSync = false)).toEntity())
-        } catch (_: Exception) { /* offline, worker reintentará */ }
-    }
 
     override suspend fun syncNow(): Result<Unit> = withContext(io) {
         val uid = currentUid() ?: return@withContext Result.failure(IllegalStateException("No user"))
@@ -158,6 +147,57 @@ class HabitRepositoryImpl @Inject constructor(
             Result.failure(ex)
         }
     }
+
+    /* ───────────────────────── habito de salud ───────────────────────── */
+    override suspend fun evaluateAchievements(userId: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        Log.d("AchievementsCheck", "Evaluando logros para el usuario: $userId")
+
+        val habitos = firestore.collection("users")
+            .document(userId)
+            .collection("habits")
+            .get()
+            .await()
+
+        Log.d("AchievementsCheck", "Hábitos obtenidos: ${habitos.size()}")
+
+        val tieneBienestar = habitos.any {
+            val categoria = it.getString("category")?.lowercase()
+            Log.d("AchievementsCheck", "Revisando hábito con categoría: $categoria")
+            categoria == "bienestar"
+        }
+
+        Log.d("AchievementsCheck", "¿Tiene hábito de bienestar?: $tieneBienestar")
+
+        if (tieneBienestar) {
+            val logroRef = firestore.collection("users")
+                .document(userId)
+                .collection("achievements")
+                .document("tibio_bienestar")
+
+            Log.d("AchievementsCheck", "Actualizando logro 'tibio_bienestar'...")
+
+            logroRef.set(
+                mapOf(
+                    "name" to "Tibio del bienestar",
+                    "description" to "Agrega un hábito de bienestar",
+                    "progress" to 100,
+                    "unlocked" to true,
+                    "unlockDate" to Timestamp.now()
+                ),
+                SetOptions.merge()
+            ).addOnSuccessListener {
+                Log.d("AchievementsCheck", "Logro 'tibio_bienestar' actualizado correctamente.")
+            }.addOnFailureListener {
+                Log.e("AchievementsCheck", "Error al actualizar el logro: ${it.message}", it)
+            }
+        } else {
+            Log.d("AchievementsCheck", "No se encontró hábito de bienestar, no se actualiza el logro.")
+        }
+    }
+
+
+
 
     /* ───────────────────────── helpers ───────────────────────── */
 

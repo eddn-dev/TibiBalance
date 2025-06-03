@@ -94,7 +94,7 @@ fun NavBarButton(
                 imageVector = item.icon, // Vector del icono desde BottomNavItem
                 contentDescription = item.label, // Descripción para accesibilidad (usa la etiqueta)
                 // Tinte del icono: primario si está seleccionado, onSurface si no
-                tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                tint = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
             )
             // Espacio vertical entre el icono y el texto
             Spacer(modifier = Modifier.height(4.dp))
@@ -103,7 +103,7 @@ fun NavBarButton(
                 text = item.label, // Texto de la etiqueta desde BottomNavItem
                 fontSize = 12.sp, // Tamaño de fuente específico para la etiqueta
                 // Color del texto: primario si está seleccionado, onSurface en caso contrario
-                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
                 // maxLines = 1 // Opcional: para asegurar que la etiqueta no haga wrap
             )
         }

@@ -61,7 +61,7 @@ fun IconContainer(
     icon: ImageVector,
     contentDescription: String?,
     backgroundColor: Color = Color.Transparent, // Fondo transparente por defecto
-    iconTint: Color = Color.Black, // Tinte negro por defecto
+    iconTint: Color = MaterialTheme.colorScheme.primary, // Color primario del tema de la app
     size: Int = 48, // Tamaño 48dp por defecto
 ) {
     Box(
