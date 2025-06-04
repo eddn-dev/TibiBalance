@@ -3,11 +3,15 @@ package com.app.tibibalance.ui.screens.settings.notification
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.domain.auth.AuthUidProvider
 import com.app.domain.entities.Habit
+import com.app.domain.entities.User
 import com.app.domain.ids.HabitId
 import com.app.domain.usecase.habit.GetHabitById
 import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.domain.usecase.habit.UpdateHabit
+import com.app.domain.usecase.user.ObserveUser
+import com.app.domain.usecase.user.UpdateUserSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -34,9 +38,12 @@ sealed class ConfigureNotifUiState {
 
 @HiltViewModel
 class ConfigureNotificationViewModel @Inject constructor(
-    getHabitsFlow : GetHabitsFlow,
-    private val getHabitById : GetHabitById,
-    private val updateHabit  : UpdateHabit
+    private val getHabitsFlow    : GetHabitsFlow,
+    private val getHabitById  : GetHabitById,
+    private val updateHabit   : UpdateHabit,
+    observeUser      : ObserveUser,
+    private val updateSettings: UpdateUserSettings,
+    private val uidProvider   : AuthUidProvider
 ) : ViewModel() {
 
     /* ---------- listado reactivo ---------- */
@@ -57,6 +64,18 @@ class ConfigureNotificationViewModel @Inject constructor(
     fun selectHabit(habit: HabitNotifUi) { _selectedHabit.value = habit }
     fun clearSelectedHabit()             { _selectedHabit.value = null }
 
+    /* ---------- notificación de emociones ---------- */
+    private val _notifEmotion = MutableStateFlow(true)
+    val notifEmotion: StateFlow<Boolean> = _notifEmotion.asStateFlow()
+
+    private val userFlow: Flow<User?> = observeUser(uidProvider())
+
+    init {
+        userFlow
+            .onEach { usr -> _notifEmotion.value = usr?.settings?.notifEmotion ?: true }
+            .launchIn(viewModelScope)
+    }
+
     /* ---------- habilitar / deshabilitar campana ---------- */
     fun toggleNotification(habitUi: HabitNotifUi) = viewModelScope.launch {
         val habit = getHabitById(HabitId(habitUi.id)).first() ?: return@launch
@@ -69,6 +88,16 @@ class ConfigureNotificationViewModel @Inject constructor(
             )
         )
         updateHabit(updated)
+    }
+
+    fun toggleEmotionNotif() = viewModelScope.launch {
+        val user = userFlow.first() ?: return@launch
+        val newValue = !_notifEmotion.value
+        _notifEmotion.value = newValue
+
+        val newSettings = user.settings.copy(notifEmotion = newValue)
+        updateSettings(user.uid, newSettings)
+            .onFailure { _notifEmotion.value = user.settings.notifEmotion }
     }
 
     /* ---------- mapper dominio ➜ UI ---------- */

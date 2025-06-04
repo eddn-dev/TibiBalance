@@ -21,6 +21,7 @@ object UserMappers {
         settings    = UserSettings(
             theme            = settingsTheme,
             notifGlobal      = settingsNotif,
+            notifEmotion     = settingsEmotion,
             language         = settingsLang,
             accessibilityTTS = settingsTTS
         ),
