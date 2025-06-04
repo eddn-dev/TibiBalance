@@ -72,7 +72,7 @@ class ConfigureNotificationViewModel @Inject constructor(
 
     init {
         userFlow
-            .onEach { usr -> _notifEmotion.value = usr?.settings?.notifEmotion ?: true }
+            .onEach { usr -> _notifEmotion.value = usr?.settings?.notifEmotion == true }
             .launchIn(viewModelScope)
     }
 

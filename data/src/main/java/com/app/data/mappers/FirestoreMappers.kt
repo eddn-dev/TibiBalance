@@ -116,7 +116,7 @@ fun DocumentSnapshot.toUser(): User? = runCatching {
                 notifGlobal      = (s["notifGlobal"] as? Boolean) != false,
                 notifEmotion     = (s["notifEmotion"] as? Boolean) != false,
                 language         = s["language"] as? String ?: "es",
-                accessibilityTTS = s["accessibilityTTS"] as? Boolean ?: false
+                accessibilityTTS = s["accessibilityTTS"] as? Boolean == false
             )
         } ?: UserSettings(),
 
@@ -125,7 +125,7 @@ fun DocumentSnapshot.toUser(): User? = runCatching {
                 createdAt   = m["createdAt"].toInstant(),
                 updatedAt   = m["updatedAt"].toInstant(),
                 deletedAt   = m["deletedAt"]?.let { it.toInstant() },
-                pendingSync = m["pendingSync"] as? Boolean ?: false
+                pendingSync = (m["pendingSync"] as? Boolean) == true
             )
         } ?: SyncMeta()
     )
