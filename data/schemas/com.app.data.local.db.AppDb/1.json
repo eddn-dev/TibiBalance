@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "61523cdf5cb09e62776c6b932cfdcc48",
+    "identityHash": "134d9e8b3617499f55f91a86509a4dec",
     "entities": [
       {
         "tableName": "habits",
@@ -240,7 +240,7 @@
       },
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `email` TEXT NOT NULL, `displayName` TEXT, `photoUrl` TEXT, `birthDate` TEXT NOT NULL, `settings_theme` TEXT NOT NULL, `settings_notif` INTEGER NOT NULL, `settings_lang` TEXT NOT NULL, `settings_tts` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `email` TEXT NOT NULL, `displayName` TEXT, `photoUrl` TEXT, `birthDate` TEXT NOT NULL, `settings_theme` TEXT NOT NULL, `settings_notif` INTEGER NOT NULL, `settings_lang` TEXT NOT NULL, `settings_tts` INTEGER NOT NULL, `settings_emotion` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "uid",
@@ -291,6 +291,12 @@
           {
             "fieldPath": "settingsTTS",
             "columnName": "settings_tts",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "settingsEmotion",
+            "columnName": "settings_emotion",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -561,7 +567,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '61523cdf5cb09e62776c6b932cfdcc48')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '134d9e8b3617499f55f91a86509a4dec')"
     ]
   }
 }

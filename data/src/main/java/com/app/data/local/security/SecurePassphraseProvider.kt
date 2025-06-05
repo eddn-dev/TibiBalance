@@ -18,18 +18,41 @@ class SecurePassphraseProvider @Inject constructor(
 ) {
 
     private val prefs by lazy {
-        val masterKey = MasterKey.Builder(ctx)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()                                       // genera/recupera clave AES GCM 256 bits :contentReference[oaicite:1]{index=1}
+        val PREF_NAME = "sqlcipher_prefs"
+        val MASTER_ALIAS = "tibibalance_master_key"   // ¡no lo cambies entre builds!
 
-        EncryptedSharedPreferences.create(
+        /* 1️⃣ Crea (o recupera) la master key */
+        fun newMasterKey(): MasterKey = MasterKey.Builder(ctx, MASTER_ALIAS)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        /* 2️⃣ Crea los EncryptedSharedPreferences con esa key */
+        fun createPrefs(masterKey: MasterKey) = EncryptedSharedPreferences.create(
             ctx,
-            "sqlcipher_prefs",
+            PREF_NAME,
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )                                                 // datos cifrados a nivel de archivo :contentReference[oaicite:2]{index=2}
+        )
+
+        try {
+            /* Primer intento: usamos el keyset existente */
+            createPrefs(newMasterKey())
+        } catch (ex: javax.crypto.AEADBadTagException) {
+            /* Keyset corrupto → lo borramos y regeneramos */
+            ctx.deleteSharedPreferences(PREF_NAME)
+
+            // (Opcional) también elimina la master key si quieres renovar todo
+            runCatching {
+                val ks = java.security.KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+                ks.deleteEntry(MASTER_ALIAS)
+            }
+
+            // Segundo intento: prefs “limpios” con una master key nueva
+            createPrefs(newMasterKey())
+        }
     }
+
 
     private fun generateRandomPassphrase(): ByteArray =
         ByteArray(32).also { SecureRandom().nextBytes(it) }  // 256 bit key :contentReference[oaicite:3]{index=3}
