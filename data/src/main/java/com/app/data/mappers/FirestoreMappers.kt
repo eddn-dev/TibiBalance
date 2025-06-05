@@ -29,6 +29,7 @@ fun Instant.toTimestamp(): Timestamp =
 fun UserSettings.toFirestoreMap() = mapOf(
     "theme"            to theme.name,
     "notifGlobal"      to notifGlobal,
+    "notifEmotion"     to notifEmotion,
     "language"         to language,
     "accessibilityTTS" to accessibilityTTS
 )
@@ -64,6 +65,7 @@ fun Map<String,Any?>.toUser(): User = User(
         UserSettings(
             theme            = ThemeMode.valueOf(get("theme") as String),
             notifGlobal      = get("notifGlobal") as Boolean,
+            notifEmotion     = (get("notifEmotion") as? Boolean) != false,
             language         = get("language") as String,
             accessibilityTTS = get("accessibilityTTS") as Boolean
         )
@@ -111,9 +113,10 @@ fun DocumentSnapshot.toUser(): User? = runCatching {
             UserSettings(
                 theme            = runCatching { ThemeMode.valueOf(s["theme"] as String) }
                     .getOrDefault(ThemeMode.SYSTEM),
-                notifGlobal      = s["notifGlobal"] as? Boolean ?: true,
+                notifGlobal      = (s["notifGlobal"] as? Boolean) != false,
+                notifEmotion     = (s["notifEmotion"] as? Boolean) != false,
                 language         = s["language"] as? String ?: "es",
-                accessibilityTTS = s["accessibilityTTS"] as? Boolean ?: false
+                accessibilityTTS = s["accessibilityTTS"] as? Boolean == false
             )
         } ?: UserSettings(),
 
@@ -122,7 +125,7 @@ fun DocumentSnapshot.toUser(): User? = runCatching {
                 createdAt   = m["createdAt"].toInstant(),
                 updatedAt   = m["updatedAt"].toInstant(),
                 deletedAt   = m["deletedAt"]?.let { it.toInstant() },
-                pendingSync = m["pendingSync"] as? Boolean ?: false
+                pendingSync = (m["pendingSync"] as? Boolean) == true
             )
         } ?: SyncMeta()
     )

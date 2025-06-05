@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 data class UserSettings(
     val theme            : ThemeMode = ThemeMode.SYSTEM,
     val notifGlobal      : Boolean   = true,
+    val notifEmotion     : Boolean   = true,
     val language         : String    = "es",
     val accessibilityTTS : Boolean   = false
 )

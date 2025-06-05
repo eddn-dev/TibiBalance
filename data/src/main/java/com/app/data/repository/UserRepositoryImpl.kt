@@ -97,6 +97,7 @@ class UserRepositoryImpl @Inject constructor(
                     uid,
                     settings.theme.name,
                     settings.notifGlobal,
+                    settings.notifEmotion,
                     settings.language,
                     settings.accessibilityTTS,
                     now.toEpochMilliseconds()

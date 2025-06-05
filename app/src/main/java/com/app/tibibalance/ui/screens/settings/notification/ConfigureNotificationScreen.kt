@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.MaterialTheme
@@ -31,8 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.buttons.RoundedIconButton
+import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.buttons.TextButtonLink
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.IconContainer
@@ -121,9 +121,19 @@ private fun HabitListSection(
             Subtitle(
                 text = "Hábitos",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center
             )
         }
+        Spacer(Modifier.height(12.dp))
+
+        val emotionEnabled by vm.notifEmotion.collectAsState()
+
+        SwitchSettingItem(
+            leadingIcon = { IconContainer(icon = Icons.Default.Mood, contentDescription = "Emociones", modifier = Modifier.size(24.dp)) },
+            text = "Recordarme registrar emociones",
+            checked = emotionEnabled,
+            onCheckedChange = { vm.toggleEmotionNotif() }
+        )
 
         Spacer(Modifier.height(12.dp))
 
@@ -217,3 +227,14 @@ private fun Centered(msg: String) =
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Description(text = msg)
     }
+@Composable
+private fun SwitchSettingItem(
+    leadingIcon: @Composable () -> Unit,
+    text: String,
+    checked: Boolean,
+    onCheckedChange: () -> Unit
+) = SettingItem(
+    leadingIcon = leadingIcon,
+    text = text,
+    trailing = { SwitchToggle(checked = checked, onCheckedChange = { onCheckedChange() }) }
+)

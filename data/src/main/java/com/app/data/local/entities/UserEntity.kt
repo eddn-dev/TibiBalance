@@ -21,6 +21,7 @@ data class UserEntity(
     @ColumnInfo(name = "settings_notif")    val settingsNotif  : Boolean,
     @ColumnInfo(name = "settings_lang")     val settingsLang   : String,
     @ColumnInfo(name = "settings_tts")      val settingsTTS    : Boolean,
+    @ColumnInfo(name = "settings_emotion")  val settingsEmotion: Boolean,
     /* ── SyncMeta ── */
     @Embedded(prefix = "meta_")             val meta: SyncMeta
 )
