@@ -3,7 +3,7 @@ package com.app.data.repository
 import com.app.data.local.dao.DailyMetricsDao
 import com.app.data.local.entities.DailyMetricsEntity
 import com.app.domain.common.SyncMeta
-import com.app.domain.model.DailyMetrics
+import com.app.domain.entities.DailyMetrics
 import com.app.domain.repository.MetricsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -61,13 +61,13 @@ class MetricsRepositoryImpl @Inject constructor(
      */
     private fun DailyMetricsEntity.toDomainModel(): DailyMetrics {
         return DailyMetrics(
-            date = this.date,
-            steps = this.steps,
-            avgHeart = this.avgHeart,
-            calories = this.calories,
-            source = this.source,
+            date       = this.date,
+            steps      = this.steps,
+            avgHeart   = this.avgHeart,
+            calories   = this.calories,
+            source     = this.source,
             importedAt = this.importedAt,
-            pendingSync = this.meta.pendingSync
+            meta       = this.meta
         )
     }
 
@@ -78,16 +78,16 @@ class MetricsRepositoryImpl @Inject constructor(
      */
     private fun DailyMetrics.toEntity(): DailyMetricsEntity {
         return DailyMetricsEntity(
-            date = this.date,
-            steps = this.steps,
-            avgHeart = this.avgHeart,
-            calories = this.calories,
-            source = this.source,
+            date       = this.date,
+            steps      = this.steps,
+            avgHeart   = this.avgHeart,
+            calories   = this.calories,
+            source     = this.source,
             importedAt = this.importedAt,
-            meta = SyncMeta(
+            meta       = SyncMeta(
                 pendingSync = true,
-                createdAt = this.importedAt,
-                updatedAt = this.importedAt
+                createdAt   = this.importedAt,
+                updatedAt   = this.importedAt
             )
         )
     }

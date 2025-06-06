@@ -8,7 +8,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.app.data.remote.datasourcemetrics.MetricsRemoteDataSource
 import com.app.data.remote.datasourcemetrics.model.FirestoreMetricsDto
-import com.app.domain.model.DailyMetrics
+import com.app.domain.entities.DailyMetrics
 import com.app.domain.repository.MetricsRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -41,7 +41,7 @@ class MetricsSyncWorker @AssistedInject constructor(
             Log.d(TAG, "  • Total métricas en Room = ${allMetrics.size}")
 
             // 2) Filtrar las pendientes
-            val pendingList = allMetrics.filter { it.pendingSync }
+            val pendingList = allMetrics.filter { it.meta.pendingSync }
             Log.d(TAG, "  • Métricas pendientes = ${pendingList.size}")
             if (pendingList.isEmpty()) {
                 Log.d(TAG, "  • No hay pendientes, SUCCESS")

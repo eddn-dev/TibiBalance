@@ -3,7 +3,8 @@ package com.app.tibibalance.wear
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.app.domain.repository.MetricsRepository
-import com.app.domain.model.DailyMetrics
+import com.app.domain.entities.DailyMetrics
+import com.app.domain.common.SyncMeta
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -67,13 +68,17 @@ class MobileWearDataReceiver : WearableListenerService() {
                     .date
 
                 val domainMetrics = DailyMetrics(
-                    date = date,
-                    steps = payload.steps,
-                    avgHeart = payload.heartRate?.toInt(),
-                    calories = payload.caloriesBurned?.toInt(),
-                    source = "wear_os",
+                    date       = date,
+                    steps      = payload.steps,
+                    avgHeart   = payload.heartRate?.toInt(),
+                    calories   = payload.caloriesBurned?.toInt(),
+                    source     = "wear_os",
                     importedAt = instant,
-                    pendingSync = true
+                    meta       = SyncMeta(
+                        createdAt   = instant,
+                        updatedAt   = instant,
+                        pendingSync = true
+                    )
                 )
 
                 // 3) Guardamos la métrica en Room a través de MetricsRepository
