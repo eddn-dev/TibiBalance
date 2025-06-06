@@ -1,8 +1,13 @@
 package com.app.tibibalance.wear
 
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.app.domain.repository.MetricsRepository
+import com.app.domain.model.DailyMetrics
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import android.util.Log
-import com.app.data.local.db.AppDb
-import com.app.data.repository.DailyMetricsRepository
 import com.app.data.remote.model.DailyMetricsPayload
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
@@ -11,9 +16,9 @@ import com.google.android.gms.wearable.WearableListenerService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class MobileWearDataReceiver : WearableListenerService() {
     private val TAG = "MobileWearReceiver"
 
@@ -25,19 +30,10 @@ class MobileWearDataReceiver : WearableListenerService() {
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val json = Json { ignoreUnknownKeys = true }
 
-    // Lazy-load del repositorio
-    private val repository: DailyMetricsRepository by lazy {
-        val db = AppDb.getInstance(applicationContext)
-        DailyMetricsRepository(db.metricsDao())
-    }
+    @Inject
+    lateinit var metricsRepository: MetricsRepository
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
-        // 1) Log “creado” y “onDataChanged” al inicio
-        // 2) Iterar por cada DataEvent
-        // 3) Si path == "/tibibalance/metrics", extraer String JSON del DataMap ["payload_json"]
-        // 4) Deserializarlo a DailyMetricsPayload
-        // 5) Invocar DailyMetricsRepository.saveFromPayload(payload)
-        // 6) Log “Métricas guardadas en Room [timestamp=…]”
 
         Log.d(TAG, "onDataChanged ► se invocó con ${dataEvents.count()} evento(s)")
         for (event in dataEvents) {
@@ -61,14 +57,34 @@ class MobileWearDataReceiver : WearableListenerService() {
 
 
             try {
+                // 1) Convertimos el JSON al DTO (DailyMetricsPayload):
                 val payload = json.decodeFromString<DailyMetricsPayload>(payloadJson)
+
+                // 2) Mapeamos el DTO a nuestro modelo de dominio (DailyMetrics):
+                val instant = Instant.fromEpochMilliseconds(payload.timestamp)
+                val date = instant
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                    .date
+
+                val domainMetrics = DailyMetrics(
+                    date = date,
+                    steps = payload.steps,
+                    avgHeart = payload.heartRate?.toInt(),
+                    calories = payload.caloriesBurned?.toInt(),
+                    source = "wear_os",
+                    importedAt = instant,
+                    pendingSync = true
+                )
+
+                // 3) Guardamos la métrica en Room a través de MetricsRepository
                 ioScope.launch {
-                    repository.saveFromPayload(payload)
-                    Log.i(TAG, "Métricas guardadas en Room [timestamp=${payload.timestamp}]")
+                    metricsRepository.upsert(domainMetrics)
+                    Log.i(TAG, "Métricas guardadas en Room [date=$date]")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error deserializando DailyMetricsPayload: $e")
+                Log.e(TAG, "Error deserializando o guardando DailyMetricsPayload: $e")
             }
+
         }
     }
 }

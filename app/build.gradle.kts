@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.google.services)    // Firebase Gradle Plugin
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.ksp)         // Hilt & Room via KSP
+    kotlin("kapt")
+
 }
 
 android {
@@ -34,6 +36,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
 }
 
 dependencies {
+
     // Inyeccion de dependencias internas de la aplicacion
     implementation(project(":core"))
     implementation(project(":domain"))
@@ -94,7 +97,6 @@ dependencies {
     /* ── Coroutines ─────────────────────────────────── */
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlinx.coroutines.test)
-    implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
 
     /* ── Tests ──────────────────────────────────────── */
@@ -107,5 +109,10 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 
     implementation("com.google.android.gms:play-services-wearable:18.1.0")
+
+    val workVersion = "2.8.1"
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
 }

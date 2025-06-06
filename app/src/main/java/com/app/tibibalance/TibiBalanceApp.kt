@@ -1,26 +1,51 @@
+// app/src/main/java/com/app/tibibalance/TibiBalanceApp.kt
 package com.app.tibibalance
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.app.data.worker.MetricsSyncWorker
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.HiltAndroidApp
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
- * @file      TibiBalanceApp.kt
- * @ingroup   app_bootstrap
- * @brief     Punto de entrada de la aplicación.  Inicializa Hilt y configura
- *            servicios globales (p.-ej., Firestore logging).
+ * Punto de entrada de la aplicación.
  *
- * @details
- *  - Anotamos con **@HiltAndroidApp** para que Dagger-Hilt genere el grafo.
- *  - Activamos el log VERBOSE de Firestore para facilitar depuración en Logcat.
+ * - Con la anotación **@HiltAndroidApp** Hilt genera el grafo de dependencias
+ *   e inyecta el `HiltWorkerFactory` antes de que WorkManager solicite la
+ *   configuración.
+ * - `TibiBalanceApp` implementa `Configuration.Provider` usando **el método
+ *   getWorkManagerConfiguration()**, compatible con WorkManager 2.8.x.
  */
 @HiltAndroidApp
-class TibiBalanceApp : Application() {
+class TibiBalanceApp : Application(), Configuration.Provider {
+
+    @Inject lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
 
-        // Activa trazas detalladas de Firestore (comenta en producción si hace ruido)
         FirebaseFirestore.setLoggingEnabled(true)
+
+        val work = PeriodicWorkRequestBuilder<MetricsSyncWorker>(
+            15, TimeUnit.MINUTES
+        ).build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            MetricsSyncWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            work
+        )
     }
+
+    /** API WorkManager 2.9+ → propiedad, no método */
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 }

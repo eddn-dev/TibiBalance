@@ -1,11 +1,13 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.android.library)      // com.android.library
+    alias(libs.plugins.kotlin.android)       // org.jetbrains.kotlin.android
+    alias(libs.plugins.hilt.android)         // com.google.dagger.hilt.android
+    alias(libs.plugins.kotlin.serialization) // org.jetbrains.kotlin.plugin.serialization
+    alias(libs.plugins.kotlin.ksp)           // com.google.devtools.ksp
 
+    // Aplica KAPT correctamente (no kotlin("kapt") ni id("kotlin-kapt"))
+    kotlin("kapt")                           // org.jetbrains.kotlin.kapt
 }
 
 android {
@@ -28,14 +30,16 @@ android {
         }
     }
 
-    kotlin { jvmToolchain(17) }
+    kotlin {
+        jvmToolchain(17)
+    }
 }
 
+// Configuración de KSP (necesaria para Room)
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
-    arg("room.generateKotlin", "true")   // ← habilita value-classes
+    arg("room.generateKotlin", "true")   // habilita value-classes
 }
-
 
 dependencies {
     /* ─── Flecha Clean Arch ─────────────────────────────────────────────── */
@@ -45,9 +49,9 @@ dependencies {
     /* ─── Inyección de dependencias ────────────────────────────────────── */
     implementation(libs.hilt.android)
     implementation(libs.google.play.services.wearable)
-    ksp(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
+    kaptAndroidTest(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
-    kspAndroidTest(libs.hilt.compiler)
 
     /* ─── Room + SQLCipher (caché local cifrada) ───────────────────────── */
     implementation(libs.room.runtime)
@@ -76,18 +80,22 @@ dependencies {
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.espresso.core)
-    // data/build.gradle.kts
-    implementation("androidx.security:security-crypto:1.1.0-alpha06") // EncryptedSharedPreferences :contentReference[oaicite:0]{index=0}
 
-    /* ─── Coroutines ─────────────────────────────── */
+    // EncryptedSharedPreferences (Security Crypto)
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    /* ─── Coroutines ─────────────────────────────────────────────────── */
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlinx.coroutines.test)
 
     /* ─── WorkManager (para SyncWorker) ───────────── */
     implementation(libs.work.runtime.ktx)
-    implementation(libs.hilt.work)
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
-    // Librería de JSON para kotlinx.serialization
+    // dependencias para ListenableFuture:
+    implementation("com.google.guava:guava:31.1-android")
+
+    /* ─── Librería de JSON para kotlinx.serialization ─────────────────── */
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-
 }
