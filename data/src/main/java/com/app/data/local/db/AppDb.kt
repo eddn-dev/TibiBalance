@@ -34,7 +34,7 @@ import androidx.room.Room
         DailyMetricsEntity::class, OnboardingStatusEntity::class,
         DailyTipEntity::class
     ],
-    version = 1,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(
