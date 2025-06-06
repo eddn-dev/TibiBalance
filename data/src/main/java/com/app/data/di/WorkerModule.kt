@@ -1,6 +1,11 @@
 // data/src/main/java/com/app/data/di/WorkerModule.kt
 package com.app.data.di
-/*
+
+/**
+ * @file WorkerModule.kt
+ * @brief Proporciona el ChildWorkerFactory para MetricsSyncWorker.
+ */
+
 import com.app.data.worker.ChildWorkerFactory
 import com.app.data.worker.MetricsSyncWorkerChildFactory
 import dagger.Binds
@@ -19,4 +24,3 @@ abstract class WorkerModule {
         factory: MetricsSyncWorkerChildFactory
     ): ChildWorkerFactory
 }
-*/

@@ -69,7 +69,18 @@ class HealthServicesSensorDataSource @Inject constructor(
     }
 
     /* ──────────── Pasos diarios ──────────── */
-    override suspend fun fetchCurrentStepCount(): Int = 0
+    override suspend fun fetchCurrentStepCount(): Int {
+        return try {
+            val data = measureClient.getCurrentData(DataType.STEP_COUNT_TOTAL)
+            data.getData(DataType.STEP_COUNT_TOTAL)
+                .lastOrNull()
+                ?.value
+                ?.roundToInt()
+                ?: 0
+        } catch (e: Exception) {
+            0
+        }
+    }
 
     /* ───────── util ───────── */
     private fun hasPerm(p: String) =

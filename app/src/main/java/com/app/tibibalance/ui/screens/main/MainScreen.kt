@@ -50,7 +50,7 @@ fun MainScreen(rootNav: NavHostController) {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(padding)
         ) {
-            composable(Screen.Home.route)     { HomeScreen() }
+            composable(Screen.Home.route)     { HomeScreen(rootNav) }
             composable(Screen.Emotions.route) { EmotionalCalendarScreen() }
             composable(Screen.Habits.route)   { HabitsScreen() }
             composable(Screen.Profile.route)  { ViewProfileScreen(rootNav) }

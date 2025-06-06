@@ -1,5 +1,10 @@
 package com.app.wear.presentation.viewmodel
 
+/**
+ * @file WearMetricsViewModel.kt
+ * @brief ViewModel que gestiona la recolección y el envío de métricas desde el reloj.
+ */
+
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -114,11 +119,11 @@ class WearMetricsViewModel @Inject constructor(
             )*/
 
             val metricsData = WearableDailyMetrics(
-                steps = 123,
-                heartRate = 70f,
-                caloriesBurned = calculateCaloriesBurned(123),
-                activeMinutes = calculateActiveMinutes(123),
-                distanceMeters = calculateDistance(123),
+                steps = currentSteps,
+                heartRate = currentHeartRate?.toFloat(),
+                caloriesBurned = calculateCaloriesBurned(currentSteps),
+                activeMinutes = calculateActiveMinutes(currentSteps),
+                distanceMeters = calculateDistance(currentSteps),
                 timestamp = System.currentTimeMillis(),
                 userId = userId
             )

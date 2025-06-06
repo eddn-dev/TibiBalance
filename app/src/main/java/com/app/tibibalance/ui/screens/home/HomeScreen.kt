@@ -13,6 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.compose.material3.Button
+import com.app.tibibalance.ui.navigation.Screen
 import com.app.domain.entities.DailyTip
 import com.app.tibibalance.ui.components.containers.DailyTip
 import com.app.tibibalance.ui.components.texts.Title // drawables / colores
@@ -26,6 +29,7 @@ private const val PAGES = 2     // Tip · Métricas
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
+    navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state      by viewModel.ui.collectAsState()
@@ -51,7 +55,7 @@ fun HomeScreen(
         ) { page ->
             when (page) {
                 0 -> TipPage(state.dailyTip)
-                1 -> MetricsPage()
+                1 -> MetricsPage(navController)
             }
         }
 
@@ -92,7 +96,7 @@ private fun TipPage(
 
 /* -------------- Página 1: Métricas ------------------- */
 @Composable
-private fun MetricsPage() {
+private fun MetricsPage(navController: NavHostController) {
     Column(
         Modifier
             .fillMaxSize()
@@ -105,7 +109,13 @@ private fun MetricsPage() {
            ⚠️ Aún NO depende de isWatchConnected; se mostrará siempre.
            Cuando implementes la lógica, ocúltalo cuando `watchConnected == true`. */
         ConnectWatchCard(
-            onClick = { /* TODO: navegar a flujo de enlace */ }
+            onClick = { navController.navigate(Screen.ManageDevices.route) }
         )
+
+        Button(
+            onClick = { navController.navigate(Screen.Metrics.route) }
+        ) {
+            Text("Historial")
+        }
     }
 }

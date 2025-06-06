@@ -76,5 +76,7 @@ data object Habits              : Screen("main/habits")
     data object ChangePassword  : Screen("change_password")
     data object ConfigureNotif  : Screen("configure_notif")
     data object Achievements : Screen("achievements")
+    /** Pantalla con la lista de métricas almacenadas localmente. */
+    data object Metrics       : Screen("metrics_list")
     data object Goodbye : Screen("goodbye")
 }
