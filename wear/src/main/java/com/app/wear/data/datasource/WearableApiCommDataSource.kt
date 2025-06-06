@@ -1,7 +1,7 @@
 package com.app.wear.data.datasource
 
 import android.util.Log
-import com.app.data.remote.model.DailyMetricsPayload
+import com.app.wear.data.model.DailyMetricsPayload
 import com.app.wear.data.model.HabitUpdatePayload
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.PutDataMapRequest
