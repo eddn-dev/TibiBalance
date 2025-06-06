@@ -1,6 +1,6 @@
 package com.app.domain.repository
 
-import com.app.domain.model.DailyMetrics
+import com.app.domain.entities.DailyMetrics
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
