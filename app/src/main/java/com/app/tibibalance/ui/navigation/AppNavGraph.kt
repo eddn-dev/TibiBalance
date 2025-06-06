@@ -24,6 +24,7 @@ import com.app.tibibalance.ui.screens.settings.devices.ManageDevicesScreen
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementsScreen
 import com.app.tibibalance.ui.screens.settings.notification.ConfigureNotificationScreen
 import com.app.tibibalance.ui.screens.delete.GoodbyeScreen
+import com.app.tibibalance.ui.screens.metrics.MetricsListScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -53,6 +54,7 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
         composable(Screen.ConfigureNotif.route) { ConfigureNotificationScreen(navController) }
         composable(Screen.ManageDevices.route) { ManageDevicesScreen(navController = navController) }
         composable(Screen.Achievements.route) { AchievementsScreen(onNavigateUp = { navController.popBackStack() }) }
+        composable(Screen.Metrics.route) { MetricsListScreen(navController = navController) }
         composable(Screen.Goodbye.route) {
             GoodbyeScreen(navController = navController)
         }

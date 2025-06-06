@@ -1,6 +1,11 @@
 // data/src/main/java/com/app/data/worker/MetricsSyncWorkerChildFactory.kt
 package com.app.data.worker
-/*
+
+/**
+ * @file MetricsSyncWorkerChildFactory.kt
+ * @brief Adaptador que registra el Factory asistido del Worker.
+ */
+
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
@@ -10,6 +15,7 @@ import javax.inject.Inject
  * Adaptador que expone MetricsSyncWorker.Factory como ChildWorkerFactory,
  * de forma que el WorkerFactory global pueda instanciarlo.
  */
+
 class MetricsSyncWorkerChildFactory @Inject constructor(
     private val assistedFactory: MetricsSyncWorker.Factory
 ) : ChildWorkerFactory {
@@ -19,4 +25,3 @@ class MetricsSyncWorkerChildFactory @Inject constructor(
         return assistedFactory.create(appContext, params)
     }
 }
-*/

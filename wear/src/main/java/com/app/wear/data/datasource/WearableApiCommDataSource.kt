@@ -17,8 +17,8 @@ class WearableApiCommDataSource @Inject constructor(
 
     companion object {
         private const val TAG = "WearableApiCommDS"
-        // Paths para la Data Layer API (deben ser únicos y consistentes con la app móvil)
-        private const val METRICS_DATA_PATH = "/tibibalance/metrics"
+        // Paths para la Data Layer API (deben ser consistentes con MobileWearDataReceiver)
+        private const val METRICS_DATA_PATH = "/tibibalance/metrics" // ↔ móvil
         private const val HABIT_UPDATE_DATA_PATH = "/tibibalance/habit_update"
 
         // Keys para los DataMap
