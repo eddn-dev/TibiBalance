@@ -4,7 +4,9 @@ package com.app.tibibalance
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.app.data.worker.MetricsSyncWorker
@@ -32,9 +34,15 @@ class TibiBalanceApp : Application(), Configuration.Provider {
 
         FirebaseFirestore.setLoggingEnabled(true)
 
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
         val work = PeriodicWorkRequestBuilder<MetricsSyncWorker>(
             15, TimeUnit.MINUTES
-        ).build()
+        )
+            .setConstraints(constraints)
+            .build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             MetricsSyncWorker.WORK_NAME,

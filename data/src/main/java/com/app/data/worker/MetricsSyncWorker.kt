@@ -33,6 +33,9 @@ class MetricsSyncWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         Log.d(TAG, "▶▶ doWork() iniciando…")
+        if (runAttemptCount > 0) {
+            Log.i(TAG, "Reintentando ejecución, intento=$runAttemptCount")
+        }
         return try {
             // 1) Recuperar todas las métricas de Room
             val allMetrics: List<DailyMetrics> = metricsRepository
@@ -73,6 +76,7 @@ class MetricsSyncWorker @AssistedInject constructor(
 
         } catch (e: Exception) {
             Log.e(TAG, "  ✗ doWork(): excepción =", e)
+            Log.i(TAG, "  • doWork(): se solicitará retry")
             Result.retry()
         }
     }
