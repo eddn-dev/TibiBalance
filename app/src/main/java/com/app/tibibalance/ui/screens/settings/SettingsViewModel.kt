@@ -12,6 +12,7 @@ import com.app.domain.usecase.auth.SignOutUseCase
 import com.app.domain.usecase.user.ObserveUser
 import com.app.domain.usecase.user.UpdateUserSettings        // ⬅️ nuevo
 import com.app.tibibalance.ui.theme.ThemeController
+import com.app.domain.repository.MetricsRepository
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,16 +29,18 @@ class SettingsViewModel @Inject constructor(
     private val update : UpdateUserSettings,
     private val theme  : ThemeController,
     private val signOutUseCase: SignOutUseCase,
-    private val deleteAccountUseCase: DeleteAccountUseCase
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val metricsRepo: MetricsRepository
 ) : ViewModel() {
 
     /* ---------- UI ---------- */
     data class UiState(
-        val loading   : Boolean = true,
-        val user      : User?   = null,
-        val error     : String? = null,
-        val signingOut: Boolean = false,
-        val navigatingToGoodbye: Boolean = false
+        val loading       : Boolean = true,
+        val user          : User?   = null,
+        val error         : String? = null,
+        val signingOut    : Boolean = false,
+        val navigatingToGoodbye: Boolean = false,
+        val pendingMetrics: Int = 0
     )
 
     /* logout one-shot */
@@ -57,12 +60,19 @@ class SettingsViewModel @Inject constructor(
                 } else observeUser(uid)
             }
             .onEach { usr ->
-                _ui.value = if (usr == null)
-                    UiState(error = "Sin sesión")
-                else
-                    UiState(loading = false, user = usr)
+                _ui.update { state ->
+                    if (usr == null) {
+                        state.copy(loading = false, error = "Sin sesión", user = null)
+                    } else {
+                        state.copy(loading = false, user = usr, error = null)
+                    }
+                }
             }
-            .catch { e -> _ui.value = UiState(loading = false, error = e.message) }
+            .catch { e -> _ui.update { it.copy(loading = false, error = e.message) } }
+            .launchIn(viewModelScope)
+
+        metricsRepo.countPending()
+            .onEach { n -> _ui.update { it.copy(pendingMetrics = n) } }
             .launchIn(viewModelScope)
     }
 

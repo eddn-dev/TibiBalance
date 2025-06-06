@@ -22,7 +22,9 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
@@ -234,6 +236,7 @@ private fun SettingsBody(
         Title(
             text = "Configuración",
         )
+        PendingMetricsBadge(count = ui.pendingMetrics)
         /* ── Grupo: Cuenta ── */
         FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
             SettingItem(
@@ -344,6 +347,18 @@ private fun SettingsBody(
 private fun Icon24(icon: ImageVector) =
     Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary
         , modifier = Modifier.size(24.dp))
+
+@Composable
+private fun PendingMetricsBadge(count: Int) {
+    if (count > 0) {
+        Badge {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Sync, contentDescription = null)
+                Text(count.toString())
+            }
+        }
+    }
+}
 
 @Composable
 private fun SwitchSettingItem(
