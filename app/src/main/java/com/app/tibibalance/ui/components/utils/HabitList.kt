@@ -41,7 +41,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
-
+import com.app.tibibalance.ui.tutorial.TutorialStepData
 
 /* ────────────────────────────────────────────────────────────────── */
 /* Sección pública                                                   */
@@ -60,7 +60,8 @@ internal fun HabitList(
     habits : List<HabitUi>,
     onCheck: (HabitUi, Boolean) -> Unit,
     onEdit : (HabitUi) -> Unit,
-    onAdd  : () -> Unit
+    onAdd  : () -> Unit,
+    tutorialStep: TutorialStepData? = null
 ) {
     /** Orden de secciones preferido; lo que no esté aquí va a “Otros”. */
     val sectionOrder = listOf(
@@ -98,6 +99,9 @@ internal fun HabitList(
                 onClick            = onAdd,
                 icon               = Icons.Default.Add,
                 contentDescription = "Agregar hábito",
+                modifier = Modifier
+                    .tutorialTarget(tutorialStep, "habit_fab")
+                    .testTag("habit_fab"),
                 backgroundColor    = MaterialTheme.colorScheme.primary,
                 iconTint           = MaterialTheme.colorScheme.onSurface
             )
@@ -170,7 +174,7 @@ private fun Category(
  * @param onAdd Callback que se invoca al pulsar el botón de añadir.
  */
 @Composable
-internal fun EmptyState(onAdd: () -> Unit) = Column(
+internal fun EmptyState(onAdd: () -> Unit, tutorialStep: TutorialStepData? = null) = Column(
     modifier = Modifier
         .fillMaxSize() // Ocupa todo el espacio disponible
         .padding(32.dp), // Padding generoso
@@ -196,6 +200,9 @@ internal fun EmptyState(onAdd: () -> Unit) = Column(
         onClick            = onAdd, // Callback para iniciar la creación
         icon               = Icons.Default.Add, // Icono de añadir
         contentDescription = "Agregar hábito", // Descripción para accesibilidad
+        modifier = Modifier
+            .tutorialTarget(tutorialStep, "habit_fab")
+            .testTag("habit_fab"),
         backgroundColor    = Color(0xFF3EA8FE), // Color primario personalizado
         iconTint           = Color.White
     )

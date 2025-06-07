@@ -37,10 +37,12 @@ import androidx.compose.runtime.remember // Para Preview
 import androidx.compose.runtime.setValue // Para Preview
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview // Para Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tibibalance.ui.components.navigation.BottomNavItem
+import com.app.tibibalance.ui.tutorial.TutorialStepData
 
 /**
  * @brief Un [Composable] que renderiza un botón individual para la barra de navegación inferior.
@@ -69,6 +71,7 @@ fun NavBarButton(
     Box(
         modifier = Modifier
             .size(75.dp) // Tamaño fijo para el área del botón
+            .testTag(item.route)
             .clickable(onClick = onClick)
             .tutorialTarget(tutorialStep, item.route),
         contentAlignment = Alignment.Center // Centra el contenido (la Columna)
@@ -160,7 +163,7 @@ private fun NavBarButtonRowPreview() {
             items.forEach { item ->
                 NavBarButton(
                     item = item,
-                    selected = item.route == selectedRoute,
+                       selected = item.route == selectedRoute,
                     onClick = { selectedRoute = item.route }
                 )
             }
