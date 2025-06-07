@@ -56,6 +56,9 @@ import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.components.utils.gradient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 
@@ -168,22 +171,50 @@ private fun SettingsBody(
     /* Sesión */
     onSignOut          : () -> Unit,
     signingOut         : Boolean,
-    onDeleteAccount: (String) -> Unit
+    onDeleteAccount    : (password: String?, googleIdToken: String?) -> Unit
 ) {
-    /* diálogos */
+    val context = androidx.compose.ui.platform.LocalContext.current
     val snackbar = remember { SnackbarHostState() }
+
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showPasswordDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     val errorMessage = ui.error
+    val TAG = "DeleteAccount"
 
     if (showDeleteDialog) {
         ConfirmDeleteDialog(
             visible = showDeleteDialog,
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
-                showDeleteDialog = false
-                showPasswordDialog = true
+                // Detecta el proveedor del usuario
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                val providerId = firebaseUser?.providerData?.getOrNull(1)?.providerId
+
+                when (providerId) {
+                    "password" -> {
+                        showDeleteDialog = false
+                        showPasswordDialog = true
+                    }
+                    "google.com" -> {
+                        val account = GoogleSignIn.getLastSignedInAccount(context)
+                        val idToken = account?.idToken
+                        if (idToken != null) {
+                            Log.d(TAG, "LAYTON Este es el idToken: $idToken")
+                            onDeleteAccount(null, idToken)
+                        } else {
+                            vm.clearError()
+                            Log.d(TAG, "LAYTON Error que no hay idToken")
+                            showErrorDialog = true
+                        }
+                        showDeleteDialog = false
+                    }
+                    else -> {
+                        vm.clearError()
+                        showErrorDialog = true
+                        showDeleteDialog = false
+                    }
+                }
             }
         )
     }
@@ -192,24 +223,27 @@ private fun SettingsBody(
         DeleteAccountDialog(
             visible = showPasswordDialog,
             onDismiss = { showPasswordDialog = false },
-            onConfirm = {
-                onDeleteAccount(it)
+            onConfirm = { password ->
+                onDeleteAccount(password, null)
                 showPasswordDialog = false
-                showErrorDialog = true  // ← activa el modal de error si lo hay
             }
         )
-        if (showErrorDialog && errorMessage != null) {
-            AlertDialog(
-                onDismissRequest = { showErrorDialog = false },
-                title = { Text("Error al eliminar cuenta") },
-                text = { Text(errorMessage) },
-                confirmButton = {
-                    TextButton(onClick = { showErrorDialog = false }) {
-                        Text("Aceptar")
-                    }
+    }
+
+    if (showErrorDialog && errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { Text("Error al eliminar cuenta") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showErrorDialog = false
+                    vm.clearError()
+                }) {
+                    Text("Aceptar")
                 }
-            )
-        }
+            }
+        )
     }
 
     /* estado local para switches/botones – sincronizado con el VM */
@@ -228,12 +262,11 @@ private fun SettingsBody(
     ) {
         ImageContainer(
             resId = R.drawable.ic_settings,
-            contentDescription = "Configuracion",
+            contentDescription = "Configuración",
             modifier = Modifier.size(128.dp)
         )
-        Title(
-            text = "Configuración",
-        )
+        Title(text = "Configuración")
+
         /* ── Grupo: Cuenta ── */
         FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
             SettingItem(
@@ -323,19 +356,6 @@ private fun SettingsBody(
     }
 
     SnackbarHost(snackbar)
-
-    if (ui.error != null) {
-        AlertDialog(
-            onDismissRequest = { vm.clearError() },
-            title = { Text("Error al eliminar cuenta") },
-            text = { Text(ui.error ?: "") },
-            confirmButton = {
-                TextButton(onClick = { vm.clearError() }) {
-                    Text("Aceptar")
-                }
-            }
-        )
-    }
 }
 
 /* ───────────────────── Helpers ───────────────────── */
