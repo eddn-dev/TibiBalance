@@ -78,4 +78,4 @@ val bottomItems: List<BottomNavItem> = listOf(
         icon  = Icons.Filled.Settings,      // Icono de engranaje
         label = "Ajustes"                   // Etiqueta
     )
-)
+ )

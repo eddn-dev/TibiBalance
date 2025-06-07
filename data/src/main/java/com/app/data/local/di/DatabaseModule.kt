@@ -33,7 +33,7 @@ object DatabaseModule {
     ): AppDb =
         Room.databaseBuilder(ctx, AppDb::class.java, "tibi.db")
             .openHelperFactory(factory)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)       // 👈 sustituye fallbackToDestructive
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)       // 👈 sustituye fallbackToDestructive
             .build()
 
 

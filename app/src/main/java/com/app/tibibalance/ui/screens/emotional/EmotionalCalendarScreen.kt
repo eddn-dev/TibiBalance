@@ -82,7 +82,8 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EmotionalCalendarScreen(
-    vm: EmotionalCalendarViewModel = hiltViewModel()
+    vm: EmotionalCalendarViewModel = hiltViewModel(),
+    tutorialVm: TutorialViewModel = hiltViewModel()
 ) {
     /* ------------ state ------------- */
     val uiState by vm.ui.collectAsState()
@@ -95,6 +96,12 @@ fun EmotionalCalendarScreen(
             .background(gradient()),
         contentAlignment = Alignment.TopCenter
     ) {
+        androidx.compose.material3.IconButton(
+            onClick = tutorialVm::restartTutorial,
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ayuda")
+        }
 
         /* ---------- contenido ---------- */
         when (uiState) {

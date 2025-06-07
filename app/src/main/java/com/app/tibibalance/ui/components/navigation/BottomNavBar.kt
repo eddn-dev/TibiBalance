@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.* // Para remember y mutableStateOf en preview
+import com.app.tibibalance.ui.tutorial.TutorialStepData
 
 /**
  * @brief Un [Composable] que renderiza la barra de navegación inferior de la aplicación.
@@ -67,7 +68,8 @@ import androidx.compose.runtime.* // Para remember y mutableStateOf en preview
 fun BottomNavBar(
     items: List<BottomNavItem>,
     selectedRoute: String?,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    tutorialStep: TutorialStepData? = null
 ) {
     Surface(
         modifier = Modifier
@@ -87,7 +89,8 @@ fun BottomNavBar(
                 NavBarButton(
                     item = item,
                     selected = item.route == selectedRoute,
-                    onClick = { onItemClick(item.route) }
+                    onClick = { onItemClick(item.route) },
+                    tutorialStep = tutorialStep
                 )
             }
         }

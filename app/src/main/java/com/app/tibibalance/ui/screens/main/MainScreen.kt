@@ -19,6 +19,8 @@ import com.app.tibibalance.ui.screens.habits.HabitsScreen
 import com.app.tibibalance.ui.screens.home.HomeScreen
 import com.app.tibibalance.ui.screens.profile.show.ViewProfileScreen
 import com.app.tibibalance.ui.screens.settings.SettingsScreen
+import com.app.tibibalance.ui.tutorial.TutorialViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -30,6 +32,8 @@ fun MainScreen(rootNav: NavHostController) {
     val current = mainNav.currentBackStackEntryAsState()
     val currentRoute = current.value?.destination?.route
 
+    val tutorialVm: TutorialViewModel = hiltViewModel()
+
     Scaffold(
         bottomBar = {
             BottomNavBar(
@@ -40,7 +44,8 @@ fun MainScreen(rootNav: NavHostController) {
                     if (route != currentRoute) {
                         mainNav.navigate(route) { launchSingleTop = true }
                     }
-                }
+                },
+                tutorialStep = tutorialVm.currentStep.collectAsState().value
             )
         }
     ) { padding ->

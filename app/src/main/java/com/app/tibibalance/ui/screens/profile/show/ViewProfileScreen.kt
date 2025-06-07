@@ -28,6 +28,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.app.tibibalance.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
@@ -46,7 +48,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ViewProfileScreen(
     navController: NavHostController,
-    vm: ViewProfileViewModel = hiltViewModel()
+    vm: ViewProfileViewModel = hiltViewModel(),
+    tutorialVm: TutorialViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
 
@@ -55,6 +58,12 @@ fun ViewProfileScreen(
             .fillMaxSize()
             .background(gradient())
     ) {
+        androidx.compose.material3.IconButton(
+            onClick = tutorialVm::restartTutorial,
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ayuda")
+        }
         when {
             ui.loading -> Centered("Cargando…")
 

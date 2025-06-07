@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
 @Singleton
 class OnboardingRepositoryImpl @Inject constructor(
@@ -48,8 +49,27 @@ class OnboardingRepositoryImpl @Inject constructor(
                     "tutorialCompleted" to status.tutorialCompleted,
                     "legalAccepted"     to status.legalAccepted,
                     "permissionsAsked"  to status.permissionsAsked,
+                    "hasCompletedTutorial" to status.hasCompletedTutorial,
                     "completedAt"       to status.completedAt?.toString(),
                     "updatedAt"         to status.meta.updatedAt.toString()
+                )
+            )
+        }
+
+    override suspend fun saveTutorialStatus(uid: String, completed: Boolean) =
+        withContext(io) {
+            val current = dao.find(uid)?.toDomain() ?: OnboardingStatus()
+            val now = Clock.System.now()
+            val updated = current.copy(
+                hasCompletedTutorial = completed,
+                meta = current.meta.copy(updatedAt = now, pendingSync = false)
+            )
+            dao.upsert(updated.toEntity(uid))
+            remote.push(
+                uid,
+                mapOf(
+                    "hasCompletedTutorial" to completed,
+                    "updatedAt" to updated.meta.updatedAt.toString()
                 )
             )
         }
@@ -77,6 +97,7 @@ class OnboardingRepositoryImpl @Inject constructor(
                         "tutorialCompleted" to winner.tutorialCompleted,
                         "legalAccepted"     to winner.legalAccepted,
                         "permissionsAsked"  to winner.permissionsAsked,
+                        "hasCompletedTutorial" to winner.hasCompletedTutorial,
                         "completedAt"       to winner.completedAt?.toString(),
                         "updatedAt"         to winner.meta.updatedAt.toString()
                     )

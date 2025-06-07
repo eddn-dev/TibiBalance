@@ -15,6 +15,7 @@ data class OnboardingStatusEntity(
     val tutorialCompleted            : Boolean,
     val legalAccepted                : Boolean,
     val permissionsAsked             : Boolean,
+    val hasCompletedTutorial         : Boolean,
     val completedAt                  : Instant?,
     @Embedded(prefix = "m_")      val meta: SyncMeta
 )
