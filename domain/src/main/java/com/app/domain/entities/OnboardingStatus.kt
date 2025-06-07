@@ -14,6 +14,7 @@ data class OnboardingStatus(
     val tutorialCompleted : Boolean = false,
     val legalAccepted     : Boolean = false,
     val permissionsAsked  : Boolean = false,
+    val hasCompletedTutorial: Boolean = false,
     val completedAt       : Instant? = null,
     val meta              : SyncMeta = SyncMeta()
 )

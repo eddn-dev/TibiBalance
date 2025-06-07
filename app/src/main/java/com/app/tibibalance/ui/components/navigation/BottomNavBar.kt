@@ -87,7 +87,8 @@ fun BottomNavBar(
                 NavBarButton(
                     item = item,
                     selected = item.route == selectedRoute,
-                    onClick = { onItemClick(item.route) }
+                    onClick = { onItemClick(item.route) },
+                    tutorialStep = null
                 )
             }
         }

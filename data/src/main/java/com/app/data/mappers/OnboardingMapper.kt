@@ -15,6 +15,7 @@ object OnboardingMappers {
         tutorialCompleted = tutorialCompleted,
         legalAccepted     = legalAccepted,
         permissionsAsked  = permissionsAsked,
+        hasCompletedTutorial = hasCompletedTutorial,
         completedAt       = completedAt,
         meta              = meta
     )
@@ -26,6 +27,7 @@ object OnboardingMappers {
             tutorialCompleted = tutorialCompleted,
             legalAccepted     = legalAccepted,
             permissionsAsked  = permissionsAsked,
+            hasCompletedTutorial = hasCompletedTutorial,
             completedAt       = completedAt,
             meta              = meta
         )

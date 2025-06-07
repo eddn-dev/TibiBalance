@@ -8,6 +8,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +22,9 @@ import com.app.tibibalance.ui.components.containers.ConnectWatchCard
 import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.components.utils.PagerIndicator
 import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
+import com.app.tibibalance.ui.tutorial.TutorialViewModel
+import com.app.tibibalance.ui.tutorial.tutorialTarget
+import com.app.tibibalance.ui.tutorial.TutorialStepData
 
 private const val PAGES = 2     // Tip · Métricas
 
@@ -27,7 +32,8 @@ private const val PAGES = 2     // Tip · Métricas
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    tutorialVm: TutorialViewModel = hiltViewModel()
 ) {
     val state      by viewModel.ui.collectAsState()
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
@@ -39,6 +45,9 @@ fun HomeScreen(
             .padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        androidx.compose.material3.IconButton(onClick = tutorialVm::restartTutorial) {
+            androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ayuda")
+        }
         /* Saludo */
         Title("¡Hola de nuevo! ${state.user?.displayName.orEmpty()}")
 
@@ -51,7 +60,7 @@ fun HomeScreen(
                 .fillMaxWidth()
         ) { page ->
             when (page) {
-                0 -> TipPage(state.dailyTip)
+                0 -> TipPage(state.dailyTip, tutorialVm.currentStep.collectAsState().value)
                 1 -> MetricsPage()
             }
         }
@@ -88,10 +97,11 @@ fun HomeScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TipPage(
-    tip: DailyTip?
+    tip: DailyTip?,
+    step: TutorialStepData?
 ) {
     if (tip != null) {
-        DailyTip(tip = tip)
+        DailyTip(tip = tip, modifier = Modifier.tutorialTarget(step, "daily_tip_card"))
     } else {
         // Fallback cuando no hay tip disponible (raro)
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
