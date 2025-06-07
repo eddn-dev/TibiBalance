@@ -11,7 +11,7 @@ import com.app.tibibalance.ui.theme.AppThemeViewModel
 import com.app.tibibalance.ui.theme.TibiBalanceTheme
 import com.app.tibibalance.ui.tutorial.TutorialOverlay
 import com.app.tibibalance.ui.tutorial.TutorialViewModel
-import com.app.tibibalance.ui.tutorial.tutorialTarget
+import com.psoffritti.taptargetcompose.TapTargetCoordinator
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -22,7 +22,13 @@ fun TibiBalanceRoot() {
     val step   = tutorialVm.currentStep.collectAsState().value
 
     TibiBalanceTheme(mode = mode) {
-        AppNavGraph()
-        TutorialOverlay(step = step, onNext = tutorialVm::proceedToNextStep, onSkip = tutorialVm::skipTutorial)
+        TapTargetCoordinator(showTapTargets = step != null, onComplete = {}) {
+            AppNavGraph()
+            TutorialOverlay(
+                step = step,
+                onNext = tutorialVm::proceedToNextStep,
+                onSkip = tutorialVm::skipTutorial
+            )
+        }
     }
 }

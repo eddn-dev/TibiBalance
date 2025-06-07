@@ -1,14 +1,17 @@
 package com.app.tibibalance.ui.tutorial
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import com.psoffritti.taptargetcompose.TapTargetCoordinator
+import androidx.compose.ui.text.font.FontWeight
 import com.psoffritti.taptargetcompose.tapTarget
 import com.psoffritti.taptargetcompose.TapTargetDefinition
 import com.psoffritti.taptargetcompose.TextDefinition
@@ -22,18 +25,16 @@ fun TutorialOverlay(
 ) {
     if (step == null) return
 
-    TapTargetCoordinator(showTapTargets = true, onComplete = {}) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            androidx.compose.foundation.layout.Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                Text(step.title)
-                Text(step.message)
-                androidx.compose.foundation.layout.Row {
-                    Button(onClick = onNext) { Text("Siguiente") }
-                    Button(onClick = onSkip) { Text("Omitir") }
-                }
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            Text(step.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text(step.message, style = MaterialTheme.typography.bodyMedium)
+            Row {
+                Button(onClick = onNext) { Text("Siguiente") }
+                Button(onClick = onSkip) { Text("Omitir") }
             }
         }
     }

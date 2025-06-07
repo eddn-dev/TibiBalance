@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import com.app.tibibalance.R
 
 @Composable
@@ -27,6 +28,7 @@ fun ConnectWatchCard(
             .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.large)
             .clickable(onClick = onClick)
             .padding(16.dp)
+            .testTag("stats_section")
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(

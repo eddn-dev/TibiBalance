@@ -61,7 +61,7 @@ fun HomeScreen(
         ) { page ->
             when (page) {
                 0 -> TipPage(state.dailyTip, tutorialVm.currentStep.collectAsState().value)
-                1 -> MetricsPage()
+                1 -> MetricsPage(tutorialVm.currentStep.collectAsState().value)
             }
         }
 
@@ -112,7 +112,7 @@ private fun TipPage(
 
 /* -------------- Página 1: Métricas ------------------- */
 @Composable
-private fun MetricsPage() {
+private fun MetricsPage(step: TutorialStepData?) {
     Column(
         Modifier
             .fillMaxSize()
@@ -125,7 +125,8 @@ private fun MetricsPage() {
            ⚠️ Aún NO depende de isWatchConnected; se mostrará siempre.
            Cuando implementes la lógica, ocúltalo cuando `watchConnected == true`. */
         ConnectWatchCard(
-            onClick = { /* TODO: navegar a flujo de enlace */ }
+            onClick = { /* TODO: navegar a flujo de enlace */ },
+            modifier = Modifier.tutorialTarget(step, "stats_section")
         )
     }
 }
