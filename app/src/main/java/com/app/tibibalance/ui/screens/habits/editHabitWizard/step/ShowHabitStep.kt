@@ -4,7 +4,8 @@ package com.app.tibibalance.ui.screens.habits.editHabitWizard.step
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,10 +45,14 @@ fun ShowHabitStep(
             ?.format(dateFmt) ?: "—"
     }
 
+    // Estado de scroll para la columna
+    val scrollState = rememberScrollState()
+
     /* UI ------------------------------------------------------------- */
     Column(
-        Modifier
-            .fillMaxWidth()
+        modifier = Modifier
+            .fillMaxSize()                    // ocupa toda la pantalla
+            .verticalScroll(scrollState)      // habilita scroll vertical
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -61,9 +66,9 @@ fun ShowHabitStep(
             verticalArrangement   = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            AssistChip({}, label = { Text(habit.category.name) })
-            AssistChip({}, label = { Text(repeatTxt) })
-            AssistChip({}, label = { Text("Creado: $createdOn") })
+            AssistChip(onClick = { }, label = { Text(habit.category.name) })
+            AssistChip(onClick = { }, label = { Text(repeatTxt) })
+            AssistChip(onClick = { }, label = { Text("Creado: $createdOn") })
         }
 
         ToggleRow(
@@ -78,11 +83,15 @@ fun ShowHabitStep(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(8.dp))  // separador antes del botón de eliminar
+
         DangerButton(
-            text       = "Eliminar hábito",
-            onClick    = onDelete,
-            isLoading  = deleting,
-            modifier   = Modifier.fillMaxWidth()
+            text      = "Eliminar hábito",
+            onClick   = onDelete,
+            isLoading = deleting,
+            modifier  = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)        // padding extra al final
         )
     }
 }
