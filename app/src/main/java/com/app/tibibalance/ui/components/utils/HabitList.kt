@@ -41,7 +41,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
-import com.app.tibibalance.ui.tutorial.TutorialStepData
+import com.app.tibibalance.ui.tutorial.*
 
 /* ────────────────────────────────────────────────────────────────── */
 /* Sección pública                                                   */

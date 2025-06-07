@@ -42,7 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview // Para Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.tibibalance.ui.components.navigation.BottomNavItem
-import com.app.tibibalance.ui.tutorial.TutorialStepData
+import com.app.tibibalance.ui.tutorial.*
 
 /**
  * @brief Un [Composable] que renderiza un botón individual para la barra de navegación inferior.

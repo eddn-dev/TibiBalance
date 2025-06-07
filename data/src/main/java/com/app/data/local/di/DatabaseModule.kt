@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.app.data.local.dao.*
 import com.app.data.local.db.AppDb
-import com.app.data.local.db.MIGRATION_1_2
-import com.app.data.local.db.MIGRATION_2_3
+import com.app.data.local.db.*
 import com.app.data.local.security.SecurePassphraseProvider
 import dagger.Module
 import dagger.Provides
