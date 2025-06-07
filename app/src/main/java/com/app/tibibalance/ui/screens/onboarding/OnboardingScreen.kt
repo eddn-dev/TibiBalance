@@ -2,7 +2,6 @@
 package com.app.tibibalance.ui.screens.onboarding
 
 // Eliminar importaciones de accompanist.pager
-// import com.google.accompanist.pager.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
