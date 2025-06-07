@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,9 +57,30 @@ import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.components.utils.gradient
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import android.app.Activity
+import androidx.credentials.CredentialManager
+import com.app.tibibalance.auth.GoogleOneTapHelper
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import android.util.Log
+
+// ID del cliente web de Firebase (OAuth).
+private const val WEB_CLIENT_ID =
+    "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com"
+
+/**
+ * Solicita el idToken a través de CredentialManager usando One Tap.
+ * @return token de Google o cadena vacía en caso de error.
+ */
+private suspend fun requestGoogleIdToken(
+    activity: Activity,
+    cm: CredentialManager
+): String {
+    val request = GoogleOneTapHelper.buildRequest(WEB_CLIENT_ID)
+    val result = cm.getCredential(activity, request)
+    return GoogleIdTokenCredential.createFrom(result.credential.data).idToken
+}
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 
@@ -174,13 +196,16 @@ private fun SettingsBody(
     onDeleteAccount    : (password: String?, googleIdToken: String?) -> Unit
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
+    val activity = context as Activity
+    val cm = remember(activity) { CredentialManager.create(activity) }
+    val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showPasswordDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     val errorMessage = ui.error
-    val TAG = "DeleteAccount"
+    val tag = "DeleteAccount"
 
     if (showDeleteDialog) {
         ConfirmDeleteDialog(
@@ -197,17 +222,22 @@ private fun SettingsBody(
                         showPasswordDialog = true
                     }
                     "google.com" -> {
-                        val account = GoogleSignIn.getLastSignedInAccount(context)
-                        val idToken = account?.idToken
-                        if (idToken != null) {
-                            Log.d(TAG, "LAYTON Este es el idToken: $idToken")
-                            onDeleteAccount(null, idToken)
-                        } else {
-                            vm.clearError()
-                            Log.d(TAG, "LAYTON Error que no hay idToken")
-                            showErrorDialog = true
+                        scope.launch {
+                            try {
+                                val token = requestGoogleIdToken(activity, cm)
+                                if (token.isNotBlank()) {
+                                    Log.d(tag, "LAYTON Este es el idToken: $token")
+                                    onDeleteAccount(null, token)
+                                } else {
+                                    vm.setError("Token de Google inválido.")
+                                    showErrorDialog = true
+                                }
+                            } catch (e: Exception) {
+                                vm.setError(e.message ?: "Error al obtener token de Google")
+                                showErrorDialog = true
+                            }
+                            showDeleteDialog = false
                         }
-                        showDeleteDialog = false
                     }
                     else -> {
                         vm.clearError()
