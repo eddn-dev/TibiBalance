@@ -55,32 +55,32 @@ import com.app.tibibalance.ui.components.dialogs.DeleteAccountDialog
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
-import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.navigation.Screen
 import android.app.Activity
 import androidx.credentials.CredentialManager
 import com.app.tibibalance.auth.GoogleOneTapHelper
+import kotlinx.coroutines.launch
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
 import android.util.Log
 
-// ID del cliente web de Firebase (OAuth).
 private const val WEB_CLIENT_ID =
     "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com"
 
-/**
- * Solicita el idToken a través de CredentialManager usando One Tap.
- * @return token de Google o cadena vacía en caso de error.
- */
 private suspend fun requestGoogleIdToken(
     activity: Activity,
     cm: CredentialManager
 ): String {
-    val request = GoogleOneTapHelper.buildRequest(WEB_CLIENT_ID)
+    // Solo mostrar la cuenta previamente autenticada
+    val request = GoogleOneTapHelper.buildRequest(
+        serverClientId = WEB_CLIENT_ID,
+        authorizedOnly = true,
+    )
     val result = cm.getCredential(activity, request)
     return GoogleIdTokenCredential.createFrom(result.credential.data).idToken
 }
+
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 
@@ -158,14 +158,14 @@ private fun SettingsContent(
             user                 = user,
             onEditPersonal       = onEditPersonal,
             onDevices            = { /* TODO */ },
-            onAchievements       = {navController.navigate(Screen.Achievements.route) },
+            onAchievements       = { navController.navigate(Screen.Achievements.route) },
             onConfigureNotis     = onConfigureNotis,
             onChangeTheme        = onChangeTheme,
             onToggleGlobalNotif  = onToggleGlobalNotif,
             onToggleTTS          = onToggleTTS,
             onSignOut            = onSignOut,
             signingOut           = signingOut,
-            onDeleteAccount = vm::reauthenticateAndDelete,
+            onDeleteAccount      = vm::reauthenticateAndDelete,
             onOpenTerms          = { /* TODO */ },
             onOpenPrivacy        = { /* TODO */ }
         )
