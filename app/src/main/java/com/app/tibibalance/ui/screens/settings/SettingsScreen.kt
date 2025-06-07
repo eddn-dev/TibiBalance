@@ -61,7 +61,8 @@ import com.app.tibibalance.ui.components.utils.gradient
 
 @Composable
 fun SettingsScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    tutorialVm: TutorialViewModel = hiltViewModel()
 ) {
     val vm: SettingsViewModel = hiltViewModel()
     val ui by vm.ui.collectAsState()
@@ -126,6 +127,12 @@ private fun SettingsContent(
             .fillMaxSize()
             .background(gradient())
     ) {
+        androidx.compose.material3.IconButton(
+            onClick = tutorialVm::restartTutorial,
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ayuda")
+        }
 
         SettingsBody(
             ui                   = ui,

@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
 @Singleton
 class OnboardingRepositoryImpl @Inject constructor(
@@ -58,7 +59,19 @@ class OnboardingRepositoryImpl @Inject constructor(
     override suspend fun saveTutorialStatus(uid: String, completed: Boolean) =
         withContext(io) {
             val current = dao.find(uid)?.toDomain() ?: OnboardingStatus()
-            dao.upsert(current.copy(hasCompletedTutorial = completed).toEntity(uid))
+            val now = Clock.System.now()
+            val updated = current.copy(
+                hasCompletedTutorial = completed,
+                meta = current.meta.copy(updatedAt = now, pendingSync = false)
+            )
+            dao.upsert(updated.toEntity(uid))
+            remote.push(
+                uid,
+                mapOf(
+                    "hasCompletedTutorial" to completed,
+                    "updatedAt" to updated.meta.updatedAt.toString()
+                )
+            )
         }
 
     override suspend fun syncNow(uid: String): Result<Unit> = withContext(io) {

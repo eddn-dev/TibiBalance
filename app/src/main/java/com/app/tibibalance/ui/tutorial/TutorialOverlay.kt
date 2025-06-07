@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.psoffritti.taptargetcompose.TapTargetCoordinator
 import com.psoffritti.taptargetcompose.tapTarget
 import com.psoffritti.taptargetcompose.TapTargetDefinition
@@ -23,9 +24,16 @@ fun TutorialOverlay(
 
     TapTargetCoordinator(showTapTargets = true, onComplete = {}) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            Box(Modifier.align(Alignment.BottomCenter)) {
-                Button(onClick = onNext) { Text("Siguiente") }
-                Button(onClick = onSkip) { Text("Omitir") }
+            androidx.compose.foundation.layout.Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Text(step.title)
+                Text(step.message)
+                androidx.compose.foundation.layout.Row {
+                    Button(onClick = onNext) { Text("Siguiente") }
+                    Button(onClick = onSkip) { Text("Omitir") }
+                }
             }
         }
     }
@@ -33,7 +41,7 @@ fun TutorialOverlay(
 
 fun Modifier.tutorialTarget(current: TutorialStepData?, id: String): Modifier {
     return if (current != null && current.targetId == id) {
-        this.tapTarget(
+        this.testTag(id).tapTarget(
             TapTargetDefinition(
                 precedence = 0,
                 title = TextDefinition(current.title),

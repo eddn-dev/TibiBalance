@@ -3,6 +3,7 @@ package com.app.tibibalance.ui.tutorial
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.domain.repository.AuthRepository
+import com.app.domain.repository.HabitRepository
 import com.app.domain.usecase.onboarding.ObserveOnboardingStatus
 import com.app.domain.usecase.tutorial.SaveTutorialStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,13 +17,20 @@ import kotlinx.coroutines.launch
 class TutorialViewModel @Inject constructor(
     private val authRepo: AuthRepository,
     private val observeStatus: ObserveOnboardingStatus,
-    private val saveStatus: SaveTutorialStatusUseCase
+    private val saveStatus: SaveTutorialStatusUseCase,
+    private val habitRepo: HabitRepository
 ) : ViewModel() {
 
     private val _currentStep = MutableStateFlow<TutorialStepData?>(null)
     val currentStep: StateFlow<TutorialStepData?> = _currentStep
 
-    private val steps = TutorialStep.all
+    private val steps = TutorialStep.all.map { step ->
+        when (step) {
+            TutorialStep.DailyProgress,
+            TutorialStep.ActivityFab -> step.data.copy(conditionalCheck = { hasChallengeHabit() })
+            else -> step.data
+        }
+    }
     private var index = -1
 
     init { startIfNeeded() }
@@ -58,6 +66,10 @@ class TutorialViewModel @Inject constructor(
     fun restartTutorial() {
         index = -1
         proceedToNextStep()
+    }
+
+    private suspend fun hasChallengeHabit(): Boolean {
+        return habitRepo.observeUserHabits().first().any { it.challenge != null }
     }
 
     private suspend fun finishTutorial() {

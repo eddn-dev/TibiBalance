@@ -88,7 +88,8 @@ import com.app.tibibalance.ui.screens.habits.editHabitWizard.EditHabitModal
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HabitsScreen(
-    vm: HabitsViewModel = hiltViewModel()
+    vm: HabitsViewModel = hiltViewModel(),
+    tutorialVm: TutorialViewModel = hiltViewModel()
 ) {
     // Estado local para controlar visibilidad del modal de “Agregar hábito”
     var showAdd by remember { mutableStateOf(false) }
@@ -124,6 +125,12 @@ fun HabitsScreen(
             .fillMaxSize()
             .background(gradient())
     ) {
+        androidx.compose.material3.IconButton(
+            onClick = tutorialVm::restartTutorial,
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            androidx.compose.material3.Icon(Icons.Default.Info, contentDescription = "Ayuda")
+        }
         // Mostrar contenido según el estado actual de la UI
         when (val state = ui) {
             HabitsUiState.Loading -> {
@@ -136,7 +143,10 @@ fun HabitsScreen(
             }
             HabitsUiState.Empty -> {
                 // No hay hábitos: invitación a agregar uno nuevo
-                EmptyState(onAdd = vm::onAddClicked)
+                EmptyState(
+                    onAdd = vm::onAddClicked,
+                    tutorialStep = tutorialVm.currentStep.collectAsState().value
+                )
             }
             is HabitsUiState.Loaded -> {
                 // Mostrar lista de hábitos
@@ -146,7 +156,8 @@ fun HabitsScreen(
                         // TODO: gestionar marcación de hábito completado
                     },
                     onEdit = vm::onHabitClicked,
-                    onAdd = vm::onAddClicked
+                    onAdd = vm::onAddClicked,
+                    tutorialStep = tutorialVm.currentStep.collectAsState().value
                 )
             }
         }
