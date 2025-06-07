@@ -62,13 +62,15 @@ import com.app.tibibalance.ui.components.navigation.BottomNavItem
 fun NavBarButton(
     item: BottomNavItem,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    tutorialStep: TutorialStepData? = null
 ) {
     // Contenedor principal del botón, define el tamaño y la acción de clic
     Box(
         modifier = Modifier
             .size(75.dp) // Tamaño fijo para el área del botón
-            .clickable(onClick = onClick), // Hace todo el Box clicable
+            .clickable(onClick = onClick)
+            .tutorialTarget(tutorialStep, item.route),
         contentAlignment = Alignment.Center // Centra el contenido (la Columna)
     ) {
         // Fondo de realce, visible solo si 'selected' es true

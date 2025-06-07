@@ -38,6 +38,7 @@ coil                  = "3.2.0"
 lottie                = "6.6.6"
 accompanist           = "0.37.3"
 spinwheel             = "1.1.1"
+tap-target-compose    = "1.2.1"
 playServicesWearable  = "19.0.0"
 healthServices        = "1.0.0"
 wearCompose           = "1.4.1"
@@ -92,6 +93,7 @@ coil-network-okhttp      = { group = "io.coil-kt.coil3",           name = "coil-
 lottie-compose           = { group = "com.airbnb.android",         name = "lottie-compose",            version.ref = "lottie" }
 accompanist-permissions  = { group = "com.google.accompanist",     name = "accompanist-permissions",   version.ref = "accompanist" }
 spinwheel-compose        = { group = "com.github.commandiron",     name = "SpinWheelCompose",          version.ref = "spinwheel" }
+tap-target-compose       = { group = "com.pierfrancescosoffritti.taptargetcompose", name = "core", version.ref = "tap-target-compose" }
 
 room-runtime             = { group = "androidx.room",             name = "room-runtime",              version.ref = "room" }
 room-ktx                 = { group = "androidx.room",             name = "room-ktx",                  version.ref = "room" }

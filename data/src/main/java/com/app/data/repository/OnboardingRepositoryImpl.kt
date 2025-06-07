@@ -48,10 +48,17 @@ class OnboardingRepositoryImpl @Inject constructor(
                     "tutorialCompleted" to status.tutorialCompleted,
                     "legalAccepted"     to status.legalAccepted,
                     "permissionsAsked"  to status.permissionsAsked,
+                    "hasCompletedTutorial" to status.hasCompletedTutorial,
                     "completedAt"       to status.completedAt?.toString(),
                     "updatedAt"         to status.meta.updatedAt.toString()
                 )
             )
+        }
+
+    override suspend fun saveTutorialStatus(uid: String, completed: Boolean) =
+        withContext(io) {
+            val current = dao.find(uid)?.toDomain() ?: OnboardingStatus()
+            dao.upsert(current.copy(hasCompletedTutorial = completed).toEntity(uid))
         }
 
     override suspend fun syncNow(uid: String): Result<Unit> = withContext(io) {
@@ -77,6 +84,7 @@ class OnboardingRepositoryImpl @Inject constructor(
                         "tutorialCompleted" to winner.tutorialCompleted,
                         "legalAccepted"     to winner.legalAccepted,
                         "permissionsAsked"  to winner.permissionsAsked,
+                        "hasCompletedTutorial" to winner.hasCompletedTutorial,
                         "completedAt"       to winner.completedAt?.toString(),
                         "updatedAt"         to winner.meta.updatedAt.toString()
                     )

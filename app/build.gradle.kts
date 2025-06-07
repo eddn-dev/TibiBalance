@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.accompanist.permissions)
     implementation(libs.spinwheel.compose)
+    implementation(libs.tap.target.compose)
 
     /* ── Room (local DB) ────────────────────────────── */
     implementation(libs.room.runtime)
