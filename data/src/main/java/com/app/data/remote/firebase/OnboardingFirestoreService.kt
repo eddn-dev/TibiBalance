@@ -30,6 +30,7 @@ class OnboardingFirestoreService @Inject constructor(
         if (!snap.exists()) return null
 
         return OnboardingStatus(
+            hasCompletedTutorial = snap.getBoolean("hasCompletedTutorial") ?: false,
             tutorialCompleted = snap.getBoolean("tutorialCompleted") ?: false,
             legalAccepted     = snap.getBoolean("legalAccepted") ?: false,
             permissionsAsked  = snap.getBoolean("permissionsAsked") ?: false,

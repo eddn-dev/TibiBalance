@@ -8,6 +8,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +32,7 @@ private const val PAGES = 2     // Tip · Métricas
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
     val state      by viewModel.ui.collectAsState()
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
@@ -39,6 +43,12 @@ fun HomeScreen(
             .padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.End)) {
+            androidx.compose.material3.Icon(
+                imageVector = Icons.Default.Help,
+                contentDescription = "Ayuda"
+            )
+        }
         /* Saludo */
         Title("¡Hola de nuevo! ${state.user?.displayName.orEmpty()}")
 
