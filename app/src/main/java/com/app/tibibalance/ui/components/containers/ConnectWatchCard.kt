@@ -14,18 +14,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import com.app.tibibalance.R
+import com.app.tibibalance.tutorial.tutorialTarget
 
 @Composable
 fun ConnectWatchCard(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel? = null
 ) {
     Box(
         modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.large)
             .clickable(onClick = onClick)
+            .testTag("connect_watch_card")
+            .let { mod -> tutorialVm?.let { mod.tutorialTarget(it, "connect_watch_card") } ?: mod }
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

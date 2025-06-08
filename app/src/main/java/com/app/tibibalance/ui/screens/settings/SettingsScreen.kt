@@ -44,9 +44,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.domain.entities.User
 import com.app.domain.enums.ThemeMode
+import androidx.compose.ui.platform.testTag
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Help
 import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.buttons.DangerButton
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
+import com.app.tibibalance.tutorial.tutorialTarget
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.dialogs.ConfirmDeleteDialog
@@ -115,6 +121,7 @@ private fun SettingsContent(
     vm: SettingsViewModel,
     ui: SettingsViewModel.UiState
 ) {
+    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
     /* Destinos secundarios */
     val onEditPersonal   = { navController.navigate(Screen.EditProfile.route) }
     val onConfigureNotis = { navController.navigate(Screen.ConfigureNotif.route) }
@@ -126,6 +133,9 @@ private fun SettingsContent(
             .fillMaxSize()
             .background(gradient())
     ) {
+        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
+        }
 
         SettingsBody(
             ui                   = ui,
@@ -222,7 +232,9 @@ private fun SettingsBody(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(top = 96.dp, start = 24.dp, end = 24.dp, bottom = 24.dp),
+            .padding(top = 96.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
+            .testTag("settings_section")
+            .tutorialTarget(tutorialVm, "settings_section"),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {

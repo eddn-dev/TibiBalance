@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.app.domain.enums.HabitCategory
 import com.app.tibibalance.ui.components.buttons.RoundedIconButton
 import com.app.tibibalance.ui.components.containers.IconContainer
@@ -41,6 +42,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.screens.habits.HabitUi
+import com.app.tibibalance.tutorial.tutorialTarget
 
 
 /* ────────────────────────────────────────────────────────────────── */
@@ -60,7 +62,8 @@ internal fun HabitList(
     habits : List<HabitUi>,
     onCheck: (HabitUi, Boolean) -> Unit,
     onEdit : (HabitUi) -> Unit,
-    onAdd  : () -> Unit
+    onAdd  : () -> Unit,
+    tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel
 ) {
     /** Orden de secciones preferido; lo que no esté aquí va a “Otros”. */
     val sectionOrder = listOf(
@@ -99,7 +102,10 @@ internal fun HabitList(
                 icon               = Icons.Default.Add,
                 contentDescription = "Agregar hábito",
                 backgroundColor    = MaterialTheme.colorScheme.primary,
-                iconTint           = MaterialTheme.colorScheme.onSurface
+                iconTint           = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .testTag("habit_fab")
+                    .tutorialTarget(tutorialVm, "habit_fab")
             )
         }
     }

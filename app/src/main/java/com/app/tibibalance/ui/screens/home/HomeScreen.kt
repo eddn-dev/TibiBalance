@@ -8,6 +8,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,9 +21,13 @@ import com.app.domain.entities.DailyTip
 import com.app.tibibalance.ui.components.containers.DailyTip
 import com.app.tibibalance.ui.components.texts.Title // drawables / colores
 import com.app.tibibalance.ui.components.containers.ConnectWatchCard
+import com.app.tibibalance.ui.components.containers.StatContainer
 import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.components.utils.PagerIndicator
 import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import com.app.tibibalance.tutorial.tutorialTarget
 
 private const val PAGES = 2     // Tip · Métricas
 
@@ -29,6 +37,7 @@ private const val PAGES = 2     // Tip · Métricas
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
     val state      by viewModel.ui.collectAsState()
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
 
@@ -39,8 +48,23 @@ fun HomeScreen(
             .padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.End)) {
+            androidx.compose.material3.Icon(
+                imageVector = Icons.Default.Help,
+                contentDescription = "Ayuda"
+            )
+        }
         /* Saludo */
         Title("¡Hola de nuevo! ${state.user?.displayName.orEmpty()}")
+
+        StatContainer(
+            value = "0%",
+            label = "Progreso del día",
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("daily_progress_card")
+                .tutorialTarget(tutorialVm, "daily_progress_card")
+        )
 
         /* Pager reducido */
         HorizontalPager(
@@ -70,6 +94,16 @@ fun HomeScreen(
             activities = state.activities,
             onClickCard = viewModel::openLog            // ✅ abre el modal
         )
+
+        FloatingActionButton(
+            onClick = { state.activities.firstOrNull()?.let(viewModel::openLog) },
+            modifier = Modifier
+                .align(Alignment.End)
+                .testTag("activity_fab")
+                .tutorialTarget(tutorialVm, "activity_fab")
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Actividad")
+        }
 
 
         /* -------- diálogo de registro -------- */
@@ -115,7 +149,8 @@ private fun MetricsPage() {
            ⚠️ Aún NO depende de isWatchConnected; se mostrará siempre.
            Cuando implementes la lógica, ocúltalo cuando `watchConnected == true`. */
         ConnectWatchCard(
-            onClick = { /* TODO: navegar a flujo de enlace */ }
+            onClick = { /* TODO: navegar a flujo de enlace */ },
+            tutorialVm = tutorialVm
         )
     }
 }

@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
+import com.app.tibibalance.tutorial.tutorialTarget
 import com.app.domain.entities.Challenge
 import com.app.domain.entities.DailyTip
 import com.app.domain.entities.DailyTipItem
@@ -41,7 +43,8 @@ import androidx.compose.ui.text.TextStyle
 @Composable
 fun DailyTip(
     tip: DailyTip,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel
 ) {
     Column{
 
@@ -52,7 +55,10 @@ fun DailyTip(
 
         /* Card principal */
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("daily_tip_card")
+                .tutorialTarget(tutorialVm, "daily_tip_card"),
             colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape    = CardDefaults.shape
         ) {

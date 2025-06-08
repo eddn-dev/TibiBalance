@@ -67,7 +67,8 @@ import androidx.compose.runtime.* // Para remember y mutableStateOf en preview
 fun BottomNavBar(
     items: List<BottomNavItem>,
     selectedRoute: String?,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel? = null
 ) {
     Surface(
         modifier = Modifier
@@ -87,7 +88,8 @@ fun BottomNavBar(
                 NavBarButton(
                     item = item,
                     selected = item.route == selectedRoute,
-                    onClick = { onItemClick(item.route) }
+                    onClick = { onItemClick(item.route) },
+                    tutorialVm = tutorialVm
                 )
             }
         }

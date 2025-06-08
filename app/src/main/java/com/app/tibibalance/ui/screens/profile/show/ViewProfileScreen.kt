@@ -33,8 +33,10 @@ import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.containers.ProfileContainer
 import com.app.tibibalance.ui.components.buttons.AchievementAccessItem
+import androidx.compose.ui.platform.testTag
 
 import com.app.tibibalance.ui.components.inputs.InputText
+import com.app.tibibalance.tutorial.tutorialTarget
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.navigation.Screen
@@ -49,6 +51,7 @@ fun ViewProfileScreen(
     vm: ViewProfileViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
+    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
 
     Box(
         Modifier
@@ -64,7 +67,8 @@ fun ViewProfileScreen(
                 user = ui.user!!,
                 onEdit = { navController.navigate(Screen.EditProfile.route) },
                 onSignOut = vm::signOut,
-                navController = navController
+                navController = navController,
+                tutorialVm = tutorialVm
             )
         }
     }
@@ -76,13 +80,16 @@ private fun ProfileContent(
     user         : com.app.domain.entities.User,
     onEdit       : () -> Unit,
     onSignOut    : () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel? = null
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 24.dp),
+            .padding(horizontal = 16.dp, vertical = 24.dp)
+            .testTag("profile_section")
+            .let { mod -> tutorialVm?.let { mod.tutorialTarget(it, "profile_section") } ?: mod },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(10.dp))
