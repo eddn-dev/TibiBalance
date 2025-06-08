@@ -11,6 +11,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class OnboardingStatus(
+    /** Flag that marks if the interactive tutorial has been completed. */
+    val hasCompletedTutorial: Boolean = false,
     val tutorialCompleted : Boolean = false,
     val legalAccepted     : Boolean = false,
     val permissionsAsked  : Boolean = false,

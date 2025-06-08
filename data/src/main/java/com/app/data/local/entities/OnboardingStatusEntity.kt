@@ -12,6 +12,7 @@ import kotlinx.datetime.Instant
 @TypeConverters(DateTimeConverters::class)
 data class OnboardingStatusEntity(
     @PrimaryKey                      val uid: String,
+    val hasCompletedTutorial         : Boolean,
     val tutorialCompleted            : Boolean,
     val legalAccepted                : Boolean,
     val permissionsAsked             : Boolean,

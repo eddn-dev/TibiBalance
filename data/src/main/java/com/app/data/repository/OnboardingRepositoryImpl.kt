@@ -45,6 +45,7 @@ class OnboardingRepositoryImpl @Inject constructor(
             remote.push(
                 uid,
                 mapOf(
+                    "hasCompletedTutorial" to status.hasCompletedTutorial,
                     "tutorialCompleted" to status.tutorialCompleted,
                     "legalAccepted"     to status.legalAccepted,
                     "permissionsAsked"  to status.permissionsAsked,
@@ -53,6 +54,15 @@ class OnboardingRepositoryImpl @Inject constructor(
                 )
             )
         }
+
+    override suspend fun saveTutorialStatus(uid: String, completed: Boolean) {
+        val current = dao.find(uid)?.toDomain() ?: OnboardingStatus()
+        val updated = current.copy(
+            hasCompletedTutorial = completed,
+            meta = current.meta.copy(pendingSync = true)
+        )
+        save(uid, updated)
+    }
 
     override suspend fun syncNow(uid: String): Result<Unit> = withContext(io) {
         return@withContext runCatching {
@@ -74,6 +84,7 @@ class OnboardingRepositoryImpl @Inject constructor(
                 remote.push(
                     uid,
                     mapOf(
+                        "hasCompletedTutorial" to winner.hasCompletedTutorial,
                         "tutorialCompleted" to winner.tutorialCompleted,
                         "legalAccepted"     to winner.legalAccepted,
                         "permissionsAsked"  to winner.permissionsAsked,

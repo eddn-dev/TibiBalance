@@ -12,6 +12,7 @@ object OnboardingMappers {
 
     /** Entity → Domain */
     fun OnboardingStatusEntity.toDomain(): OnboardingStatus = OnboardingStatus(
+        hasCompletedTutorial = hasCompletedTutorial,
         tutorialCompleted = tutorialCompleted,
         legalAccepted     = legalAccepted,
         permissionsAsked  = permissionsAsked,
@@ -23,6 +24,7 @@ object OnboardingMappers {
     fun OnboardingStatus.toEntity(uid: String): OnboardingStatusEntity =
         OnboardingStatusEntity(
             uid               = uid,
+            hasCompletedTutorial = hasCompletedTutorial,
             tutorialCompleted = tutorialCompleted,
             legalAccepted     = legalAccepted,
             permissionsAsked  = permissionsAsked,
