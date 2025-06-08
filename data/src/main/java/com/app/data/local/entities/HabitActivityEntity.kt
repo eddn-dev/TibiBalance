@@ -25,7 +25,9 @@ import kotlinx.datetime.*
             onDelete      = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("habitId")]
+    indices = [
+        Index(value = ["habitId", "activityDate", "scheduledTime"], unique = true)
+    ]
 )
 @TypeConverters(
     DateTimeConverters::class,   // LocalDate, LocalTime, Instant

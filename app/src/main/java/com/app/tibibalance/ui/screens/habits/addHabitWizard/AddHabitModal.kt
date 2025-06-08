@@ -125,13 +125,7 @@ fun AddHabitModal(
                     onBack    = vm::back,
                     onNext    = vm::next,
                     onSave = {
-                        //val userId = FirebaseAuth.getInstance().currentUser?.uid
-                        //val context = LocalContext.current
-                        if (userId != null) {
-                            vm.save(context)
-                        } else {
-                            // puedes mostrar un diálogo de error o un toast si lo deseas
-                        }
+                        vm.save()
                     },
                     onCancel  = vm::requestExit
                 )

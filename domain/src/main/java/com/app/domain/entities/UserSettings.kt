@@ -13,6 +13,8 @@ data class UserSettings(
     val theme            : ThemeMode = ThemeMode.SYSTEM,
     val notifGlobal      : Boolean   = true,
     val notifEmotion     : Boolean   = true,
+    // Hora del recordatorio de emociones.
+    val notifEmotionTime : String?   = null,
     val language         : String    = "es",
     val accessibilityTTS : Boolean   = false
 )

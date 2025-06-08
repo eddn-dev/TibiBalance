@@ -2,7 +2,9 @@ package com.app.tibibalance.di
 
 import android.app.Application
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.Operation
 import androidx.work.WorkManager
+import com.app.tibibalance.sync.ActivitySyncWorker
 import com.app.tibibalance.sync.HabitSyncWorker
 import dagger.Module
 import dagger.Provides
@@ -15,15 +17,27 @@ import javax.inject.Singleton
 object WorkerModule {
 
     @Provides
-    fun provideWorkManager(context: Application) = WorkManager.getInstance(context)
+    fun provideWorkManager(app: Application): WorkManager =
+        WorkManager.getInstance(app)
 
+    /* ---------- inicia sincronía de hábitos ---------- */
     @Provides
     @Singleton
-    fun provideHabitSyncInit(workManager: WorkManager): androidx.work.Operation =
-        workManager.enqueueUniquePeriodicWork(
+    fun provideHabitSyncInit(wm: WorkManager): Operation =
+        wm.enqueueUniquePeriodicWork(
             "habit_sync",
             ExistingPeriodicWorkPolicy.KEEP,
             HabitSyncWorker.periodicRequest()
         )
 
+    /* ---------- inicia sincronía de actividades ---------- */
+    @Provides
+    @Singleton
+    fun provideActivitySyncInit(wm: WorkManager): Operation =
+        wm.enqueueUniquePeriodicWork(
+            "activity_sync",
+            ExistingPeriodicWorkPolicy.KEEP,
+            ActivitySyncWorker.periodicRequest()
+        )
 }
+

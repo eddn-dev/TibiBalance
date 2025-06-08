@@ -83,24 +83,25 @@ class UserRepositoryImpl @Inject constructor(
 
     /* ───── updateSettings ─────── */
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun updateSettings(uid: String, settings: UserSettings): Result<Unit> =
+    override suspend fun updateSettings(uid: String, s: UserSettings): Result<Unit> =
         withContext(io) {
             runCatching {
-                val now = Instant.fromEpochMilliseconds(System.currentTimeMillis())
+                val now = Clock.System.now().toEpochMilliseconds()
 
-                /* Firestore */
+                /* Firestore (estructura anidada) */
                 db.collection("users").document(uid)
-                    .update("settings", settings).await()
+                    .update("settings", s).await()
 
                 /* Room */
                 dao.updateSettings(
-                    uid,
-                    settings.theme.name,
-                    settings.notifGlobal,
-                    settings.notifEmotion,
-                    settings.language,
-                    settings.accessibilityTTS,
-                    now.toEpochMilliseconds()
+                    uid            = uid,
+                    theme          = s.theme.name,
+                    notifGlobal    = s.notifGlobal,
+                    notifEmotion   = s.notifEmotion,
+                    emotionTime    = s.notifEmotionTime,   // ← NUEVO
+                    lang           = s.language,
+                    tts            = s.accessibilityTTS,
+                    updatedAt      = now
                 )
             }
         }

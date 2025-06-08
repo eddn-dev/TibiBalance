@@ -11,8 +11,7 @@ import com.app.domain.entities.UserSettings
 
 object UserMappers {
 
-    /** Entity → Domain */
-    fun UserEntity.toDomain(): User = User(
+    fun UserEntity.toDomain() = User(
         uid         = uid,
         email       = email,
         displayName = displayName,
@@ -22,24 +21,26 @@ object UserMappers {
             theme            = settingsTheme,
             notifGlobal      = settingsNotif,
             notifEmotion     = settingsEmotion,
+            notifEmotionTime = settingsEmotionTime,   // ← NUEVO
             language         = settingsLang,
             accessibilityTTS = settingsTTS
         ),
         meta        = meta
     )
 
-    /** Domain → Entity */
-    fun User.toEntity(): UserEntity = UserEntity(
-        uid           = uid,
-        email         = email,
-        displayName   = displayName,
-        photoUrl      = photoUrl,
-        birthDate     = birthDate,
-        settingsTheme = settings.theme,
-        settingsNotif = settings.notifGlobal,
-        settingsLang  = settings.language,
-        settingsTTS   = settings.accessibilityTTS,
-        settingsEmotion =settings.notifEmotion,
-        meta          = meta
+    fun User.toEntity() = UserEntity(
+        uid                  = uid,
+        email                = email,
+        displayName          = displayName,
+        photoUrl             = photoUrl,
+        birthDate            = birthDate,
+        settingsTheme        = settings.theme,
+        settingsNotif  = settings.notifGlobal,
+        settingsEmotion = settings.notifEmotion,
+        settingsEmotionTime  = settings.notifEmotionTime, // ← NUEVO
+        settingsLang         = settings.language,
+        settingsTTS          = settings.accessibilityTTS,
+        meta                 = meta
     )
+
 }

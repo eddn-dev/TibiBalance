@@ -49,6 +49,8 @@ interface HabitActivityRepository {
         loggedAtUtc: kotlinx.datetime.Instant
     )
 
+    suspend fun countByHabitAndDate(habitId: HabitId, date: LocalDate): Int
+
     /* ---------- limpieza ---------- */
 
     /** Borra una actividad (por cambios en el hábito o depuración). */

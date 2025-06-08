@@ -39,6 +39,8 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 
@@ -54,8 +56,12 @@ class HabitRepositoryImpl @Inject constructor(
 
     override fun observeUserHabits(): Flow<List<Habit>> =
         dao.observeByBuiltIn(false)
-            .map   { list -> list.map { it.toDomain() } }
+            .map { list -> list
+                .filter { it.meta.deletedAt == null }   // por si el DAO fallara
+                .map   { it.toDomain() }
+            }
             .distinctUntilChanged()
+
 
     override fun observeSuggestedHabits(): Flow<List<Habit>> =
         flow {
@@ -87,40 +93,48 @@ class HabitRepositoryImpl @Inject constructor(
 
     /* ─────────────────────── operaciones CRUD ────────────────── */
 
+    /* ──────────── CREATE (Room-only) ──────────── */
     override suspend fun create(habit: Habit) = withContext(io) {
-        val uid = currentUid() ?: return@withContext
-        val entity = habit.copy(
-            meta = habit.meta.copy(createdAt = Clock.System.now(), pendingSync = true)
-        ).toEntity()
-
-        dao.upsert(entity)
-        try {
-            remote.pushHabit(uid, habit)
-            dao.upsert(entity.copy(meta = entity.meta.copy(pendingSync = false)))
-        } catch (_: Exception) { /* se queda pendingSync = true */ }
+        dao.upsert(
+            habit.copy(
+                meta = habit.meta.copy(
+                    createdAt   = Clock.System.now(),
+                    pendingSync = true        // ← lo enviará el SyncWorker
+                )
+            ).toEntity()
+        )
+        Unit
     }
 
+    /* ──────────── UPDATE (Room-only) ──────────── */
     override suspend fun update(habit: Habit) = withContext(io) {
         require(!habit.isBuiltIn) { "Plantillas sugeridas no son editables" }
-        val uid = currentUid() ?: return@withContext
-
-        val updated = habit.copy(
-            meta = habit.meta.copy(updatedAt = Clock.System.now(), pendingSync = true)
+        dao.upsert(
+            habit.copy(
+                meta = habit.meta.copy(
+                    updatedAt   = Clock.System.now(),
+                    pendingSync = true
+                )
+            ).toEntity()
         )
-        dao.upsert(updated.toEntity())
-
-        try {
-            remote.pushHabit(uid, updated)
-            dao.upsert(updated.copy(meta = updated.meta.copy(pendingSync = false)).toEntity())
-        } catch (_: Exception) { /* pendingSync queda true */ }
+        Unit
     }
 
+    /* ──────────── DELETE (Room-only Tombstone) ──────────── */
     override suspend fun delete(id: HabitId) = withContext(io) {
-        val uid = currentUid() ?: return@withContext
-        dao.delete(id.raw)
-        try { remote.deleteHabit(uid, id) } catch (_: Exception) { /* ignorar, worker */ }
+        dao.findById(id.raw)?.let { row ->
+            dao.upsert(
+                row.copy(
+                    meta = row.meta.copy(
+                        deletedAt   = Clock.System.now(),
+                        updatedAt   = Clock.System.now(),
+                        pendingSync = true
+                    )
+                )
+            )
+        }
+        Unit
     }
-
 
     override suspend fun syncNow(): Result<Unit> = withContext(io) {
         val uid = currentUid() ?: return@withContext Result.failure(IllegalStateException("No user"))

@@ -9,6 +9,7 @@ import com.app.data.mappers.toForm
 import com.app.data.mappers.toHabit
 import com.app.domain.ids.HabitId
 import com.app.domain.model.HabitForm
+import com.app.domain.service.AlertManager
 import com.app.domain.usecase.habit.DeleteHabit
 import com.app.domain.usecase.habit.GetHabitById
 import com.app.domain.usecase.habit.UpdateHabit
@@ -26,7 +27,8 @@ import javax.inject.Inject
 class EditHabitViewModel @Inject constructor(
     private val getHabit   : GetHabitById,
     private val updateHabit: UpdateHabit,
-    private val deleteHabit: DeleteHabit
+    private val deleteHabit: DeleteHabit,
+    private val alertMgr   : AlertManager
 ) : ViewModel() {
 
     /* ───────── estado interno ───────── */
@@ -54,15 +56,14 @@ class EditHabitViewModel @Inject constructor(
 
     fun load(id: HabitId) {
         habitId.value = id
+        _ui.value = EditHabitUiState(showOnly = true)
 
-        // Estado limpio: vista-solo, paso 0, sin datos previos
-        _ui.value = EditHabitUiState(
-            showOnly    = true,
-            currentStep = 0,
-            form        = HabitForm()
-        )
+        viewModelScope.launch {
+            getHabit(id).first()?.let {        // primer valor no nulo
+                _ui.update { it.copy(form = it.form) }
+            } ?: _events.send(EditEvent.Dismiss)   // ⚠️  desapareció → cerrar
+        }
     }
-
 
     fun startEditing() = _ui.update { st ->
         val pre = habit.value?.toForm() ?: st.form
@@ -116,23 +117,32 @@ class EditHabitViewModel @Inject constructor(
         else st
     }
 
+    /* ─────────── SAVE (UPDATE) ─────────── */
+
     fun save() = viewModelScope.launch {
         val id       = habitId.value ?: return@launch
-        val original = habit.value   ?: return@launch          // ①
+        val original = habit.value   ?: return@launch
 
         _ui.update { it.copy(saving = true) }
 
-        // ②  Generamos el nuevo objeto *preservando* createdAt
         val updated = ui.value.form
             .toHabit(id, now = Clock.System.now())
-            .copy(meta = original.meta.copy(   // ← sólo cambiamos lo permitido
+            .copy(meta = original.meta.copy(
                 updatedAt   = Clock.System.now(),
                 pendingSync = true
             ))
 
         runCatching { updateHabit(updated) }
-            .onSuccess { _ui.value = EditHabitUiState(savedOk = true) }
-            .onFailure  { ex ->
+            .onSuccess {
+                /* ①  refresca alarmas */
+                alertMgr.cancel(id)
+                if (updated.notifConfig.enabled) {
+                    alertMgr.schedule(updated)
+                }
+
+                _ui.value = EditHabitUiState(savedOk = true)
+            }
+            .onFailure { ex ->
                 _ui.update { it.copy(saving = false, errorMsg = ex.message) }
             }
     }
@@ -149,14 +159,18 @@ class EditHabitViewModel @Inject constructor(
         _ui.update { it.copy(askDelete = false) }
     }
 
-    /* modifica el existente */
+    /* ─────────── DELETE ─────────── */
+
     private fun delete() = viewModelScope.launch {
         val id = habitId.value ?: return@launch
         _ui.update { it.copy(deleting = true) }
 
         runCatching { deleteHabit(id) }
             .onSuccess {
-                _ui.value = EditHabitUiState(deletedOk = true)   // disparará el dismiss
+                /* ①  anula alarmas del hábito borrado */
+                alertMgr.cancel(id)
+
+                _ui.value = EditHabitUiState(deletedOk = true)
                 _events.send(EditEvent.Dismiss)
             }
             .onFailure { ex ->
@@ -173,7 +187,18 @@ class EditHabitViewModel @Inject constructor(
     // EditHabitViewModel.kt
     fun toggleNotifications(enabled: Boolean) = viewModelScope.launch {
         habit.value?.let { current ->
-            updateHabit(current.copy(notifConfig = current.notifConfig.copy(enabled = enabled)))
+            val updated = current.copy(
+                notifConfig = current.notifConfig.copy(enabled = enabled),
+                meta        = current.meta.copy(
+                    updatedAt   = Clock.System.now(),
+                    pendingSync = true
+                )
+            )
+            updateHabit(updated)
+
+            /* ①  refresca alarmas en-caliente */
+            alertMgr.cancel(current.id)
+            if (enabled) alertMgr.schedule(updated)
         }
     }
 

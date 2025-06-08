@@ -23,6 +23,7 @@ import javax.inject.Inject
 import android.content.Context
 import androidx.work.WorkManager
 import com.app.domain.repository.AuthRepository
+import com.app.domain.service.AlertManager
 import com.app.domain.usecase.activity.GenerateActivitiesForHabit
 import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.domain.usecase.user.UnlockAchievementUseCase
@@ -42,7 +43,8 @@ class AddHabitViewModel @Inject constructor(
     private val unlockAchievement: UnlockAchievementUseCase,
     private val auth: AuthRepository,
     private val getHabitsFlow: GetHabitsFlow,
-    private val genForHabit: GenerateActivitiesForHabit
+    private val genForHabit: GenerateActivitiesForHabit,
+    private val alertMgr: AlertManager
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(AddHabitUiState())
@@ -109,91 +111,111 @@ class AddHabitViewModel @Inject constructor(
     )
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun save(context: Context) = viewModelScope.launch {
-        val uid = auth.authState().first() ?: return@launch
-        val state = _ui.updateAndGet { it.copy(saving = true) }
+    fun save() = viewModelScope.launch {
+        /* 1️⃣  Spinner ON */
+        _ui.update { it.copy(saving = true) }
 
-        runCatching {
-            val habit = state.form.toHabit()
+        val uid   = auth.authState().firstOrNull()           // puede ser null
+        val habit = _ui.value.form.toHabit()
+
+        try {
+            /* 2️⃣  ROOM: siempre */
             createHabit(habit)
 
-            /* 2️⃣  Si es reto ⇒ generar actividades de hoy/mañana */
+            /* 3️⃣  Actividades de reto (si procede) */
             if (habit.challenge != null) {
-                withContext(Dispatchers.IO) {        // decide el dispatcher aquí
+                withContext(Dispatchers.IO) {
                     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
                     genForHabit(habit, today)
                 }
             }
+            alertMgr.schedule(habit)
 
-            // --- Lógica de desbloqueo según categoría ---
-            val logro = when (habit.category.name.lowercase()) {
-                "salud" -> AchievementUnlocked(
-                    id = "tibio_salud",
-                    name = "Tibio saludable",
-                    description = "Agrega un hábito de salud."
-                )
-                "productividad" -> AchievementUnlocked(
-                    id = "tibio_productividad",
-                    name = "Tibio productivo",
-                    description = "Agrega un hábito de productividad."
-                )
-                "bienestar" -> AchievementUnlocked(
-                    id = "tibio_bienestar",
-                    name = "Tibio del bienestar",
-                    description = "Agrega un hábito de bienestar."
-                )
-                else -> null
-            }
+            /* 4️⃣  UI de éxito INMEDIATA */
+            _ui.update { it.copy(
+                saving  = false,
+                savedOk = true
+            ) }
 
-            logro?.let {
-                if (unlockAchievement(uid, it.id)) {
-                    pushAchievement(it)
+            /* 5️⃣  Logros en segundo plano (no bloquea) */
+            if (uid != null) {
+                launch(Dispatchers.IO) {                    // <- coroutine hija
+                    runCatching { processAchievements(uid, habit) }
                 }
             }
 
-            // Verifica logros por hábitos con modo reto activado
-            // Verifica logros por hábitos con modo reto activado
-            getHabitsFlow().first()
-                .filter { it.challenge != null }
-                .let { retos ->
-
-                    // Calcula progreso (mínimo 1 reto = 33%, máximo 3 retos = 100%)
-                    val progreso = (retos.size.coerceAtMost(5) * 20)
-
-                    // Si aún no llega al 100%, solo actualiza progreso
-                    if (progreso < 100) {
-                        unlockAchievement.updateProgress(uid, "cinco_habitos", progreso)
-                    } else {
-                        val l3 = AchievementUnlocked(
-                            id = "cinco_habitos",
-                            name = "La sendera del reto",
-                            description = "Agrega cinco hábitos con modo reto activado."
-                        )
-                        if (unlockAchievement(uid, l3.id)) {
-                            pushAchievement(l3)
-                        }
-                    }
-
-                    // Manejo independiente del de "primer_habito"
-                    if (retos.size == 1) {
-                        val l1 = AchievementUnlocked(
-                            id = "primer_habito",
-                            name = "El inicio del reto",
-                            description = "Agrega tu primer hábito con modo reto activado."
-                        )
-                        if (unlockAchievement(uid, l1.id)) {
-                            pushAchievement(l1)
-                        }
-                    }
-                }
-            // Notifica éxito
-            _ui.value = AddHabitUiState(savedOk = true)
-        }.onFailure { ex ->
-            _ui.update { it.copy(saving = false, errorMsg = ex.message) }
+        } catch (ex: Exception) {
+            _ui.update { it.copy(
+                saving   = false,
+                errorMsg = ex.message ?: "Error desconocido"
+            ) }
         }
-        _ui.value = AddHabitUiState(savedOk = true)
     }
 
+
+    /**
+     * Evalúa y desbloquea logros relacionados con la creación del [habit].
+     * Se llama solo si existe un uid válido (es decir, cuando el usuario
+     * está autenticado y la capa remota está disponible).
+     */
+    private suspend fun processAchievements(uid: String, habit: Habit) {
+        /* ---------- logro por categoría ---------- */
+        val catAchievement = when (habit.category.name.lowercase()) {
+            "salud"         -> AchievementUnlocked(
+                id = "tibio_salud",
+                name = "Tibio saludable",
+                description = "Agrega un hábito de salud."
+            )
+            "productividad" -> AchievementUnlocked(
+                id = "tibio_productividad",
+                name = "Tibio productivo",
+                description = "Agrega un hábito de productividad."
+            )
+            "bienestar"     -> AchievementUnlocked(
+                id = "tibio_bienestar",
+                name = "Tibio del bienestar",
+                description = "Agrega un hábito de bienestar."
+            )
+            else -> null
+        }
+
+        catAchievement?.let { logro ->
+            if (unlockAchievement(uid, logro.id)) {
+                pushAchievement(logro)
+            }
+        }
+
+        /* ---------- logros por hábitos con modo reto ---------- */
+        val retos = getHabitsFlow().first().filter { it.challenge != null }
+
+        // progreso incremental para “cinco_habitos”
+        val progreso = (retos.size.coerceAtMost(5) * 20)   // 1 reto = 20 %, … 5 retos = 100 %
+
+        if (progreso < 100) {
+            unlockAchievement.updateProgress(uid, "cinco_habitos", progreso)
+        } else {
+            val l3 = AchievementUnlocked(
+                id = "cinco_habitos",
+                name = "La sendera del reto",
+                description = "Agrega cinco hábitos con modo reto activado."
+            )
+            if (unlockAchievement(uid, l3.id)) {
+                pushAchievement(l3)
+            }
+        }
+
+        // logro “primer_habito” (solo cuando el primer reto se agrega)
+        if (retos.size == 1) {
+            val l1 = AchievementUnlocked(
+                id = "primer_habito",
+                name = "El inicio del reto",
+                description = "Agrega tu primer hábito con modo reto activado."
+            )
+            if (unlockAchievement(uid, l1.id)) {
+                pushAchievement(l1)
+            }
+        }
+    }
 
 
     /* ---------- validaciones ---------- */

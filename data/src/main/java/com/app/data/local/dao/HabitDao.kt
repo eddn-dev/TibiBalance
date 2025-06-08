@@ -13,7 +13,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HabitDao {
 
-    @Query("SELECT * FROM habits WHERE isBuiltIn = :builtIn ORDER BY name")
+    @Query("""
+        SELECT * FROM habits
+        WHERE isBuiltIn = :builtIn
+          AND m_deletedAt IS NULL
+        ORDER BY name
+    """)
     fun observeByBuiltIn(builtIn: Boolean): Flow<List<HabitEntity>>
 
     @Upsert
@@ -28,10 +33,20 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE m_pendingSync = 1")
     suspend fun pendingToSync(): List<HabitEntity>
 
-    @Query("SELECT * FROM habits WHERE id = :id LIMIT 1")
+    @Query("""
+        SELECT * FROM habits
+        WHERE id = :id
+          AND m_deletedAt IS NULL
+        LIMIT 1
+    """)
     suspend fun findById(id: String): HabitEntity?
 
-    @Query("SELECT * FROM habits WHERE id = :id and m_deletedAt is null LIMIT 1")
+    @Query("""
+        SELECT * FROM habits
+        WHERE id = :id
+          AND m_deletedAt IS NULL          -- ⚠️  filtro
+        LIMIT 1
+    """)
     fun observeById(id: String): Flow<HabitEntity?>
 
     /* ─────────── Actividades asociadas ─────────────────────────── */

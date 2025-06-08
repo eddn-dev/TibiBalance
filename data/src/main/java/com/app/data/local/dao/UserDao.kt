@@ -24,28 +24,29 @@ interface UserDao {
     suspend fun upsert(user: UserEntity)
 
     /* ---- settings “solo escritura” ---- */
-    @Query(
-        """
-        UPDATE users
-        SET settings_theme = :theme,
-            settings_notif = :notif,
-            settings_emotion = :notifE,
-            settings_lang  = :lang,
-            settings_tts   = :tts,
-            meta_updatedAt = :updatedAt,
-            meta_pendingSync = 1
+    @Query("""
+        UPDATE users SET
+            settings_theme        = :theme,
+            settings_notif        = :notifGlobal,
+            settings_emotion      = :notifEmotion,
+            settings_emotion_time = :emotionTime,
+            settings_lang         = :lang,
+            settings_tts          = :tts,
+            meta_updatedAt        = :updatedAt,
+            meta_pendingSync      = 1
         WHERE uid = :uid
-        """
-    )
+    """)
     suspend fun updateSettings(
-        uid: String,
-        theme: String,
-        notif: Boolean,
-        notifE : Boolean,
-        lang: String,
-        tts: Boolean,
-        updatedAt: Long
+        uid          : String,
+        theme        : String,
+        notifGlobal  : Boolean,
+        notifEmotion : Boolean,
+        emotionTime  : String?,     // ← NUEVO
+        lang         : String,
+        tts          : Boolean,
+        updatedAt    : Long
     )
+
 
     /* ---- utilidades de sincronización ---- */
 

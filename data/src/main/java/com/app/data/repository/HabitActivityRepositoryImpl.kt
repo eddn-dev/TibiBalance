@@ -68,6 +68,13 @@ class HabitActivityRepositoryImpl @Inject constructor(
         dao.update(updated)
     }
 
+    override suspend fun countByHabitAndDate(
+        habitId: HabitId,
+        date   : LocalDate
+    ): Int = withContext(io) {
+        dao.countByHabitAndDate(habitId.raw, date)
+    }
+
     /* ───────────────   limpieza   ──────────────── */
 
     override suspend fun delete(id: ActivityId) =

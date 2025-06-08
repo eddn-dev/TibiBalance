@@ -34,7 +34,7 @@ data class HabitActivity(
     val scheduledTime: LocalTime? = null,
 
     /**
-     * Inicio de la ventana para registrar el progreso de esta actividad.
+     * Inicio de la ventana paRra registrar el progreso de esta actividad.
      */
     val opensAt : Instant? = null,
 

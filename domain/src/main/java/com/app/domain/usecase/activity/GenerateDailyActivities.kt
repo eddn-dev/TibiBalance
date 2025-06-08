@@ -10,6 +10,7 @@ import com.app.domain.entities.*
 import com.app.domain.enums.ActivityStatus
 import com.app.domain.enums.SessionUnit
 import com.app.domain.ids.ActivityId
+import com.app.domain.ids.HabitId
 import com.app.domain.repository.HabitActivityRepository
 import com.app.domain.repository.HabitRepository
 import kotlinx.coroutines.flow.first
@@ -70,7 +71,7 @@ class GenerateDailyActivities @Inject constructor(
                 else           schedInst + duration + buffer
 
             HabitActivity(
-                id            = ActivityId(UUID.randomUUID().toString()),
+                id            = buildId(habit.id, date, lt),
                 habitId       = habit.id,
                 activityDate  = date,
                 scheduledTime = schedLt,
@@ -98,6 +99,9 @@ class GenerateDailyActivities @Inject constructor(
         SessionUnit.MINUTOS-> this.minutes
         else                                    -> Duration.ZERO
     }
+
+    fun buildId(habitId: HabitId, date: LocalDate, time: LocalTime?): ActivityId =
+        ActivityId("$habitId-${date.toEpochDays()}-${time ?: "any"}")
 
     private fun LocalDate.startOf(tz: TimeZone): Instant =
         atTime(LocalTime(0, 0)).toInstant(tz)

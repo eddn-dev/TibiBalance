@@ -36,6 +36,15 @@ interface HabitActivityDao {
 
     @Query(
         """
+            SELECT COUNT(*) FROM activities
+            WHERE habitId = :habitId AND activityDate = :date
+        """
+    )
+    suspend fun countByHabitAndDate(habitId: String, date: LocalDate): Int
+
+
+    @Query(
+        """
         SELECT * FROM activities
         WHERE activityDate = :date
         ORDER BY CASE WHEN scheduledTime IS NULL THEN 1 ELSE 0 END,
