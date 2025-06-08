@@ -33,6 +33,7 @@ import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.containers.ProfileContainer
 import com.app.tibibalance.ui.components.buttons.AchievementAccessItem
+import androidx.compose.ui.platform.testTag
 
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Description
@@ -82,7 +83,8 @@ private fun ProfileContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 24.dp),
+            .padding(horizontal = 16.dp, vertical = 24.dp)
+            .testTag("profile_section"),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(10.dp))

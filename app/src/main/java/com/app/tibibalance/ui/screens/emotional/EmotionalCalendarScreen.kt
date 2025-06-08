@@ -30,9 +30,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -84,6 +87,7 @@ import java.util.Locale
 fun EmotionalCalendarScreen(
     vm: EmotionalCalendarViewModel = hiltViewModel()
 ) {
+    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
     /* ------------ state ------------- */
     val uiState by vm.ui.collectAsState()
     val dialog by vm.dialog.collectAsState()
@@ -95,6 +99,9 @@ fun EmotionalCalendarScreen(
             .background(gradient()),
         contentAlignment = Alignment.TopCenter
     ) {
+        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
+        }
 
         /* ---------- contenido ---------- */
         when (uiState) {

@@ -38,8 +38,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,6 +92,7 @@ import com.app.tibibalance.ui.screens.habits.editHabitWizard.EditHabitModal
 fun HabitsScreen(
     vm: HabitsViewModel = hiltViewModel()
 ) {
+    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
     // Estado local para controlar visibilidad del modal de “Agregar hábito”
     var showAdd by remember { mutableStateOf(false) }
 
@@ -124,6 +127,9 @@ fun HabitsScreen(
             .fillMaxSize()
             .background(gradient())
     ) {
+        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
+        }
         // Mostrar contenido según el estado actual de la UI
         when (val state = ui) {
             HabitsUiState.Loading -> {

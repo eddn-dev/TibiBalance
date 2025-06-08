@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.app.domain.entities.Challenge
 import com.app.domain.entities.DailyTip
 import com.app.domain.entities.DailyTipItem
@@ -52,7 +53,9 @@ fun DailyTip(
 
         /* Card principal */
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("daily_tip_card"),
             colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             shape    = CardDefaults.shape
         ) {
