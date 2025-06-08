@@ -64,6 +64,12 @@ import kotlinx.coroutines.launch
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
+import android.util.Base64
+import androidx.compose.material.icons.filled.Error
+import com.app.tibibalance.ui.components.dialogs.DialogButton
+import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
+import com.app.tibibalance.ui.screens.auth.signin.SignInUiState
+import org.json.JSONObject
 
 private const val WEB_CLIENT_ID =
     "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com"
@@ -207,6 +213,9 @@ private fun SettingsBody(
     val errorMessage = ui.error
     val tag = "DeleteAccount"
 
+    var showGooglePreConfirmDialog by remember { mutableStateOf(false) }
+    var showWrongGoogleAccountDialog by remember { mutableStateOf(false) }
+
     if (showDeleteDialog) {
         ConfirmDeleteDialog(
             visible = showDeleteDialog,
@@ -222,22 +231,8 @@ private fun SettingsBody(
                         showPasswordDialog = true
                     }
                     "google.com" -> {
-                        scope.launch {
-                            try {
-                                val token = requestGoogleIdToken(activity, cm)
-                                if (token.isNotBlank()) {
-                                    Log.d(tag, "LAYTON Este es el idToken: $token")
-                                    onDeleteAccount(null, token)
-                                } else {
-                                    vm.setError("Token de Google inválido.")
-                                    showErrorDialog = true
-                                }
-                            } catch (e: Exception) {
-                                vm.setError(e.message ?: "Error al obtener token de Google")
-                                showErrorDialog = true
-                            }
-                            showDeleteDialog = false
-                        }
+                        showDeleteDialog = false
+                        showGooglePreConfirmDialog = true
                     }
                     else -> {
                         vm.clearError()
@@ -248,6 +243,69 @@ private fun SettingsBody(
             }
         )
     }
+
+    if (showGooglePreConfirmDialog) {
+        ModalInfoDialog(
+            visible = showGooglePreConfirmDialog,
+            icon    = Icons.Default.Person,
+            title   = "Confirma tu cuenta de Google",
+            message = "A continuación se abrirá Google One Tap.\n\nAsegúrate de elegir la misma cuenta con la que iniciaste sesión.",
+            primaryButton = DialogButton("Continuar") {
+                showGooglePreConfirmDialog = false
+                scope.launch {
+                    try {
+                        val token = requestGoogleIdToken(activity, cm)
+
+                        val currentUid = FirebaseAuth.getInstance()
+                            .currentUser?.providerData
+                            ?.find { it.providerId == "google.com" }?.uid
+
+                        val tokenInfo = GoogleOneTapHelper.decodeToken(token)
+                        val selectedUid = tokenInfo["sub"] as? String
+
+                        if (selectedUid != currentUid) {
+                            showWrongGoogleAccountDialog = true
+                            return@launch
+                        }
+
+                        Log.d(tag, "LAYTON Token OK: $token")
+                        onDeleteAccount(null, token)
+                    } catch (e: Exception) {
+                        vm.setError(e.message ?: "Error durante autenticación")
+                        showErrorDialog = true
+                    }
+                }
+            },
+            secondaryButton = DialogButton("Cancelar") {
+                showGooglePreConfirmDialog = false
+            }
+        )
+    }
+    /*if (showGooglePreConfirmDialog) {
+    ModalInfoDialog(
+        visible = showDialog,
+        loading = uiState is SignInUiState.Loading,
+        icon    = if (uiState is SignInUiState.Error) Icons.Default.Error else null,
+        title   = if (uiState is SignInUiState.Error) "Error" else null,
+        message = (uiState as? SignInUiState.Error)?.message,
+        primaryButton = if (uiState is SignInUiState.Error)
+            DialogButton("Aceptar") { vm.consumeError() } else null,
+        dismissOnBack = uiState !is SignInUiState.Loading,
+        dismissOnClickOutside = uiState !is SignInUiState.Loading
+    )
+}*/
+    if (showWrongGoogleAccountDialog) {
+        ModalInfoDialog(
+            visible = true,
+            icon    = Icons.Default.Error,
+            title   = "Cuenta incorrecta",
+            message = "La cuenta seleccionada no coincide con la que usaste para iniciar sesión. Intenta de nuevo.",
+            primaryButton = DialogButton("Aceptar") {
+                showWrongGoogleAccountDialog = false
+            }
+        )
+    }
+
 
     if (showPasswordDialog) {
         DeleteAccountDialog(
@@ -386,6 +444,14 @@ private fun SettingsBody(
     }
 
     SnackbarHost(snackbar)
+}
+fun GoogleOneTapHelper.decodeToken(token: String): Map<String, Any> {
+    val parts = token.split(".")
+    if (parts.size < 2) throw IllegalArgumentException("Token JWT inválido")
+    val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
+    return JSONObject(payload).let { json ->
+        json.keys().asSequence().associateWith { json[it] }
+    }
 }
 
 /* ───────────────────── Helpers ───────────────────── */

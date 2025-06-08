@@ -143,6 +143,7 @@ class SettingsViewModel @Inject constructor(
         Log.d(tag, "LAYTON Proveedor de autenticación: $providerId")
 
         try {
+            Log.d("DeleteAccount", "LAYTON Entrando a reauthenticateAndDelete: password=${password != null}, token=${googleIdToken != null}")
             when (providerId) {
                 "password" -> {
                     val email = user.email
