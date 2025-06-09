@@ -40,6 +40,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -104,6 +106,9 @@ fun HabitsScreen(
 
     // Observamos el estado de la UI desde el ViewModel
     val ui by vm.uiState.collectAsState()
+
+    val tutorialStep by tutorialVm.currentStep.collectAsState()
+    val highlightFab = tutorialStep?.id == "habit_fab"
 
     // Recogemos eventos (SideEffects) enviados por el ViewModel
     LaunchedEffect(Unit) {
@@ -166,6 +171,22 @@ fun HabitsScreen(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp)
         )
+
+        Button(
+            onClick = {
+                vm.onAddClicked()
+                tutorialVm.proceedToNextStep()
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (highlightFab) Color.Yellow else MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Text("+ Hábito")
+        }
+
     }
 
     // Modal para agregar un nuevo hábito (si showAdd == true)
