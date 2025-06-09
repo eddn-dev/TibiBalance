@@ -40,6 +40,7 @@ class SettingsViewModel @Inject constructor(
         val error     : String? = null,
         val signingOut: Boolean = false,
         val syncing     : Boolean = false,
+        val syncDone    : Boolean = false,
         val navigatingToGoodbye: Boolean = false
     )
 
@@ -51,7 +52,6 @@ class SettingsViewModel @Inject constructor(
     val ui: StateFlow<UiState> = _ui.asStateFlow()
 
     init {
-        /* observa cambios de sesión y del documento de usuario */
         authRepo.authState()
             .flatMapLatest { uid ->
                 if (uid == null) {
@@ -60,14 +60,25 @@ class SettingsViewModel @Inject constructor(
                 } else observeUser(uid)
             }
             .onEach { usr ->
-                _ui.value = if (usr == null)
-                    UiState(error = "Sin sesión")
-                else
-                    UiState(loading = false, user = usr)
+                _ui.update { prev ->                 //  🟢  conserva flags previos
+                    when (usr) {
+                        null -> prev.copy(
+                            loading = false,
+                            user    = null,
+                            error   = "Sin sesión"
+                        )
+                        else  -> prev.copy(
+                            loading = false,
+                            user    = usr,
+                            error   = null
+                        )
+                    }
+                }
             }
-            .catch { e -> _ui.value = UiState(loading = false, error = e.message) }
+            .catch { e -> _ui.update { it.copy(loading = false, error = e.message) } }
             .launchIn(viewModelScope)
     }
+
 
     /* --------- acciones --------- */
 
@@ -79,16 +90,21 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun syncNow() = viewModelScope.launch {
-        _ui.update { it.copy(syncing = true) }
+        _ui.update { it.copy(syncing = true, syncDone = false) }   // ← limpia bandera previa
 
         val result = syncAccount()
         _ui.update { it.copy(syncing = false) }
 
         result.onSuccess {
-            // puedes mostrar un Snackbar desde la pantalla
+            _ui.update { it.copy(syncDone = true) }                 // 🆕  muestra modal
         }.onFailure { ex ->
             _ui.update { it.copy(error = ex.message ?: "Error al sincronizar") }
         }
+    }
+
+    /*  cierra el modal  */
+    fun dismissSyncDone() {
+        _ui.update { it.copy(syncDone = false) }
     }
 
     fun toggleGlobalNotif(enabled: Boolean) = persist { old ->
