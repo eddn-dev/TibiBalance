@@ -2,6 +2,7 @@ package com.app.tibibalance.di
 
 import com.app.domain.repository.AuthRepository
 import com.app.domain.repository.EmotionRepository
+import com.app.domain.repository.HabitActivityRepository
 import com.app.domain.repository.HabitRepository
 import com.app.domain.repository.OnboardingRepository
 import com.app.domain.repository.UserRepository
@@ -26,13 +27,15 @@ object AuthUseCaseModule {
         emotionRepo    : EmotionRepository,
         onboardingRepo : OnboardingRepository,
         userRepo       : UserRepository,
-        authRepo       : AuthRepository
+        authRepo       : AuthRepository,
+        habitActivityRepo: HabitActivityRepository
     ) = SyncAccount(
         habitRepo,
         emotionRepo,
         onboardingRepo,
         userRepo,
-        authRepo
+        authRepo,
+        habitActivityRepo
     )
 
     @Provides
