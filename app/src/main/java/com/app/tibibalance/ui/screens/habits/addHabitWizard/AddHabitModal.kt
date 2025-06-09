@@ -38,9 +38,6 @@ fun AddHabitModal(
     vm: AddHabitViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
-    val context = LocalContext.current
-    val userId = FirebaseAuth.getInstance().currentUser?.uid
-
 
     /* ------------- escucha de cierre programático ------------- */
     var showAchievement by remember { mutableStateOf<AchievementUnlocked?>(null) }

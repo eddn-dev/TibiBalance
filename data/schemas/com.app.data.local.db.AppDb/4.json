@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "35e863e172e012ed0567c2a7ba43404e",
+    "identityHash": "8ec5a9c432cd54e9e76a2da8175c2156",
     "entities": [
       {
         "tableName": "habits",
@@ -340,7 +340,7 @@
       },
       {
         "tableName": "emotions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `emojiId` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `mood` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
         "fields": [
           {
             "fieldPath": "date",
@@ -349,8 +349,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "emojiId",
-            "columnName": "emojiId",
+            "fieldPath": "mood",
+            "columnName": "mood",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -576,11 +576,81 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "achievements",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `progress` INTEGER NOT NULL, `unlocked` INTEGER NOT NULL, `unlockDate` INTEGER, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unlocked",
+            "columnName": "unlocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unlockDate",
+            "columnName": "unlockDate",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "meta_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "meta_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "meta_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "meta_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '35e863e172e012ed0567c2a7ba43404e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8ec5a9c432cd54e9e76a2da8175c2156')"
     ]
   }
 }

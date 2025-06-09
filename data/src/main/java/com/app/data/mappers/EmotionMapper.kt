@@ -11,14 +11,14 @@ import com.app.domain.entities.EmotionEntry
 object EmotionMappers {
 
     fun EmotionEntryEntity.toDomain(): EmotionEntry = EmotionEntry(
-        date  = date,
-        emojiId = emojiId,
-        meta  = meta
+        date    = date,
+        mood    = mood,
+        meta    = meta
     )
 
     fun EmotionEntry.toEntity(): EmotionEntryEntity = EmotionEntryEntity(
         date    = date,
-        emojiId = emojiId,
+        mood    = mood,
         meta    = meta
     )
 }

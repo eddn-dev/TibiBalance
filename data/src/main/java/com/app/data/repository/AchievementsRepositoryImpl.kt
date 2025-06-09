@@ -1,111 +1,111 @@
+// :data/repository/AchievementsRepositoryImpl.kt
 package com.app.data.repository
 
+import android.util.Log
+import com.app.data.local.dao.AchievementDao
+import com.app.data.mappers.AchievementMappers.toDomain
+import com.app.data.mappers.AchievementMappers.toEntity
+import com.app.data.remote.datasource.AchievementRemoteDataSource
+import com.app.domain.achievements.DefaultAchievements    // (ver §3)
+import com.app.domain.auth.AuthUidProvider
+import com.app.domain.entities.Achievement
+import com.app.domain.ids.AchievementId
 import com.app.domain.repository.AchievementsRepository
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
+@Singleton
 class AchievementsRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val dao       : AchievementDao,
+    private val remote    : AchievementRemoteDataSource,
+    private val uidProvider : AuthUidProvider,
+    @IoDispatcher private val io: CoroutineDispatcher
 ) : AchievementsRepository {
 
-    override suspend fun initializeAchievementsIfMissing(userId: String) {
-        val logrosIniciales = listOf(
-            mapOf(
-                "id" to "foto_perfil",
-                "name" to "Un placer conocernos",
-                "description" to "Cambia tu foto de perfil."
-            ),
-            mapOf(
-                "id" to "tibio_salud",
-                "name" to "Tibio saludable",
-                "description" to "Agrega un hábito de salud."
-            ),
-            mapOf(
-                "id" to "tibio_productividad",
-                "name" to "Tibio productivo",
-                "description" to "Agrega un hábito de productividad."
-            ),
-            mapOf(
-                "id" to "tibio_bienestar",
-                "name" to "Tibio del bienestar",
-                "description" to "Agrega un hábito de bienestar."
-            ),
-            mapOf(
-                "id" to "primer_habito",
-                "name" to "El inicio del reto",
-                "description" to "Agrega tu primer hábito con modo reto activado."
-            ),
-            mapOf(
-                "id" to "cinco_habitos",
-                "name" to "La sendera del reto",
-                "description" to "Agrega cinco hábitos con modo reto activado."
-            ),
-            mapOf(
-                "id" to "feliz_7_dias",
-                "name" to "Todo en su lugar",
-                "description" to "Registra un estado de ánimo “feliz” por siete días consecutivos."
-            ),
-            mapOf(
-                "id" to "emociones_30_dias",
-                "name" to "Un tibio emocional",
-                "description" to "Registra tus emociones por 30 días consecutivos."
-            ),
-            mapOf(
-                "id" to "noti_personalizada",
-                "name" to "¡Ya es hora!",
-                "description" to "Descubriste la personalización de notificaciones desde configuración."
-            )
-        )
+    /* --------------- lectura --------------- */
+    override fun observeAll(): Flow<List<Achievement>> =
+        dao.observeAll()
+            .map { it.map { it.toDomain() } }
+            .distinctUntilChanged()
 
-        val logrosRef = firestore.collection("users").document(userId).collection("achievements")
+    override suspend fun find(id: AchievementId): Achievement? =
+        dao.findById(id.raw)?.toDomain()
 
-        val snapshot = logrosRef.get().await()
-        val existentes = snapshot.documents.map { it.id }.toSet()
+    /* --------------- escritura -------------- */
+    override suspend fun upsert(achievement: Achievement) = withContext(io) {
+        dao.upsert(achievement.toEntity())
+    }
 
-        logrosIniciales.forEach { logro ->
-            val id = logro["id"] as String
-            if (!existentes.contains(id)) {
-                val data = mapOf(
-                    "name" to logro["name"],
-                    "description" to logro["description"],
-                    "progress" to 0,
-                    "unlock" to false,
-                    "unlockDate" to null
+    override suspend fun updateProgress(id: AchievementId, progress: Int) = withContext(io) {
+        dao.findById(id.raw)?.let { row ->
+            dao.upsert(
+                row.copy(
+                    progress = progress,
+                    meta = row.meta.copy(
+                        updatedAt   = Clock.System.now(),
+                        pendingSync = true
+                    )
                 )
-                logrosRef.document(id).set(data)
+            )
+        }
+        ?: throw IllegalStateException("Achievement not found")
+    }
+
+    /* --------------- seed inicial ----------- */
+    override suspend fun initializeDefaults() = withContext(io) {
+        val existing = dao.allIds().toSet()
+        val now      = Clock.System.now()
+
+        val toInsert = DefaultAchievements.list
+            .filter { it.id.raw !in existing }
+            .map { ach ->
+                ach.copy(
+                    meta = ach.meta.copy(
+                        createdAt   = now,
+                        updatedAt   = now,
+                        pendingSync = true   // ← para que el Worker los suba
+                    )
+                ).toEntity()
+            }
+
+        if (toInsert.isNotEmpty()) {
+            dao.upsert(toInsert)
+            Log.d("AchievementsRepo", "Seeded ${toInsert.size} achievements")
+        }
+    }
+    /* --------------- sync ------------------- */
+    override suspend fun syncNow(): Result<Unit> = withContext(io) {
+        val uid = uidProvider()
+        Log.d("AchievementsRepositoryImpl", "Syncing achievements for user $uid")
+
+        runCatching {
+            /* 1 ▸ PUSH pendientes */
+            dao.pendingToSync().forEach { local ->
+                remote.push(uid, local.toDomain())
+                dao.upsert(local.copy(meta = local.meta.copy(pendingSync = false)))
+                Log.d("AchievementsRepositoryImpl", "Synced achievement ${local.id}")
+            }
+
+            /* 2 ▸ PULL y LWW */
+            remote.fetchAll(uid).forEach { remoteAch ->
+                val local  = dao.findById(remoteAch.id.raw)
+                val winner = resolveLww(local?.toDomain(), remoteAch)
+                dao.upsert(winner.toEntity())
             }
         }
     }
 
-    override suspend fun unlockIfNotYet(userId: String, achievementId: String): Boolean {
-        val ref = firestore.collection("users")
-            .document(userId)
-            .collection("achievements")
-            .document(achievementId)
-
-        val snapshot = ref.get().await()
-        if (snapshot.exists() && snapshot.getBoolean("unlock") != true) {
-            ref.update(
-                mapOf(
-                    "unlock" to true,
-                    "unlockDate" to com.google.firebase.Timestamp.now(),
-                    "progress" to 100
-                )
-            ).await()
-            return true
+    private fun resolveLww(local: Achievement?, remote: Achievement): Achievement =
+        when {
+            local == null -> remote
+            local.meta.updatedAt >= remote.meta.updatedAt -> local
+            else -> remote
         }
-        return false
-    }
-
-    override suspend fun updateProgress(userId: String, achievementId: String, progress: Int) {
-        // Guarda el progreso en Firestore, Room, etc.
-        val docRef = firestore.collection("users")
-            .document(userId)
-            .collection("achievements")
-            .document(achievementId)
-
-        docRef.set(mapOf("progress" to progress), SetOptions.merge())
-    }
 }

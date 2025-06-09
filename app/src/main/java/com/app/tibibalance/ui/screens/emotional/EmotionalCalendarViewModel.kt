@@ -17,23 +17,24 @@
 package com.app.tibibalance.ui.screens.emotional
 
 import android.os.Build
+import android.os.SharedMemory
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.domain.achievements.event.AchievementEvent
+import com.app.domain.entities.Achievement
 import com.app.domain.entities.EmotionEntry
+import com.app.domain.enums.Emotion
 import com.app.domain.repository.AuthRepository
+import com.app.domain.usecase.achievement.CheckUnlockAchievement
 import com.app.domain.usecase.emotions.ObserveEmotions
 import com.app.domain.usecase.emotions.SaveEmotion
-import com.app.domain.usecase.user.UnlockAchievementUseCase
 import com.app.tibibalance.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 
 /* ────────────────────────────────────────────────────────────────── */
@@ -57,7 +58,7 @@ sealed interface DialogState {
 class EmotionalCalendarViewModel @Inject constructor(
     observeEmotions: ObserveEmotions,
     private val saveEmotion : SaveEmotion,
-    private val unlockAchievement: UnlockAchievementUseCase,
+    private val chechAchievement : CheckUnlockAchievement,
     private val auth: AuthRepository
 ) : ViewModel() {
 
@@ -69,52 +70,11 @@ class EmotionalCalendarViewModel @Inject constructor(
     private val _dialog = MutableStateFlow<DialogState>(DialogState.None)
     val dialog: StateFlow<DialogState> = _dialog
 
-    private val _logroFeliz = MutableStateFlow<AchievementUnlocked?>(null)
-    val logroFeliz: StateFlow<AchievementUnlocked?> = _logroFeliz
+    private val _unlocked = MutableSharedFlow<AchievementUnlocked>(extraBufferCapacity = 1)
+    val unlocked: SharedFlow<AchievementUnlocked> = _unlocked
 
     init {
         observeEmotions()
-            .onEach { entries ->  // aquí sí son EmotionEntry
-                val uid = auth.authState().firstOrNull() ?: return@onEach
-                val felicidadDates = entries
-                    .filter { it.emojiId == "FELICIDAD" }
-                    .map { it.date }
-                    .sorted()
-
-                val rachaFeliz = streakLength(felicidadDates)
-                val progresoFeliz = (rachaFeliz.coerceAtMost(7) * 100 / 7.0).toInt()
-
-                if (rachaFeliz >= 7) {
-                    val desbloqueado = unlockAchievement(uid, "feliz_7_dias")
-                    if (desbloqueado) {
-                        _logroFeliz.value = AchievementUnlocked(
-                            id = "feliz_7_dias",
-                            name = "Todo en su lugar",
-                            description = "Registra un estado de ánimo “feliz” por siete días consecutivos."
-                        )
-                    }
-                } else {
-                    unlockAchievement.updateProgress(uid, "feliz_7_dias", progresoFeliz)
-                }
-
-                // nuevo logro: emociones_30_dias
-                val fechasRegistradas = entries.map { it.date }.distinct().sorted()
-                val rachaTotal = streakLength(fechasRegistradas)
-                val progresoTotal = (rachaTotal.coerceAtMost(30) * 100 / 30.0).toInt()
-
-                if (rachaTotal >= 30) {
-                    val desbloqueado = unlockAchievement(uid, "emociones_30_dias")
-                    if (desbloqueado) {
-                        _logroFeliz.value = AchievementUnlocked(
-                            id = "emociones_30_dias",
-                            name = "Un tibio emocional",
-                            description = "Registra tus emociones por 30 días consecutivos."
-                        )
-                    }
-                } else {
-                    unlockAchievement.updateProgress(uid, "emociones_30_dias", progresoTotal)
-                }
-            }
             .map(::mapMonthToUi)
             .onEach { days ->
                 _ui.value = if (days.isEmpty())
@@ -152,8 +112,15 @@ class EmotionalCalendarViewModel @Inject constructor(
         saveEmotion(
             /* date -> kotlinx.datetime.LocalDate */
             LocalDate(date.year, date.monthValue, date.dayOfMonth),
-            emojiId = emotion.name
+            emotion
         )
+
+        chechAchievement(
+            AchievementEvent.EmotionLogged(
+                date = LocalDate(date.year, date.monthValue, date.dayOfMonth),
+                mood = emotion
+            )
+        ).forEach { ach -> _unlocked.emit(ach.toUi()) }
         _dialog.value = DialogState.None       // cierra modal
     }
 
@@ -173,67 +140,25 @@ class EmotionalCalendarViewModel @Inject constructor(
             val entry = indexed[d]
             EmotionDayUi(
                 day          = d,
-                iconRes      = entry?.emojiId?.let(::emojiDrawable),
+                iconRes      = entry?.mood?.let(::emojiDrawable),
                 isRegistered = entry != null
             )
         }
     }
 
     /** Convierte el id “FELICIDAD” → R.drawable.ic_happyimage. */
-    private fun emojiDrawable(id: String): Int = when (id) {
-        Emotion.FELICIDAD.name    -> R.drawable.ic_happyimage
-        Emotion.TRANQUILIDAD.name -> R.drawable.ic_calmimage
-        Emotion.TRISTEZA.name     -> R.drawable.ic_sadimage
-        Emotion.ENOJO.name        -> R.drawable.ic_angryimage
-        Emotion.DISGUSTO.name     -> R.drawable.ic_disgustingimage
-        Emotion.MIEDO.name        -> R.drawable.ic_fearimage
+    private fun emojiDrawable(e: Emotion): Int = when (e) {
+        Emotion.FELICIDAD    -> R.drawable.ic_happyimage
+        Emotion.TRANQUILIDAD -> R.drawable.ic_calmimage
+        Emotion.TRISTEZA     -> R.drawable.ic_sadimage
+        Emotion.ENOJO        -> R.drawable.ic_angryimage
+        Emotion.DISGUSTO     -> R.drawable.ic_disgustingimage
+        Emotion.MIEDO        -> R.drawable.ic_fearimage
         else                      -> 0
     }
 
-    private fun has7ConsecutiveDays(dates: List<LocalDate>): Boolean {
-        val sortedDates = dates.sorted()
-        var streak = 1
-        for (i in 1 until sortedDates.size) {
-            if (sortedDates[i - 1].plus(1, DateTimeUnit.DAY) == sortedDates[i]) {
-                streak++
-                if (streak >= 7) return true
-            } else {
-                streak = 1
-            }
-        }
-        return false
-    }
+    /* helper interno */
+    private fun Achievement.toUi() =
+        AchievementUnlocked(id.raw, name, description)
 
-    private fun has30ConsecutiveDays(dates: List<LocalDate>): Boolean {
-        val sortedDates = dates.distinct().sorted()
-        var streak = 1
-        for (i in 1 until sortedDates.size) {
-            if (sortedDates[i - 1].plus(1, DateTimeUnit.DAY) == sortedDates[i]) {
-                streak++
-                if (streak >= 30) return true
-            } else {
-                streak = 1
-            }
-        }
-        return false
-    }
-
-    fun ocultarLogroFeliz() {
-        _logroFeliz.value = null
-    }
-
-    private fun streakLength(dates: List<LocalDate>): Int {
-        val sorted = dates.distinct().sorted()
-        var streak = 1
-        var maxStreak = 1
-        for (i in 1 until sorted.size) {
-            if (sorted[i - 1].plus(1, DateTimeUnit.DAY) == sorted[i]) {
-                streak++
-                maxStreak = maxOf(maxStreak, streak)
-            } else {
-                streak = 1
-            }
-        }
-        return maxStreak
-    }
 }

@@ -1,170 +1,92 @@
+/* ui/screens/settings/achievements/AchievementsScreen.kt */
 package com.app.tibibalance.ui.screens.settings.achievements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tibibalance.R
+import com.app.tibibalance.ui.components.containers.AchievementContainer
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.layout.Header
-import com.app.tibibalance.ui.components.containers.AchievementContainer
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material3.Text
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.text.font.FontWeight
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.app.tibibalance.ui.components.utils.gradient
 
+/** Descripción estática de cada logro para dibujar icono, texto, etc. */
+private data class AchvUi(
+    val id: String,
+    val icon: Int,
+    val title: String,
+    val desc: String
+)
 
+/* --------------- lista master (en el orden deseado) ---------------- */
+private val allUi = listOf(
+    AchvUi("foto_perfil",        R.drawable.ic_tibio_camera     , "Un placer conocernos",  "Cambia tu foto de perfil."),
+    AchvUi("tibio_salud",        R.drawable.ic_tibio_salud      , "Tibio saludable",       "Agrega un hábito de salud."),
+    AchvUi("tibio_productividad",R.drawable.ic_tibio_productivo , "Tibio productivo",      "Agrega un hábito de productividad."),
+    AchvUi("tibio_bienestar",    R.drawable.ic_tibio_bienestar  , "Tibio del bienestar",   "Agrega un hábito de bienestar."),
+    AchvUi("primer_habito",      R.drawable.ic_tibio_explorer   , "El inicio del reto",    "Agrega tu primer hábito con modo reto activado."),
+    AchvUi("cinco_habitos",      R.drawable.ic_tibio_arquitecto , "La sendera del reto",   "Agrega cinco hábitos con modo reto activado."),
+    AchvUi("feliz_7_dias",       R.drawable.ic_tibio_calendar   , "Todo en su lugar",      "Siete días seguidos feliz."),
+    AchvUi("emociones_30_dias",  R.drawable.ic_emocional        , "Un tibio emocional",    "Registra emociones 30 días seguidos."),
+    AchvUi("noti_personalizada", R.drawable.ic_tibio_reloj      , "¡Ya es hora!",          "Personaliza tus notificaciones.")
+)
+
+/* ------------------------------------------------------------------- */
 @Composable
 fun AchievementsScreen(
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    vm: AchievementsViewModel = hiltViewModel()
 ) {
-    val vm: AchievementsViewModel = hiltViewModel()
-    val logros by vm.logros.collectAsState()
+    val achMap by vm.achievements.collectAsState()
 
-    // Contenedor principal que ocupa toda la pantalla.
+    // separa los logros dependiendo de su estado
+    val (unlocked, locked) = remember(achMap) {
+        allUi.partition { achMap[it.id]?.unlocked == true }
+    }
+
     Box(
-        modifier = Modifier
+        Modifier
             .fillMaxSize()
-            .background(gradient()) // Aplica el fondo degradado.
+            .background(gradient())
     ) {
-        // Columna principal para el contenido, permite desplazamiento vertical.
         Column(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()) // Habilita el scroll.
-                .padding(horizontal = 16.dp, vertical = 24.dp), // Padding general.
-            horizontalAlignment = Alignment.CenterHorizontally // Centra elementos horizontalmente.
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(77.dp))// Espacio superior.
+            Spacer(Modifier.height(77.dp))
 
-
-            FormContainer (
+            FormContainer(
                 backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                Box(
-                    modifier = Modifier
-                        .background(Color(0xFF5997C7), shape = RoundedCornerShape(16.dp))
-                        .padding(horizontal = 100.dp, vertical = 8.dp)
-                        .align(Alignment.CenterHorizontally) // Centrado dentro del FormContainer
-                ) {
-                    Text(
-                        text = "Tus logros",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                SectionTitle("Logros desbloqueados")
+                if (unlocked.isEmpty()) {
+                    Subtitle("Todavía no has desbloqueado ninguno.")
+                } else {
+                    unlocked.forEach { ui -> DrawItem(ui, achMap[ui.id]) }
                 }
-                //Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    text = "⬇\uFE0F Desplazate hacia abajo⬇\uFE0F\npara ver el resto de los logros.",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Spacer(Modifier.height(24.dp))
 
-                //Spacer(modifier = Modifier.height(20.dp))
-
-                val fotoPerfil = logros["foto_perfil"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_camera,
-                    title = "Un placer conocernos",
-                    description = "Cambia tu foto de perfil.",
-                    percent = fotoPerfil?.progress ?: 0,
-                    isUnlocked = fotoPerfil?.unlocked == true
-                )
-
-                val tibioSalud = logros["tibio_salud"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_salud,
-                    title = "Tibio saludable",
-                    description = "Agrega un hábito de salud.",
-                    percent = tibioSalud?.progress ?: 0,
-                    isUnlocked = tibioSalud?.unlocked == true
-                )
-
-                val tibioProductivo = logros["tibio_productividad"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_productivo,
-                    title = "Tibio productivo",
-                    description = "Agrega un hábito de productividad.",
-                    percent = tibioProductivo?.progress ?: 0,
-                    isUnlocked = tibioProductivo?.unlocked == true
-                )
-
-                val tibioBienestar = logros["tibio_bienestar"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_bienestar,
-                    title = "Tibio del bienestar",
-                    description = "Agrega un hábito de bienestar.",
-                    percent = tibioBienestar?.progress ?: 0,
-                    isUnlocked = tibioBienestar?.unlocked == true
-                )
-
-                val primerHabito = logros["primer_habito"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_explorer,
-                    title = "El inicio del reto",
-                    description = "Agrega tu primer hábito con modo reto activado.",
-                    percent = primerHabito?.progress ?: 0,
-                    isUnlocked = primerHabito?.unlocked == true
-                )
-
-                val cincoHabitos = logros["cinco_habitos"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_arquitecto,
-                    title = "La sendera del reto",
-                    description = "Agrega cinco hábitos con modo reto activado.",
-                    percent = cincoHabitos?.progress ?: 0,
-                    isUnlocked = cincoHabitos?.unlocked == true
-                )
-
-                val feliz7Dias = logros["feliz_7_dias"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_calendar,
-                    title = "Todo en su lugar",
-                    description = "Registra un estado de ánimo “feliz” por siete días consecutivos.",
-                    percent = feliz7Dias?.progress ?: 0,
-                    isUnlocked = feliz7Dias?.unlocked == true
-                )
-
-                val emotions30 = logros["emociones_30_dias"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_emocional,
-                    title = "Un tibio emocional",
-                    description = "Registra tus emociones por 30 días consecutivos.",
-                    percent = emotions30?.progress ?: 0,
-                    isUnlocked = emotions30?.unlocked == true
-                )
-
-                val notiPersonalizada = logros["noti_personalizada"]
-                AchievementContainer(
-                    iconRes = R.drawable.ic_tibio_reloj,
-                    title = "¡Ya es hora!",
-                    description = "Descubriste la personalización de notificaciones desde configuración.",
-                    percent = notiPersonalizada?.progress ?: 0,
-                    isUnlocked = notiPersonalizada?.unlocked == true
-                )
-
-                //Spacer(modifier = Modifier.height(120.dp))
+                SectionTitle("Logros pendientes")
+                locked.forEach { ui -> DrawItem(ui, achMap[ui.id]) }
             }
-
         }
+
         Header(
             title = "Logros y Rachas",
             showBackButton = true,
@@ -173,8 +95,34 @@ fun AchievementsScreen(
         )
     }
 }
-/*@Preview(showBackground = true, widthDp = 360, heightDp = 720)
+
+/* --------------------- UI helpers ---------------------------------- */
+@Composable private fun SectionTitle(text: String) = Text(
+    text,
+    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+    color = MaterialTheme.colorScheme.onSurface,
+    textAlign = TextAlign.Center,
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 6.dp)
+)
+
+/** Texto gris de apoyo. */
+@Composable private fun Subtitle(text: String) = Text(
+    text,
+    style = MaterialTheme.typography.bodyMedium,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    textAlign = TextAlign.Center,
+    modifier = Modifier.fillMaxWidth()
+)
+
+/** Dibuja un logro individual con su progreso. */
 @Composable
-fun PreviewAchievementsScreen() {
-    AchievementsScreen()
-}*/
+private fun DrawItem(ui: AchvUi, ach: com.app.domain.entities.Achievement?) =
+    AchievementContainer(
+        iconRes     = ui.icon,
+        title       = ui.title,
+        description = ui.desc,
+        percent     = ach?.progress ?: 0,
+        isUnlocked  = ach?.unlocked == true
+    )

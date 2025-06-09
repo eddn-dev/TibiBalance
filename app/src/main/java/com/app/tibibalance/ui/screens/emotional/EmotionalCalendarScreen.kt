@@ -31,13 +31,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +61,7 @@ import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.EmotionDay
 import androidx.compose.ui.text.style.TextAlign
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -92,6 +93,14 @@ fun EmotionalCalendarScreen(
     /* ------------ state ------------- */
     val uiState by vm.ui.collectAsState()
     val dialog by vm.dialog.collectAsState()
+
+    var pendingAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
+
+    LaunchedEffect(Unit) {
+        vm.unlocked.collect {
+            pendingAch = it
+        }
+    }
 
     /* ------------ fondo ------------- */
     Box(
@@ -138,20 +147,19 @@ fun EmotionalCalendarScreen(
                 )
             }
         }
-        val logroFeliz by vm.logroFeliz.collectAsState()
-        logroFeliz?.let { logro ->
-            val iconRes = when (logro.id) {
-                "feliz_7_dias"         -> R.drawable.ic_tibio_calendar
+        pendingAch?.let { ach ->
+            val iconRes = when (ach.id) {
+                "feliz_7_dias"      -> R.drawable.ic_tibio_calendar
                 "emociones_30_dias" -> R.drawable.ic_emocional
-                else                  -> R.drawable.avatar_placeholder
+                else                -> R.drawable.avatar_placeholder
             }
             ModalAchievementDialog(
                 visible = true,
                 iconResId = iconRes,
                 title = "¡Logro desbloqueado!",
-                message = "${logro.name}\n${logro.description}",
+                message = "${ach.name}\n${ach.description}",
                 primaryButton = DialogButton("Aceptar") {
-                    vm.ocultarLogroFeliz()
+                    pendingAch = null           // cierra modal
                 }
             )
         }

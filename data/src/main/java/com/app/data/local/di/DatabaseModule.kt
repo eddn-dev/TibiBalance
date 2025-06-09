@@ -52,4 +52,5 @@ object DatabaseModule {
     @Provides fun provideMetricsDao(db: AppDb): DailyMetricsDao        = db.metricsDao()
     @Provides fun provideOnboardingDao(db: AppDb): OnboardingStatusDao = db.onboardingDao()
     @Provides fun provideDailyTipDao(db: AppDb): DailyTipDao           = db.dailyTipDao()
+    @Provides fun provideAchievementDao(db: AppDb): AchievementDao     = db.achievementDao()
 }

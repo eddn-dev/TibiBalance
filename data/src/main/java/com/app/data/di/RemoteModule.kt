@@ -5,7 +5,9 @@
  */
 package com.app.data.di
 
+import com.app.data.remote.datasource.AchievementRemoteDataSource
 import com.app.data.remote.datasource.DailyTipsRemoteDataSource
+import com.app.data.remote.datasource.FirebaseAchievementRemoteDataSource
 import com.app.data.remote.datasource.FirebaseDailyTipsRemoteDataSource
 import com.app.data.remote.datasource.FirebaseHabitActivityRemoteDataSource
 import com.app.data.remote.datasource.FirebaseHabitRemoteDataSource
@@ -34,4 +36,10 @@ abstract class RemoteModule {
     abstract fun bindHabitActivityRemoteDataSource(
         impl: FirebaseHabitActivityRemoteDataSource
     ): HabitActivityRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindAchievementRemoteDataSource(
+        impl: FirebaseAchievementRemoteDataSource
+    ): AchievementRemoteDataSource
 }

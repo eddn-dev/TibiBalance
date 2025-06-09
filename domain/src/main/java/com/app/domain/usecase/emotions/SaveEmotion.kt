@@ -1,29 +1,27 @@
-/**
- * @file SaveEmotion.kt
- * @ingroup domain_usecase_emotions
- */
 package com.app.domain.usecase.emotions
 
 import com.app.domain.common.SyncMeta
 import com.app.domain.entities.EmotionEntry
+import com.app.domain.enums.Emotion                // 🆕
 import com.app.domain.repository.EmotionRepository
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
-
 class SaveEmotion @Inject constructor(
     private val repo: EmotionRepository
 ) {
-    suspend operator fun invoke(date: LocalDate, emojiId: String) {
+    /** Guarda o reemplaza la emoción del [date]. */
+    suspend operator fun invoke(date: LocalDate, mood: Emotion) {
+        val now = Clock.System.now()
         repo.upsert(
             EmotionEntry(
-                date    = date,
-                emojiId = emojiId,
-                meta    = SyncMeta(
-                    createdAt  = Clock.System.now(),
-                    updatedAt  = Clock.System.now(),
-                    pendingSync= true
+                date = date,
+                mood = mood,
+                meta = SyncMeta(
+                    createdAt   = now,
+                    updatedAt   = now,
+                    pendingSync = true
                 )
             )
         )

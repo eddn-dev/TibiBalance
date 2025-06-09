@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,9 +44,9 @@ fun HomeScreen(
             .padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.End)) {
+        IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.End)) {
             androidx.compose.material3.Icon(
-                imageVector = Icons.Default.Help,
+                imageVector = Icons.AutoMirrored.Filled.Help,
                 contentDescription = "Ayuda"
             )
         }

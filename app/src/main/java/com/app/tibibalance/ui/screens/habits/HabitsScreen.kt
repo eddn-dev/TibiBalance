@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Button
@@ -128,7 +129,7 @@ fun HabitsScreen(
             .background(gradient())
     ) {
         androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
-            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
+            androidx.compose.material3.Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Ayuda")
         }
         // Mostrar contenido según el estado actual de la UI
         when (val state = ui) {
