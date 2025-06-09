@@ -5,14 +5,18 @@ import com.app.domain.enums.*
 import com.app.domain.ids.*
 import com.app.domain.config.Repeat
 import com.app.domain.entities.DailyTipItem
-import kotlinx.datetime.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-/* ── Date/Time ───────────────────────────────────────────────────────────── */
+/**
+ * Conversores de fechas/horas para Room.
+ */
 object DateTimeConverters {
 
-    /* Instant ⇄ Long ------------------------------------------------------ */
+    /* kotlinx.datetime.Instant ⇄ Long -------------------------------------- */
     @TypeConverter
     fun instantToLong(value: Instant?): Long? =
         value?.toEpochMilliseconds()
@@ -21,7 +25,7 @@ object DateTimeConverters {
     fun longToInstant(value: Long?): Instant? =
         value?.let { Instant.fromEpochMilliseconds(it) }
 
-    /* LocalDate ⇄ String --------------------------------------------------- */
+    /* kotlinx.datetime.LocalDate ⇄ String ---------------------------------- */
     @TypeConverter
     fun localDateToString(value: LocalDate?): String? =
         value?.toString()
@@ -30,7 +34,7 @@ object DateTimeConverters {
     fun stringToLocalDate(value: String?): LocalDate? =
         value?.let(LocalDate::parse)
 
-    /* LocalTime ⇄ String --------------------------------------------------- */
+    /* kotlinx.datetime.LocalTime ⇄ String ---------------------------------- */
     @TypeConverter
     fun localTimeToString(value: LocalTime?): String? =
         value?.toString()
@@ -45,7 +49,7 @@ object DateTimeConverters {
         ignoreUnknownKeys = true
     }
 
-    /* List<DailyTipItem> ⇄ String (JSON) ---------------------------------- */
+    /* List<DailyTipItem> ⇄ JSON String ------------------------------------- */
     @TypeConverter
     fun listToString(value: List<DailyTipItem>?): String? =
         value?.let { json.encodeToString(it) }
