@@ -3,6 +3,7 @@ package com.app.tibibalance.ui.screens.settings.notification
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.data.alert.EmotionAlertManager
 import com.app.domain.auth.AuthUidProvider
 import com.app.domain.entities.Habit
 import com.app.domain.entities.User
@@ -16,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalTime
 import javax.inject.Inject
 
 /* ───────────── modelos UI ───────────── */
@@ -38,12 +40,13 @@ sealed class ConfigureNotifUiState {
 
 @HiltViewModel
 class ConfigureNotificationViewModel @Inject constructor(
-    private val getHabitsFlow    : GetHabitsFlow,
+    getHabitsFlow    : GetHabitsFlow,
     private val getHabitById  : GetHabitById,
     private val updateHabit   : UpdateHabit,
     observeUser      : ObserveUser,
     private val updateSettings: UpdateUserSettings,
-    private val uidProvider   : AuthUidProvider
+    uidProvider   : AuthUidProvider,
+    private val emotionMgr      : EmotionAlertManager
 ) : ViewModel() {
 
     /* ---------- listado reactivo ---------- */
@@ -67,13 +70,18 @@ class ConfigureNotificationViewModel @Inject constructor(
     /* ---------- notificación de emociones ---------- */
     private val _notifEmotion = MutableStateFlow(true)
     val notifEmotion: StateFlow<Boolean> = _notifEmotion.asStateFlow()
+    private val _emotionTime = MutableStateFlow<LocalTime?>(null)
+    val emotionTime: StateFlow<LocalTime?> = _emotionTime.asStateFlow()
 
     private val userFlow: Flow<User?> = observeUser(uidProvider())
 
     init {
-        userFlow
-            .onEach { usr -> _notifEmotion.value = usr?.settings?.notifEmotion == true }
-            .launchIn(viewModelScope)
+        userFlow.onEach { usr ->
+            usr?.settings?.let {
+                _notifEmotion.value = it.notifEmotion
+                _emotionTime.value  = it.notifEmotionTime?.let { t -> LocalTime.parse(t) }
+            }
+        }.launchIn(viewModelScope)
     }
 
     /* ---------- habilitar / deshabilitar campana ---------- */
@@ -90,15 +98,31 @@ class ConfigureNotificationViewModel @Inject constructor(
         updateHabit(updated)
     }
 
+    /* -------- toggle ON/OFF -------- */
     fun toggleEmotionNotif() = viewModelScope.launch {
         val user = userFlow.first() ?: return@launch
-        val newValue = !_notifEmotion.value
-        _notifEmotion.value = newValue
+        val newVal = !_notifEmotion.value
 
-        val newSettings = user.settings.copy(notifEmotion = newValue)
-        updateSettings(user.uid, newSettings)
-            .onFailure { _notifEmotion.value = user.settings.notifEmotion }
+        val newSettings = user.settings.copy(notifEmotion = newVal)
+        updateSettings(user.uid, newSettings).onSuccess {
+            _notifEmotion.value = newVal
+            if (newVal && _emotionTime.value != null)
+                emotionMgr.schedule(_emotionTime.value!!)
+            else
+                emotionMgr.cancel()
+        }
     }
+
+    fun updateEmotionTime(newTime: LocalTime) = viewModelScope.launch {
+        val user = userFlow.first() ?: return@launch
+        _emotionTime.value = newTime                // se muestra enseguida
+
+        val newSettings = user.settings.copy(notifEmotionTime = newTime.toString())
+        updateSettings(user.uid, newSettings).onSuccess {
+            if (_notifEmotion.value) emotionMgr.schedule(newTime)
+        }
+    }
+
 
     /* ---------- mapper dominio ➜ UI ---------- */
     private fun Habit.toUi() = HabitNotifUi(

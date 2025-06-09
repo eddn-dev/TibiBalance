@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">TibiBalance\t\t\t</string>
     <string name="channel_habits">Habitos</string>
+    <string name="emotion_reminder_title">¿Cómo te sientes hoy?</string>
+    <string name="emotion_reminder_msg">Selecciona la emoción que más vaya contigo por este día</string>
+    <string name="emotion_action_title">¡Registra tu emoción de hoy!</string>
 </resources>

@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.Palette
@@ -22,8 +23,11 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -39,17 +43,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.domain.entities.User
 import com.app.domain.enums.ThemeMode
-import androidx.compose.ui.platform.testTag
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Help
 import com.app.tibibalance.R
+import com.app.tibibalance.tutorial.TutorialViewModel
 import com.app.tibibalance.ui.components.buttons.DangerButton
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.containers.FormContainer
@@ -59,8 +60,8 @@ import com.app.tibibalance.ui.components.dialogs.DeleteAccountDialog
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
-import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.navigation.Screen
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 
@@ -95,10 +96,12 @@ fun SettingsScreen(
             user = ui.user!!,
             navController = navController,
             signingOut = ui.signingOut,
+            syncing = ui.syncing,          // 👈 NUEVO
             onChangeTheme = vm::changeTheme,
             onToggleGlobalNotif = vm::toggleGlobalNotif,
             onToggleTTS = vm::toggleTTS,
             onSignOut = vm::signOut,
+            onSyncAccount = vm::syncNow,   // 👈 NUEVO
             vm = vm,
             ui = ui
         )
@@ -112,15 +115,17 @@ private fun SettingsContent(
     user                : User,
     navController       : NavHostController,
     signingOut          : Boolean,
+    syncing             : Boolean,
     /* VM callbacks */
     onChangeTheme       : (ThemeMode) -> Unit,
     onToggleGlobalNotif : (Boolean) -> Unit,
     onToggleTTS         : (Boolean) -> Unit,
     onSignOut           : () -> Unit,
+    onSyncAccount       : () -> Unit,
     vm: SettingsViewModel,
     ui: SettingsViewModel.UiState
 ) {
-    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
+    val tutorialVm: TutorialViewModel = hiltViewModel()
     /* Destinos secundarios */
     val onEditPersonal   = { navController.navigate(Screen.EditProfile.route) }
     val onConfigureNotis = { navController.navigate(Screen.ConfigureNotif.route) }
@@ -132,26 +137,26 @@ private fun SettingsContent(
             .fillMaxSize()
             .background(gradient())
     ) {
-        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
-            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
+        IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+            Icon(Icons.Default.Help, contentDescription = "Ayuda")
         }
 
         SettingsBody(
-            ui                   = ui,
-            vm                   = vm,
-            user                 = user,
-            onEditPersonal       = onEditPersonal,
-            onDevices            = { /* TODO */ },
-            onAchievements       = {navController.navigate(Screen.Achievements.route) },
-            onConfigureNotis     = onConfigureNotis,
-            onChangeTheme        = onChangeTheme,
-            onToggleGlobalNotif  = onToggleGlobalNotif,
-            onToggleTTS          = onToggleTTS,
-            onSignOut            = onSignOut,
-            signingOut           = signingOut,
+            ui = ui,
+            vm = vm,
+            user = user,
+            onEditPersonal = onEditPersonal,
+            onDevices = { /* TODO */ },
+            onAchievements = { navController.navigate(Screen.Achievements.route) },
+            onConfigureNotis = onConfigureNotis,
+            onChangeTheme = onChangeTheme,
+            onToggleGlobalNotif = onToggleGlobalNotif,
+            onToggleTTS = onToggleTTS,
+            onSignOut = onSignOut,
+            signingOut = signingOut,
             onDeleteAccount = vm::reauthenticateAndDelete,
-            onOpenTerms          = { /* TODO */ },
-            onOpenPrivacy        = { /* TODO */ }
+            onSyncAccount = onSyncAccount,
+            syncing = syncing
         )
     }
 }
@@ -172,11 +177,11 @@ private fun SettingsBody(
     onChangeTheme      : (ThemeMode) -> Unit,
     onToggleGlobalNotif: (Boolean) -> Unit,
     onToggleTTS        : (Boolean) -> Unit,
-    onOpenTerms        : () -> Unit,
-    onOpenPrivacy      : () -> Unit,
+    onSyncAccount      : () -> Unit,
     /* Sesión */
     onSignOut          : () -> Unit,
     signingOut         : Boolean,
+    syncing            : Boolean,
     onDeleteAccount: (String) -> Unit
 ) {
     /* diálogos */
@@ -266,6 +271,18 @@ private fun SettingsBody(
                 text        = "Configurar notificaciones",
                 onClick     = onConfigureNotis
             )
+            SettingItem(
+                leadingIcon = { Icon24(Icons.Default.Sync) },
+                text        = if (syncing) "Sincronizando…" else "Sincronizar cuenta",
+                onClick     = onSyncAccount,
+                trailing    = {
+                    if (syncing)
+                        CircularProgressIndicator(           // import androidx.compose.material3.*
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(18.dp)
+                        )
+                }
+            )
         }
 
         /* ── Grupo: Preferencias ── */
@@ -294,20 +311,6 @@ private fun SettingsBody(
                     tts = it
                     onToggleTTS(it)
                 }
-            )
-        }
-
-        /* ── Grupo: Legal ── */
-        FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
-            SettingItem(
-                leadingIcon = { Icon24(Icons.Default.Description) },
-                text        = "Términos de uso",
-                onClick     = onOpenTerms
-            )
-            SettingItem(
-                leadingIcon = { Icon24(Icons.Default.PrivacyTip) },
-                text        = "Política de privacidad",
-                onClick     = onOpenPrivacy
             )
         }
 

@@ -9,6 +9,7 @@ import com.app.domain.enums.ThemeMode
 import com.app.domain.repository.AuthRepository
 import com.app.domain.usecase.auth.DeleteAccountUseCase
 import com.app.domain.usecase.auth.SignOutUseCase
+import com.app.domain.usecase.auth.SyncAccount
 import com.app.domain.usecase.user.ObserveUser
 import com.app.domain.usecase.user.UpdateUserSettings        // ⬅️ nuevo
 import com.app.tibibalance.ui.theme.ThemeController
@@ -28,7 +29,8 @@ class SettingsViewModel @Inject constructor(
     private val update : UpdateUserSettings,
     private val theme  : ThemeController,
     private val signOutUseCase: SignOutUseCase,
-    private val deleteAccountUseCase: DeleteAccountUseCase
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val syncAccount: SyncAccount
 ) : ViewModel() {
 
     /* ---------- UI ---------- */
@@ -37,6 +39,7 @@ class SettingsViewModel @Inject constructor(
         val user      : User?   = null,
         val error     : String? = null,
         val signingOut: Boolean = false,
+        val syncing     : Boolean = false,
         val navigatingToGoodbye: Boolean = false
     )
 
@@ -73,6 +76,19 @@ class SettingsViewModel @Inject constructor(
         persist { old -> old.copy(
             settings = old.settings.copy(theme = mode)
         )}
+    }
+
+    fun syncNow() = viewModelScope.launch {
+        _ui.update { it.copy(syncing = true) }
+
+        val result = syncAccount()
+        _ui.update { it.copy(syncing = false) }
+
+        result.onSuccess {
+            // puedes mostrar un Snackbar desde la pantalla
+        }.onFailure { ex ->
+            _ui.update { it.copy(error = ex.message ?: "Error al sincronizar") }
+        }
     }
 
     fun toggleGlobalNotif(enabled: Boolean) = persist { old ->

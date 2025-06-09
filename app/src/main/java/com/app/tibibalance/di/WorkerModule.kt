@@ -5,6 +5,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.Operation
 import androidx.work.WorkManager
 import com.app.tibibalance.sync.ActivitySyncWorker
+import com.app.tibibalance.sync.EmotionScheduleWorker
 import com.app.tibibalance.sync.HabitSyncWorker
 import dagger.Module
 import dagger.Provides
@@ -39,5 +40,10 @@ object WorkerModule {
             ExistingPeriodicWorkPolicy.KEEP,
             ActivitySyncWorker.periodicRequest()
         )
+
+    @Provides @Singleton
+    fun provideEmotionScheduleInit(wm: WorkManager): Operation =
+        EmotionScheduleWorker.enqueue(wm)
+
 }
 

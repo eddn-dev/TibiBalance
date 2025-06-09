@@ -1,12 +1,14 @@
 /* ui/screens/settings/ConfigureNotificationScreen.kt */
 package com.app.tibibalance.ui.screens.settings.notification
 
+import android.app.TimePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +24,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +58,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.components.utils.gradient
+import kotlinx.datetime.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -98,6 +106,7 @@ fun ConfigureNotificationScreen(
 
 /* ───────────── lista con SettingItem ───────────── */
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HabitListSection(
     habits: List<HabitNotifUi>,
@@ -116,6 +125,17 @@ private fun HabitListSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         /* encabezado */
+
+        FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant)
+        {
+            Subtitle(
+                text = "Emociones",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+        EmotionReminderSettingItem(vm)
+        Spacer(Modifier.height(12.dp))
         FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant)
         {
             Subtitle(
@@ -124,19 +144,6 @@ private fun HabitListSection(
                 textAlign = TextAlign.Center
             )
         }
-        Spacer(Modifier.height(12.dp))
-
-        val emotionEnabled by vm.notifEmotion.collectAsState()
-
-        SwitchSettingItem(
-            leadingIcon = { IconContainer(icon = Icons.Default.Mood, contentDescription = "Emociones", modifier = Modifier.size(24.dp)) },
-            text = "Recordarme registrar emociones",
-            checked = emotionEnabled,
-            onCheckedChange = { vm.toggleEmotionNotif() }
-        )
-
-        Spacer(Modifier.height(12.dp))
-
         habits.forEach { habit ->
             SettingItem(
                 leadingIcon = {
@@ -238,3 +245,67 @@ private fun SwitchSettingItem(
     text = text,
     trailing = { SwitchToggle(checked = checked, onCheckedChange = { onCheckedChange() }) }
 )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+private fun EmotionReminderSettingItem(vm: ConfigureNotificationViewModel) {
+
+    /*---- estados reactivos del VM ----*/
+    val enabled  by vm.notifEmotion.collectAsState()
+    val time     by vm.emotionTime.collectAsState()
+
+    /*---- selector de hora modal (compose TimePicker) ----*/
+    var showPicker by remember { mutableStateOf(false) }
+    if (showPicker) {
+        val tp  = rememberTimePickerState(
+            initialHour   = time?.hour   ?: 20,
+            initialMinute = time?.minute ?: 0,
+            is24Hour      = true
+        )
+        AlertDialog(
+            onDismissRequest = { showPicker = false },
+            title  = { Text("Hora del recordatorio") },
+            text   = { TimePicker(tp) },
+            confirmButton = {
+                TextButton(onClick = {
+                    vm.updateEmotionTime(LocalTime(tp.hour, tp.minute))
+                    showPicker = false
+                }) { Text("Aceptar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    /*---- vista base ----*/
+    SettingItem(
+        leadingIcon = {
+            IconContainer(
+                icon  = Icons.Default.Mood,
+                contentDescription = "Emociones",
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        text = "Recordatorio de emociones",
+        /* trailing: switch + hora ↓ */
+        trailing = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = time?.toString() ?: "--:--",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                SwitchToggle(
+                    checked = enabled,
+                    onCheckedChange = { vm.toggleEmotionNotif() }
+                )
+            }
+        },
+        /* 1 tap abre selector si está activado */
+        onClick = { if (enabled) showPicker = true }
+    )
+}
+
+

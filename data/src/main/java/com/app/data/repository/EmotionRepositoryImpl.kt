@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 
 @Singleton
 class EmotionRepositoryImpl @Inject constructor(
@@ -83,6 +84,10 @@ class EmotionRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    // EmotionRepositoryImpl.kt
+    override suspend fun hasEntryFor(date: LocalDate): Boolean =
+        withContext(io) { dao.findByDate(date) != null }
 
     /* ─────────── helpers ─────────────────────────────────── */
 

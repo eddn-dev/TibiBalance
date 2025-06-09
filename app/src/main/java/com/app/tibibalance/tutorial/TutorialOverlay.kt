@@ -1,4 +1,4 @@
-package com.app.tibibalance.tutorial
+/*package com.app.tibibalance.tutorial
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -34,3 +34,4 @@ fun TutorialOverlay(viewModel: TutorialViewModel, content: @Composable () -> Uni
         }
     }
 }
+*/

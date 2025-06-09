@@ -20,6 +20,13 @@
         <receiver
             android:name="com.app.data.alert.HabitAlertReceiver"
             android:exported="false" />
+        <receiver
+            android:name="com.app.data.alert.EmotionChoiceReceiver"
+            android:exported="false" />
+        <receiver
+            android:name="com.app.data.alert.EmotionReminderReceiver"
+            android:exported="false"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

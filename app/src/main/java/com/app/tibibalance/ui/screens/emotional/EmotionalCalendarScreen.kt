@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Help
@@ -99,8 +100,8 @@ fun EmotionalCalendarScreen(
             .background(gradient()),
         contentAlignment = Alignment.TopCenter
     ) {
-        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
-            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
+        IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+            Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Ayuda")
         }
 
         /* ---------- contenido ---------- */

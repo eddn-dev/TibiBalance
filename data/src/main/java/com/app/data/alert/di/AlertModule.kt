@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import com.app.data.R
+import com.app.data.alert.EmotionAlertManager
 import com.app.data.alert.HabitAlertManager
 import com.app.data.alert.HabitAlertReceiver
 import com.app.domain.service.AlertManager
@@ -48,6 +49,12 @@ object AlertModule {
             mgr.createNotificationChannel(ch)
         }
     }
+
+    @Provides @Singleton
+    fun provideEmotionAlertManager(
+        @ApplicationContext ctx: Context,
+        alarm: AlarmManager
+    ): EmotionAlertManager = EmotionAlertManager(ctx, alarm)
 }
 
 fun interface ChannelInitializer { operator fun invoke() }
