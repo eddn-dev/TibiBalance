@@ -21,10 +21,21 @@ class PhotoUploader @Inject constructor(
      * guardarse en Firestore.
      */
     suspend fun upload(uid: String, uri: Uri): String = withContext(Dispatchers.IO) {
-        val bytes = ctx.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-            ?: error("No se pudo leer la imagen")
+        val inputStream = ctx.contentResolver.openInputStream(uri)
+            ?: error("No se pudo abrir la imagen")
 
-        val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+        val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+            ?: error("No se pudo decodificar la imagen")
+
+        val outputStream = java.io.ByteArrayOutputStream()
+
+        // Comprime en JPEG al 80% de calidad (ajustable)
+        bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, outputStream)
+
+        val compressedBytes = outputStream.toByteArray()
+
+        val base64 = Base64.encodeToString(compressedBytes, Base64.NO_WRAP)
         "data:image/jpeg;base64,$base64"
     }
+
 }
