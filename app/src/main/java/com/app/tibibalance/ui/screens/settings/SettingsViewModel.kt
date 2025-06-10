@@ -1,22 +1,33 @@
 /* ui/screens/settings/SettingsViewModel.kt */
 package com.app.tibibalance.ui.screens.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.domain.entities.User
-import com.app.domain.entities.UserSettings
 import com.app.domain.enums.ThemeMode
 import com.app.domain.repository.AuthRepository
 import com.app.domain.usecase.auth.DeleteAccountUseCase
 import com.app.domain.usecase.auth.SignOutUseCase
 import com.app.domain.usecase.auth.SyncAccount
 import com.app.domain.usecase.user.ObserveUser
-import com.app.domain.usecase.user.UpdateUserSettings        // ⬅️ nuevo
+import com.app.domain.usecase.user.UpdateUserSettings
 import com.app.tibibalance.ui.theme.ThemeController
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -150,22 +161,68 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun reauthenticateAndDelete(password: String) = viewModelScope.launch {
+    fun reauthenticateAndDelete(password: String? = null, googleIdToken: String? = null) = viewModelScope.launch {
+        val tag = "DeleteAccount"
         val user = FirebaseAuth.getInstance().currentUser
-        val email = user?.email ?: return@launch
 
-        val credential = EmailAuthProvider.getCredential(email, password)
+        if (user == null) {
+            Log.e(tag, "LAYTON Usuario actual es null.")
+            _ui.update { it.copy(error = "No hay sesión activa.") }
+            return@launch
+        }
+
+        val providerId = user.providerData.getOrNull(1)?.providerId
+        Log.d(tag, "LAYTON Proveedor de autenticación: $providerId")
 
         try {
-            user.reauthenticate(credential).await()
+            Log.d("DeleteAccount", "LAYTON Entrando a reauthenticateAndDelete: password=${password != null}, token=${googleIdToken != null}")
+            when (providerId) {
+                "password" -> {
+                    val email = user.email
+                    if (email == null || password.isNullOrBlank()) {
+                        Log.e(tag, "LAYTON Email o contraseña faltante. email=$email, password vacío=${password.isNullOrBlank()}")
+                        _ui.update { it.copy(error = "Falta email o contraseña.") }
+                        return@launch
+                    }
+                    Log.d(tag, "LAYTON Reautenticando con email/password")
+                    val credential = EmailAuthProvider.getCredential(email, password)
+                    user.reauthenticate(credential).await()
+                }
+
+                "google.com" -> {
+                    if (googleIdToken.isNullOrBlank()) {
+                        Log.e(tag, "LAYTON idToken de Google es null o vacío.")
+                        _ui.update { it.copy(error = "Token de Google inválido.") }
+                        return@launch
+                    }
+                    Log.d(tag, "LAYTON Reautenticando con Google token")
+                    val credential = GoogleAuthProvider.getCredential(googleIdToken, null)
+                    user.reauthenticate(credential).await()
+                }
+
+                else -> {
+                    Log.e(tag, "LAYTON Proveedor no soportado: $providerId")
+                    _ui.update { it.copy(error = "Proveedor no soportado para eliminar cuenta.") }
+                    return@launch
+                }
+            }
+
+            Log.d(tag, "LAYTON Reautenticación exitosa. Eliminando cuenta...")
             user.delete().await()
+            Log.d(tag, "LAYTON Cuenta eliminada con éxito.")
             _ui.update { it.copy(navigatingToGoodbye = true) }
+
         } catch (e: Exception) {
-            _ui.update { it.copy(error = e.message ?: "Error al eliminar cuenta") }
+            Log.e(tag, "LAYTON Error durante reautenticación o eliminación", e)
+            _ui.update { it.copy(error = "No se pudo eliminar: ${e.message ?: "Error desconocido"}") }
         }
     }
 
     fun clearError() {
         _ui.update { it.copy(error = null) }
+    }
+
+    fun setError(message: String) {
+        _ui.update { it.copy(error = message) }
     }
 }

@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
+      <SelectionState runConfigName="TibiBalance.wear">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
       <SelectionState runConfigName="TibiBalance.app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
