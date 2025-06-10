@@ -9,7 +9,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tibibalance.ui.navigation.AppNavGraph
 import com.app.tibibalance.ui.theme.AppThemeViewModel
 import com.app.tibibalance.ui.theme.TibiBalanceTheme
-//import com.app.tibibalance.tutorial.TutorialOverlay
+import com.app.tibibalance.tutorial.TutorialOverlay
 import com.app.tibibalance.tutorial.TutorialViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -20,8 +20,8 @@ fun TibiBalanceRoot() {
     val mode   = themeVm.mode.collectAsState().value
 
     TibiBalanceTheme(mode = mode) {
-        //TutorialOverlay(viewModel = tutorialVm) {
+        TutorialOverlay(viewModel = tutorialVm) {
             AppNavGraph()
-        //}
+        }
     }
 }

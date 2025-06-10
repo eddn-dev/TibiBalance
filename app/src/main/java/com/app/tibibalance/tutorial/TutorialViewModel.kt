@@ -39,11 +39,20 @@ class TutorialViewModel @Inject constructor(
     }
 
     fun proceedToNextStep() {
-        index++
-        if (index >= steps.size) {
+        val index = TutorialSteps.all.indexOf(_current.value)
+        if (index == -1 || index + 1 >= TutorialSteps.all.size) {
             finishTutorial()
+            return
+        }
+
+        val nextStep = TutorialSteps.all[index + 1]
+
+        if (_current.value?.id == "habit_fab" && !hasRetoHabit()) {
+            _current.value = TutorialSteps.all.firstOrNull { it.id == "daily_tip" }
+        } else if ((nextStep.id == "daily_progress" || nextStep.id == "activity_fab") && !hasRetoHabit()) {
+            _current.value = TutorialSteps.all.firstOrNull { it.id == "daily_tip" }
         } else {
-            _current.value = steps[index]
+            _current.value = nextStep
         }
     }
 
@@ -54,11 +63,24 @@ class TutorialViewModel @Inject constructor(
         _current.value = steps.first()
     }
 
-    private fun finishTutorial() {
+    internal fun finishTutorial() {
         viewModelScope.launch {
             val uid = uidProvider()
             saveTutorialStatus(uid, true)
             _current.value = null
         }
+    }
+
+    var habitFabSkipped = false
+        private set
+
+    fun skipHabitFab() {
+        habitFabSkipped = true
+        proceedToNextStep()
+    }
+
+    private fun hasRetoHabit(): Boolean {
+        // TODO: reemplaza con acceso real a ViewModel o repositorio si aplica
+        return true // <-- o consulta vm.habits.any { it.isReto && it.hasQuantity }
     }
 }
