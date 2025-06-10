@@ -186,11 +186,7 @@ class AddHabitViewModel @Inject constructor(
     fun popNextAchievement(): AchievementUnlocked? =
         _pendingAchievements.removeFirstOrNull()
 
-    private fun pushAchievement(logro: AchievementUnlocked) {
-        _pendingAchievements.add(logro)
-    }
 
     private fun Achievement.toUi() =
         AchievementUnlocked(id.raw, name, description)
-
 }

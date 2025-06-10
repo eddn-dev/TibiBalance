@@ -184,7 +184,6 @@ fun AddHabitModal(
             }
         )
     }
-
 }
 
 /* ---------------- barra nav para pasos 1-3 ---------------- */

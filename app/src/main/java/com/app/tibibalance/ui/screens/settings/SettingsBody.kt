@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -139,8 +140,8 @@ fun SettingsBody(
                 onClick     = onEditPersonal
             )
             SettingItem(
-                leadingIcon = { Icon24(Icons.Default.Person) },
-                text        = "Administrar dispositivos",
+                leadingIcon = { Icon24(Icons.Filled.Watch) },
+                text        = "Administrar dispositivos de monitoreo",
                 onClick     = onDevices
             )
             SettingItem(
@@ -155,7 +156,7 @@ fun SettingsBody(
             )
             SettingItem(
                 leadingIcon = { Icon24(Icons.Default.Sync) },
-                text        = if (syncing) "Sincronizando…" else "Sincronizar cuenta",
+                text        = if (syncing) "Sincronizando…" else "Sincronizar datos de cuenta",
                 onClick     = onSyncAccount,
                 trailing    = {
                     if (syncing)
