@@ -66,5 +66,5 @@ data class HabitUi(
     val name     : String,
     val icon     : String,  ///< Nombre del material-icon (ej. `"ic_favorite"`)
     val category : String,  ///< Enum en texto (“SALUD”, “PRODUCTIVIDAD”, …)
-    val checked  : Boolean = false   ///< Placeholder para futuros “marcar hecho”.
+    val challenge: Boolean,
 )

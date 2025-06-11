@@ -109,7 +109,6 @@ fun HabitsScreen(
     val ui by vm.uiState.collectAsState()
 
     val tutorialStep by tutorialVm.currentStep.collectAsState()
-    val highlightFab = tutorialStep?.id == "habit_fab"
 
     // Recogemos eventos (SideEffects) enviados por el ViewModel
     LaunchedEffect(Unit) {
@@ -133,8 +132,8 @@ fun HabitsScreen(
             .fillMaxSize()
             .background(gradient())
     ) {
-        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
-            androidx.compose.material3.Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Ayuda")
+        IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+            Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Ayuda")
         }
         // Mostrar contenido según el estado actual de la UI
         when (val state = ui) {
@@ -154,9 +153,6 @@ fun HabitsScreen(
                 // Mostrar lista de hábitos
                 HabitList(
                     habits = state.data,
-                    onCheck = { habitId, checked ->
-                        // TODO: gestionar marcación de hábito completado
-                    },
                     onEdit = vm::onHabitClicked,
                     onAdd = vm::onAddClicked
                 )
@@ -172,22 +168,6 @@ fun HabitsScreen(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp)
         )
-
-        Button(
-            onClick = {
-                vm.onAddClicked()
-                tutorialVm.proceedToNextStep()
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (highlightFab) Color.Yellow else MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Text("+ Hábito")
-        }
-
     }
 
     // Modal para agregar un nuevo hábito (si showAdd == true)
