@@ -1,7 +1,6 @@
 /* ui/screens/settings/ConfigureNotificationScreen.kt */
 package com.app.tibibalance.ui.screens.settings.notification
 
-import android.app.TimePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -32,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,55 +52,99 @@ import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.IconContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.containers.ModalContainer
+import com.app.tibibalance.ui.components.dialogs.DialogButton
+import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.inputs.iconByName
 import com.app.tibibalance.ui.components.layout.Header
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 import kotlinx.datetime.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ConfigureNotificationScreen(
     navController: NavHostController,
-    viewModel: ConfigureNotificationViewModel = hiltViewModel()
+    viewModel   : ConfigureNotificationViewModel = hiltViewModel()
 ) {
-    /* ---------- UI-state ---------- */
-    val ui by viewModel.ui.collectAsState()
+    /* ---- estados reactivos ---- */
+    val ui            by viewModel.ui.collectAsState()
     val selectedHabit by viewModel.selectedHabit.collectAsState()
-    selectedHabit?.let { h ->
-        ModalConfigNotification(
-            habitId = com.app.domain.ids.HabitId(h.id),
-            onDismiss = { viewModel.clearSelectedHabit() }
-        )
+
+    /* ---- manejo de logros ---- */
+    var showAchievement by remember { mutableStateOf<AchievementUnlocked?>(null) }
+
+    /* ➊ Escucha cola de logros sólo si ningún otro modal tapa la pantalla */
+    LaunchedEffect(Unit) {
+        viewModel.unlocked.collect { ach ->
+            if (selectedHabit == null && showAchievement == null) {
+                showAchievement = ach
+            }
+        }
     }
 
+    /* ➋ Cuando se cierra ModalConfigNotification, vacía la cola */
+    LaunchedEffect(selectedHabit) {
+        if (selectedHabit == null && showAchievement == null) {
+            showAchievement = viewModel.popNextAchievement()
+        }
+    }
+
+    /* ---------------- UI base ---------------- */
     Box(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
             .background(gradient())
     ) {
+        /* ----- listado / estados ----- */
         when (ui) {
             ConfigureNotifUiState.Loading -> Centered("Cargando…")
-            ConfigureNotifUiState.Empty -> Centered("No tienes hábitos aún.")
+            ConfigureNotifUiState.Empty   -> Centered("No tienes hábitos aún.")
             is ConfigureNotifUiState.Error ->
                 Centered((ui as ConfigureNotifUiState.Error).msg)
+
             is ConfigureNotifUiState.Loaded -> HabitListSection(
-                habits = (ui as ConfigureNotifUiState.Loaded).data,
+                habits   = (ui as ConfigureNotifUiState.Loaded).data,
                 onToggle = viewModel::toggleNotification,
-                vm = viewModel
+                vm       = viewModel
             )
         }
 
-        Header(
-            title = "Notificaciones",
-            showBackButton = true,
-            onBackClick = { navController.navigateUp() },
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
+        /* ----- Modal de edición de un hábito ----- */
+        selectedHabit?.let { h ->
+            ModalConfigNotification(
+                habitId   = com.app.domain.ids.HabitId(h.id),
+                onDismiss = { viewModel.clearSelectedHabit() }
+            )
+        }
 
+        /* ----- Header ----- */
+        Header(
+            title          = "Notificaciones",
+            showBackButton = true,
+            onBackClick    = { navController.navigateUp() },
+            modifier       = Modifier.align(Alignment.TopCenter)
+        )
+    }
+
+    /* ---------------- Modal logro ---------------- */
+    showAchievement?.let { logro ->
+        val iconRes = when (logro.id) {
+            "noti_personalizada" -> R.drawable.ic_tibio_reloj
+            else                 -> R.drawable.ic_tibio_arquitecto
+        }
+        ModalAchievementDialog(
+            visible   = true,
+            iconResId = iconRes,
+            title     = "¡Logro desbloqueado!",
+            message   = "${logro.name}\n${logro.description}",
+            primaryButton = DialogButton("Aceptar") {
+                showAchievement = viewModel.popNextAchievement()
+            }
+        )
     }
 }
 
@@ -234,17 +278,6 @@ private fun Centered(msg: String) =
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Description(text = msg)
     }
-@Composable
-private fun SwitchSettingItem(
-    leadingIcon: @Composable () -> Unit,
-    text: String,
-    checked: Boolean,
-    onCheckedChange: () -> Unit
-) = SettingItem(
-    leadingIcon = leadingIcon,
-    text = text,
-    trailing = { SwitchToggle(checked = checked, onCheckedChange = { onCheckedChange() }) }
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)

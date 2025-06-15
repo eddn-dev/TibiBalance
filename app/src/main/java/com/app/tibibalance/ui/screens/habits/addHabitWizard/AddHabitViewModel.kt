@@ -152,7 +152,11 @@ class AddHabitViewModel @Inject constructor(
                         category    = habit.category,
                         isChallenge = habit.challenge != null
                     )
-                ).forEach { ach -> _unlocked.emit(ach.toUi()) }
+                ).forEach { ach ->
+                    val uiAch = ach.toUi()
+                    _pendingAchievements += uiAch
+                    _unlocked.emit(uiAch)
+                }
             }
 
         } catch (ex: Exception) {

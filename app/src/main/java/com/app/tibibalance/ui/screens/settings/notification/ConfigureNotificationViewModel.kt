@@ -4,15 +4,19 @@ package com.app.tibibalance.ui.screens.settings.notification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.data.alert.EmotionAlertManager
+import com.app.domain.achievements.event.AchievementEvent
 import com.app.domain.auth.AuthUidProvider
+import com.app.domain.entities.Achievement
 import com.app.domain.entities.Habit
 import com.app.domain.entities.User
 import com.app.domain.ids.HabitId
+import com.app.domain.usecase.achievement.CheckUnlockAchievement
 import com.app.domain.usecase.habit.GetHabitById
 import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.domain.usecase.habit.UpdateHabit
 import com.app.domain.usecase.user.ObserveUser
 import com.app.domain.usecase.user.UpdateUserSettings
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -41,13 +45,18 @@ sealed class ConfigureNotifUiState {
 @HiltViewModel
 class ConfigureNotificationViewModel @Inject constructor(
     getHabitsFlow    : GetHabitsFlow,
-    private val getHabitById  : GetHabitById,
-    private val updateHabit   : UpdateHabit,
-    observeUser      : ObserveUser,
-    private val updateSettings: UpdateUserSettings,
-    uidProvider   : AuthUidProvider,
-    private val emotionMgr      : EmotionAlertManager
+    private val getHabitById        : GetHabitById,
+    private val updateHabit         : UpdateHabit,
+    observeUser                     : ObserveUser,
+    private val updateSettings      : UpdateUserSettings,
+    uidProvider                     : AuthUidProvider,
+    private val emotionMgr          : EmotionAlertManager,
+    private val checkAchievement    : CheckUnlockAchievement
 ) : ViewModel() {
+
+    private val _pendingAchievements = mutableListOf<AchievementUnlocked>()
+    private val _unlocked = MutableSharedFlow<AchievementUnlocked>(extraBufferCapacity = 1)
+    val unlocked: SharedFlow<AchievementUnlocked> = _unlocked
 
     /* ---------- listado reactivo ---------- */
     val ui: StateFlow<ConfigureNotifUiState> = getHabitsFlow()
@@ -96,6 +105,12 @@ class ConfigureNotificationViewModel @Inject constructor(
             )
         )
         updateHabit(updated)
+
+        checkAchievement(AchievementEvent.NotifCustomized).forEach { ach ->
+            val uiAch = ach.toUi()
+            _pendingAchievements += uiAch
+            _unlocked.emit(uiAch)
+        }
     }
 
     /* -------- toggle ON/OFF -------- */
@@ -121,6 +136,12 @@ class ConfigureNotificationViewModel @Inject constructor(
         updateSettings(user.uid, newSettings).onSuccess {
             if (_notifEmotion.value) emotionMgr.schedule(newTime)
         }
+
+        checkAchievement(AchievementEvent.NotifCustomized).forEach { ach ->
+            val uiAch = ach.toUi()
+            _pendingAchievements += uiAch          // cola interna
+            _unlocked.emit(uiAch)                  // primer logro sale en caliente
+        }
     }
 
 
@@ -131,4 +152,10 @@ class ConfigureNotificationViewModel @Inject constructor(
         icon    = icon,
         enabled = notifConfig.enabled
     )
+
+    fun popNextAchievement(): AchievementUnlocked? =
+        _pendingAchievements.removeFirstOrNull()
+
+    private fun Achievement.toUi() =
+        AchievementUnlocked(id.raw, name, description)
 }
