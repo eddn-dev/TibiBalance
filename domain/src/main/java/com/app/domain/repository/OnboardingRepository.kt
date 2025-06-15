@@ -25,4 +25,7 @@ interface OnboardingRepository {
     suspend fun save(uid: String, status: OnboardingStatus)
     suspend fun saveTutorialStatus(uid: String, completed: Boolean)
     suspend fun syncNow(uid: String): Result<Unit>
+
+    suspend fun getStatus(uid: String): OnboardingStatus
+    suspend fun saveStatus(uid: String, status: OnboardingStatus)
 }

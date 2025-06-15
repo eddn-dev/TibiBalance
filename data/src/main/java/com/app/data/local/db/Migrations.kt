@@ -25,3 +25,29 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         db.execSQL("ALTER TABLE onboarding_status ADD COLUMN hasCompletedTutorial INTEGER NOT NULL DEFAULT 0")
     }
 }
+
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "ALTER TABLE onboarding_status " +
+                    "ADD COLUMN hasSeenTutorial_HomeScreenMain  INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execSQL(
+            "ALTER TABLE onboarding_status " +
+                    "ADD COLUMN hasSeenTutorial_HomeScreenStats INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execSQL(
+            "ALTER TABLE onboarding_status " +
+                    "ADD COLUMN hasSeenTutorial_HabitsScreen    INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execSQL(
+            "ALTER TABLE onboarding_status " +
+                    "ADD COLUMN hasSeenTutorial_EmotionsScreen  INTEGER NOT NULL DEFAULT 0"
+        )
+        db.execSQL(
+            "ALTER TABLE onboarding_status " +
+                    "ADD COLUMN hasSeenTutorial_SettingsScreen  INTEGER NOT NULL DEFAULT 0"
+        )
+    }
+}
+

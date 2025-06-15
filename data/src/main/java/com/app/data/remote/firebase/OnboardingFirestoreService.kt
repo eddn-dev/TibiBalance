@@ -29,19 +29,31 @@ class OnboardingFirestoreService @Inject constructor(
         val snap = doc(uid).get().await()
         if (!snap.exists()) return null
 
+        fun Any?.toBoolOrNull(): Boolean? = when (this) {
+            is Boolean -> this
+            is String -> this == "true"
+            else -> null
+        }
+
         return OnboardingStatus(
-            hasCompletedTutorial = snap.getBoolean("hasCompletedTutorial") ?: false,
-            tutorialCompleted = snap.getBoolean("tutorialCompleted") ?: false,
-            legalAccepted     = snap.getBoolean("legalAccepted") ?: false,
-            permissionsAsked  = snap.getBoolean("permissionsAsked") ?: false,
-            completedAt       = snap.getString("completedAt")?.let(Instant::parse),
+            hasCompletedTutorial = snap.get("hasCompletedTutorial")?.toBoolOrNull() ?: false,
+            tutorialCompleted = snap.get("tutorialCompleted")?.toBoolOrNull() ?: false,
+            legalAccepted = snap.get("legalAccepted")?.toBoolOrNull() ?: false,
+            permissionsAsked = snap.get("permissionsAsked")?.toBoolOrNull() ?: false,
+            completedAt = snap.getString("completedAt")?.let(Instant::parse),
             meta = SyncMeta(
-                updatedAt   = snap.getString("updatedAt")?.let(Instant::parse)
-                    ?: Instant.DISTANT_PAST,
-                pendingSync = false     // Firestore ≡ ya sincronizado
-            )
+                updatedAt = snap.getString("updatedAt")?.let(Instant::parse) ?: Instant.DISTANT_PAST,
+                pendingSync = false
+            ),
+            hasSeenTutorial_HomeScreenMain = snap.get("hasSeenTutorial_HomeScreenMain")?.toBoolOrNull() ?: false,
+            hasSeenTutorial_HomeScreenStats = snap.get("hasSeenTutorial_HomeScreenStats")?.toBoolOrNull() ?: false,
+            hasSeenTutorial_HabitsScreen = snap.get("hasSeenTutorial_HabitsScreen")?.toBoolOrNull() ?: false,
+            hasSeenTutorial_EmotionsScreen = snap.get("hasSeenTutorial_EmotionsScreen")?.toBoolOrNull() ?: false,
+            hasSeenTutorial_SettingsScreen = snap.get("hasSeenTutorial_SettingsScreen")?.toBoolOrNull() ?: false
         )
     }
+
+
 
     /* ───── escrituras ────────────────────────── */
 

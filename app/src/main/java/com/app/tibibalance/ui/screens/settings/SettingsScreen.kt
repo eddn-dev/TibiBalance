@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.domain.entities.User
 import com.app.domain.enums.ThemeMode
+import com.app.tibibalance.tutorial.TutorialOverlay
 import com.app.tibibalance.tutorial.TutorialViewModel
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
 import com.app.tibibalance.ui.components.dialogs.DialogButton
@@ -40,6 +41,13 @@ fun SettingsScreen(
 ) {
     val vm: SettingsViewModel = hiltViewModel()
     val ui by vm.ui.collectAsState()
+    val tutorialVm: TutorialViewModel = hiltViewModel()
+    val step by tutorialVm.currentStep.collectAsState()
+    val currentTarget = step?.targetId
+
+    LaunchedEffect(Unit) {
+        tutorialVm.startTutorialIfNeeded(Screen.Settings)
+    }
 
     /* Navegación a Launch cuando se cierre sesión */
     LaunchedEffect(Unit) {
@@ -81,32 +89,39 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingsContent(
-    user                : User,
-    navController       : NavHostController,
-    signingOut          : Boolean,
-    syncing             : Boolean,
-    /* VM callbacks */
-    onChangeTheme       : (ThemeMode) -> Unit,
-    onToggleGlobalNotif : (Boolean) -> Unit,
-    onToggleTTS         : (Boolean) -> Unit,
-    onSignOut           : () -> Unit,
-    onSyncAccount       : () -> Unit,
+    user: User,
+    navController: NavHostController,
+    signingOut: Boolean,
+    syncing: Boolean,
+    onChangeTheme: (ThemeMode) -> Unit,
+    onToggleGlobalNotif: (Boolean) -> Unit,
+    onToggleTTS: (Boolean) -> Unit,
+    onSignOut: () -> Unit,
+    onSyncAccount: () -> Unit,
     vm: SettingsViewModel,
     ui: SettingsViewModel.UiState
 ) {
     val tutorialVm: TutorialViewModel = hiltViewModel()
-    /* Destinos secundarios */
+    val step by tutorialVm.currentStep.collectAsState()
+    val currentTargetId = step?.targetId
+
+    // Inicia el tutorial si es necesario
+    LaunchedEffect(Unit) {
+        tutorialVm.startTutorialIfNeeded(Screen.Settings)
+    }
+
     val onEditPersonal   = { navController.navigate(Screen.EditProfile.route) }
     val onConfigureNotis = { navController.navigate(Screen.ConfigureNotif.route) }
-    val vm: SettingsViewModel = hiltViewModel()
-    val ui by vm.ui.collectAsState()
 
     Box(
         Modifier
             .fillMaxSize()
             .background(gradient())
     ) {
-        IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
+        IconButton(
+            onClick = { tutorialVm.restartTutorial(Screen.Emotions) },
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
             Icon(Icons.Default.Help, contentDescription = "Ayuda")
         }
 
@@ -135,11 +150,15 @@ private fun SettingsContent(
             message  = "Tu cuenta se ha actualizado correctamente.",
             primaryButton = DialogButton(
                 text = "Aceptar",
-                onClick = vm::dismissSyncDone            // ⬅️ cierra modal
+                onClick = vm::dismissSyncDone
             )
         )
+
+        // Aquí va el tutorial overlay
+        TutorialOverlay(viewModel = tutorialVm) {}
     }
 }
+
 
 /* ───────────────────── Helpers ───────────────────── */
 
