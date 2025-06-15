@@ -105,5 +105,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
+
+    implementation("io.github.pseudoankit:coachmark:3.0.1")
 }
 

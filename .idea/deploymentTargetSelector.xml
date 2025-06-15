@@ -5,10 +5,10 @@
       <SelectionState runConfigName="TibiBalance.wear">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="TibiBalance.app">
+      <SelectionState runConfigName="TibiBalance.wear">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="TibiBalance.wear">
+      <SelectionState runConfigName="TibiBalance.app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

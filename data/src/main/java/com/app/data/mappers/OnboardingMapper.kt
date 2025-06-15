@@ -17,7 +17,12 @@ object OnboardingMappers {
         legalAccepted     = legalAccepted,
         permissionsAsked  = permissionsAsked,
         completedAt       = completedAt,
-        meta              = meta
+        meta              = meta,
+        hasSeenTutorial_HomeScreenMain  = hasSeenTutorial_HomeScreenMain,
+        hasSeenTutorial_HomeScreenStats = hasSeenTutorial_HomeScreenStats,
+        hasSeenTutorial_HabitsScreen    = hasSeenTutorial_HabitsScreen,
+        hasSeenTutorial_EmotionsScreen  = hasSeenTutorial_EmotionsScreen,
+        hasSeenTutorial_SettingsScreen  = hasSeenTutorial_SettingsScreen
     )
 
     /** Domain → Entity */
@@ -29,6 +34,11 @@ object OnboardingMappers {
             legalAccepted     = legalAccepted,
             permissionsAsked  = permissionsAsked,
             completedAt       = completedAt,
-            meta              = meta
+            meta              = meta,
+            hasSeenTutorial_HomeScreenMain  = hasSeenTutorial_HomeScreenMain,
+            hasSeenTutorial_HomeScreenStats = hasSeenTutorial_HomeScreenStats,
+            hasSeenTutorial_HabitsScreen    = hasSeenTutorial_HabitsScreen,
+            hasSeenTutorial_EmotionsScreen  = hasSeenTutorial_EmotionsScreen,
+            hasSeenTutorial_SettingsScreen  = hasSeenTutorial_SettingsScreen
         )
 }

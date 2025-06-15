@@ -21,4 +21,6 @@ dependencies {
     // Tests
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test) // 👈 ideal para TestScope
+
+    implementation("io.github.pseudoankit:coachmark:3.0.1")
 }

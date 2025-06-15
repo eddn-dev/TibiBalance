@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "8ec5a9c432cd54e9e76a2da8175c2156",
+    "identityHash": "a986b5095b8ad0f87b50c258552619ad",
     "entities": [
       {
         "tableName": "habits",
@@ -456,7 +456,7 @@
       },
       {
         "tableName": "onboarding_status",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `hasCompletedTutorial` INTEGER NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `hasCompletedTutorial` INTEGER NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `hasSeenTutorial_HomeScreenMain` INTEGER NOT NULL, `hasSeenTutorial_HomeScreenStats` INTEGER NOT NULL, `hasSeenTutorial_HabitsScreen` INTEGER NOT NULL, `hasSeenTutorial_EmotionsScreen` INTEGER NOT NULL, `hasSeenTutorial_SettingsScreen` INTEGER NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "uid",
@@ -492,6 +492,36 @@
             "fieldPath": "completedAt",
             "columnName": "completedAt",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "hasSeenTutorial_HomeScreenMain",
+            "columnName": "hasSeenTutorial_HomeScreenMain",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_HomeScreenStats",
+            "columnName": "hasSeenTutorial_HomeScreenStats",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_HabitsScreen",
+            "columnName": "hasSeenTutorial_HabitsScreen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_EmotionsScreen",
+            "columnName": "hasSeenTutorial_EmotionsScreen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_SettingsScreen",
+            "columnName": "hasSeenTutorial_SettingsScreen",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "meta.createdAt",
@@ -650,7 +680,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8ec5a9c432cd54e9e76a2da8175c2156')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a986b5095b8ad0f87b50c258552619ad')"
     ]
   }
 }

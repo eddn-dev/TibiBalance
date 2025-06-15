@@ -85,4 +85,6 @@ dependencies {
     /* ─── WorkManager (para SyncWorker) ───────────── */
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
+
+    implementation("io.github.pseudoankit:coachmark:3.0.1")
 }

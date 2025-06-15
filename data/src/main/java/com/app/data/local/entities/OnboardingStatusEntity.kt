@@ -17,5 +17,10 @@ data class OnboardingStatusEntity(
     val legalAccepted                : Boolean,
     val permissionsAsked             : Boolean,
     val completedAt                  : Instant?,
-    @Embedded(prefix = "m_")      val meta: SyncMeta
+    @Embedded(prefix = "m_")      val meta: SyncMeta,
+    val hasSeenTutorial_HomeScreenMain  : Boolean,
+    val hasSeenTutorial_HomeScreenStats : Boolean,
+    val hasSeenTutorial_HabitsScreen    : Boolean,
+    val hasSeenTutorial_EmotionsScreen  : Boolean,
+    val hasSeenTutorial_SettingsScreen  : Boolean
 )
