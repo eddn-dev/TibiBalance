@@ -1,4 +1,5 @@
-/* ui/screens/settings/EditNotifViewModel.kt */
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.app.tibibalance.ui.screens.settings.notification
 
 import android.os.Build
@@ -28,54 +29,56 @@ import javax.inject.Inject
 class EditNotifViewModel @Inject constructor(
     private val getHabit        : GetHabitById,
     private val updateHabit     : UpdateHabit,
-    private val checkAchievement: CheckUnlockAchievement,   // 🆕
+    private val checkAchievement: CheckUnlockAchievement,
     private val auth            : AuthRepository
 ) : ViewModel() {
 
-    /* ----------- carga explícita del hábito ----------- */
+    /* ---------- carga del hábito ---------- */
     private val habitId = MutableStateFlow<HabitId?>(null)
+    private val habit   = habitId.filterNotNull().flatMapLatest { getHabit(it) }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val habit = habitId.filterNotNull()
-        .flatMapLatest { getHabit(it) }
-
-    /* ----------- estado del formulario --------------- */
+    /* ---------- formulario ---------- */
     private val _form = MutableStateFlow(HabitForm())
-    val  form : StateFlow<HabitForm> = _form
+    val   form : StateFlow<HabitForm> = _form
 
-    /* ----------- flags UI ---------------------------- */
+    /* ---------- flags ---------- */
     private val _saving = MutableStateFlow(false)
-    val saving: StateFlow<Boolean> = _saving
+    val   saving: StateFlow<Boolean>  = _saving
 
-    /* ----------- logros desbloqueados ---------------- */
+    /* ---------- cola de logros ---------- */
+    private val pending = mutableListOf<AchievementUnlocked>()
     private val _unlocked = MutableSharedFlow<AchievementUnlocked>(extraBufferCapacity = 1)
-    val unlocked: SharedFlow<AchievementUnlocked> = _unlocked
+    val   unlocked: SharedFlow<AchievementUnlocked> = _unlocked
 
-    /* ------------ API pública ------------------------ */
+    fun hasPendingAchievements() : Boolean = pending.isNotEmpty()
 
+    /* ---------- API ---------- */
     fun load(id: HabitId) = viewModelScope.launch {
         habitId.value = id
-        habit.filterNotNull().first().let { h -> _form.value = h.toForm() }
+        habit.filterNotNull().first().let { _form.value = it.toForm() }
     }
 
     fun onFormChanged(f: HabitForm) { _form.value = f }
 
-    /** Guarda únicamente `notifConfig` y emite logros si procede. */
+    fun popNextAchievement(): AchievementUnlocked? = pending.removeFirstOrNull()
+
     fun save() = viewModelScope.launch {
-        val h = habit.first() ?: return@launch
+        val original = habit.first() ?: return@launch
         _saving.value = true
 
-        val updated = _form.value.toHabit(h.id, now = Clock.System.now())
+        val updated = _form.value
+            .toHabit(original.id, now = Clock.System.now())
             .copy(
-                name        = h.name,
-                description = h.description,
-                category    = h.category,
-                icon        = h.icon,
-                session     = h.session,
-                repeat      = h.repeat,
-                period      = h.period,
-                challenge   = h.challenge,
-                meta        = h.meta.copy(
+                /* bloqueamos todo salvo notifConfig */
+                name        = original.name,
+                description = original.description,
+                category    = original.category,
+                icon        = original.icon,
+                session     = original.session,
+                repeat      = original.repeat,
+                period      = original.period,
+                challenge   = original.challenge,
+                meta        = original.meta.copy(
                     updatedAt   = Clock.System.now(),
                     pendingSync = true
                 )
@@ -83,28 +86,17 @@ class EditNotifViewModel @Inject constructor(
 
         updateHabit(updated)
 
-        /* ----- motor de logros ----- */
-        val notifyConfigured = _form.value.notify && _form.value.notifTimes.isNotEmpty()
-        if (notifyConfigured) {
-            checkAchievement(AchievementEvent.NotifCustomized)
-                .forEach { ach -> _unlocked.emit(ach.toUi()) }
+        /* --- motor de logros --- */
+        if (updated.notifConfig.enabled && updated.notifConfig.times.isNotEmpty()) {
+            checkAchievement(AchievementEvent.NotifCustomized).forEach { ach ->
+                val uiAch = ach.toUi()
+                pending += uiAch
+                _unlocked.emit(uiAch)          // emite el primero (o siguientes)
+            }
         }
-
         _saving.value = false
     }
 
-    /* ------------- helpers --------------------------- */
-
-    var wasSaveTriggered = false
-        private set
-
-    fun guardarYVerificarLogro(): Boolean {
-        wasSaveTriggered = true
-        save()                     // espera a terminar
-        return unlocked.replayCache.isNotEmpty()
-    }
-
-    /* Achievement → UI DTO */
     private fun Achievement.toUi() =
         AchievementUnlocked(id.raw, name, description)
 }

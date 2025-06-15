@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,24 +25,27 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ModalConfigNotification(
-    habitId : HabitId,
+    habitId  : HabitId,
     onDismiss: () -> Unit,
     vm: EditNotifViewModel = hiltViewModel()
 ) {
-    /* ------------ carga inicial ------------- */
+    /* --- carga --- */
     LaunchedEffect(habitId) { vm.load(habitId) }
 
-    /* ------------ state ------------- */
+    /* --- estados --- */
     val form   by vm.form.collectAsState()
     val saving by vm.saving.collectAsState()
 
-    /* ------------ flujo de logros ------------- */
-    var pendingAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
-    LaunchedEffect(Unit) { vm.unlocked.collect { pendingAch = it } }
+    /* --- logro actual a mostrar --- */
+    var currentAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
+    LaunchedEffect(Unit) {
+        vm.unlocked.collect { ach ->
+            if (currentAch == null) currentAch = ach
+        }
+    }
 
-    /* Para cerrar automáticamente cuando no hubo logro */
-    var saveTriggered by remember { mutableStateOf(false) }
-
+    /* --- flag para cierre automático cuando NO hay logro --- */
+    var savePressed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     ModalContainer(
@@ -52,22 +54,16 @@ fun ModalConfigNotification(
             .fillMaxWidth()
             .heightIn(max = LocalWindowInfo.current.containerSize.height.dp * .85f)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-        ) {
+        Column(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
 
-            /* -------- cuerpo (paso de notificaciones) -------- */
+            /* Paso notificaciones */
             Box(Modifier.weight(1f)) {
-                NotificationStep(form = form, onForm = vm::onFormChanged)
+                NotificationStep(form, vm::onFormChanged)
             }
 
-            /* -------- botones -------- */
+            /* Botones */
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                Modifier.fillMaxWidth().padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SecondaryButton(
@@ -80,7 +76,7 @@ fun ModalConfigNotification(
                     text     = if (saving) "Guardando…" else "Guardar",
                     enabled  = !saving && form.notify && form.notifTimes.isNotEmpty(),
                     onClick  = {
-                        saveTriggered = true
+                        savePressed = true
                         scope.launch { vm.save() }
                     },
                     modifier = Modifier.weight(1f)
@@ -89,24 +85,31 @@ fun ModalConfigNotification(
         }
     }
 
-    /* ------------ Modal de logro desbloqueado ------------ */
-    pendingAch?.let { ach ->
+    /* --- diálogo logro (cadena) --- */
+    currentAch?.let { ach ->
         ModalAchievementDialog(
             visible      = true,
             iconResId    = R.drawable.ic_tibio_reloj,
             title        = "¡Logro desbloqueado!",
             message      = "${ach.name}\n${ach.description}",
             primaryButton = DialogButton("Aceptar") {
-                pendingAch = null          // cierra modal
-                onDismiss()                // y cierra el sheet
+                val next = vm.popNextAchievement()
+                if (next != null) currentAch = next
+                else {
+                    currentAch = null
+                    onDismiss()     // sin logros pendientes → cerrar modal
+                }
             }
         )
     }
 
-    /* ------------ cierre automático si no hubo logro ------------ */
-    LaunchedEffect(saving, pendingAch, saveTriggered) {
-        if (saveTriggered && !saving && pendingAch == null) {
-            saveTriggered = false
+    /* --- cierre automático si NO hubo logro --- */
+    LaunchedEffect(saving, currentAch, savePressed) {
+        if (savePressed && !saving &&
+            currentAch == null &&
+            !vm.hasPendingAchievements()
+        ) {
+            savePressed = false
             onDismiss()
         }
     }
