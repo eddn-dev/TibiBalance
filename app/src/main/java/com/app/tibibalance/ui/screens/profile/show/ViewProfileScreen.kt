@@ -61,6 +61,8 @@ fun ViewProfileScreen(
 
             ui.error != null -> Centered(ui.error!!)
 
+            ui.user?.displayName.isNullOrBlank() || ui.user?.email.isNullOrBlank() -> Centered("Cargando perfil…")
+
             ui.user != null -> ProfileContent(
                 user = ui.user!!,
                 onEdit = { navController.navigate(Screen.EditProfile.route) },

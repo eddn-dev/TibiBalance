@@ -2,6 +2,7 @@ package com.app.data.local.converters
 
 import androidx.room.TypeConverter
 import com.app.domain.enums.ActivityType
+import com.app.domain.enums.Emotion
 import com.app.domain.enums.HabitCategory
 import com.app.domain.enums.NotifChannel
 import com.app.domain.enums.NotifMode
@@ -30,4 +31,11 @@ object EnumConverters {
 
     @TypeConverter fun nChanToString(v: NotifChannel?)= toString(v)
     @TypeConverter fun stringToNChan(v: String?)      = fromString<NotifChannel>(v)
+
+    @TypeConverter
+    fun emotionToString(e: Emotion): String = e.name
+
+    @TypeConverter
+    fun stringToEmotion(s: String): Emotion =
+        Emotion.valueOf(s)
 }

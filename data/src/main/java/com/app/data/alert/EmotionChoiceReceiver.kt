@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.RemoteInput
+import com.app.domain.enums.Emotion
 import com.app.domain.usecase.emotions.SaveEmotion
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -30,13 +31,13 @@ class EmotionChoiceReceiver : BroadcastReceiver() {
         val choice  = RemoteInput.getResultsFromIntent(intent)
             ?.getCharSequence("emotion_choice")?.toString() ?: return
 
-        val emojiId = when (choice) {
-            "🙂" -> "HAPPY"
-            "😐" -> "CALM"
-            "🙁" -> "SAD"
-            "😡" -> "ANGRY"
-            "🤢" -> "DISGUST"
-            else -> "FEAR"
+        val mood = when (choice) {
+            "🙂" -> Emotion.FELICIDAD
+            "😐" -> Emotion.TRANQUILIDAD
+            "🙁" -> Emotion.TRISTEZA
+            "😡" -> Emotion.ENOJO
+            "🤢" -> Emotion.DISGUSTO
+            else -> Emotion.MIEDO
         }
 
         val dateUtc = intent.getLongExtra("dateUtc", 0L)
@@ -45,7 +46,7 @@ class EmotionChoiceReceiver : BroadcastReceiver() {
 
         // ─── Lanza la tarea en hilo IO ───
         scope.launch {
-            saveEmotion(date, emojiId)
+            saveEmotion(date, mood)
         }
     }
 }

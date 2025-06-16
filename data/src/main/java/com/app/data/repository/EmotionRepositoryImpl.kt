@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-
 @Singleton
 class EmotionRepositoryImpl @Inject constructor(
     private val dao      : EmotionEntryDao,
@@ -34,33 +33,29 @@ class EmotionRepositoryImpl @Inject constructor(
     /* ─────────── observación ─────────────────────────────── */
 
     override fun observeAll(): Flow<List<EmotionEntry>> =
-        dao.observeAll().map { list -> list.map { it.toDomain() } }
+        dao.observeAll()
+            .map { list -> list.map { it.toDomain() } }
 
     /* ─────────── creación/actualización ───────────────────── */
 
+    /**
+     * Guarda/actualiza la entrada **solo en Room** y marca
+     * `pendingSync = true`.  El SyncWorker o `syncNow()` se
+     * encargarán de subirla a Firestore más tarde.
+     */
     override suspend fun upsert(entry: EmotionEntry) = withContext(io) {
-        /* 1 ▸ actualiza metadatos LWW */
-        val now     = Clock.System.now()
-        val newMeta = entry.meta.copy(
-            createdAt   = if (entry.meta.createdAt == SyncMeta().createdAt) now else entry.meta.createdAt,
-            updatedAt   = now,
-            pendingSync = true
-        )
-        val localCopy = entry.copy(meta = newMeta)
-
-        /* 2 ▸ guarda localmente */
-        dao.upsert(localCopy.toEntity())
-
-        /* 3 ▸ intenta subir a Firestore (tipado) */
-        val uid = authRepo.authState().first() ?: return@withContext
-        try {
-            remote.push(uid, localCopy)           // ← sobrecarga tip-safe
-            dao.upsert(
-                localCopy.copy(meta = localCopy.meta.copy(pendingSync = false)).toEntity()
+        val now = Clock.System.now()
+        val localCopy = entry.copy(
+            meta = entry.meta.copy(
+                createdAt   = entry.meta.createdAt.takeUnless {
+                    it == SyncMeta().createdAt
+                } ?: now,
+                updatedAt   = now,
+                pendingSync = true               // ← clave
             )
-        } catch (_: Exception) {
-            /* offline: pendingSync se mantiene en true, lo tomará el worker */
-        }
+        )
+        dao.upsert(localCopy.toEntity())
+        // nada más: 100 % offline-safe ✔️
     }
 
     /* ─────────── sincronización integral ──────────────────── */
@@ -73,10 +68,14 @@ class EmotionRepositoryImpl @Inject constructor(
             /* 1️⃣ PUSH locales pendientes */
             dao.pendingToSync().forEach { local ->
                 remote.push(uid, local.toDomain())
-                dao.upsert(local.copy(meta = local.meta.copy(pendingSync = false)))
+                dao.upsert(
+                    local.copy(
+                        meta = local.meta.copy(pendingSync = false)
+                    )
+                )
             }
 
-            /* 2️⃣ PULL remotos y LWW */
+            /* 2️⃣ PULL remotos + LWW */
             remote.fetchAll(uid).forEach { remoteEntry ->
                 val local = dao.findByDate(remoteEntry.date)
                 val winner = resolveLww(local, remoteEntry)
@@ -85,7 +84,8 @@ class EmotionRepositoryImpl @Inject constructor(
         }
     }
 
-    // EmotionRepositoryImpl.kt
+    /* ─────────── consulta puntual ─────────────────────────── */
+
     override suspend fun hasEntryFor(date: LocalDate): Boolean =
         withContext(io) { dao.findByDate(date) != null }
 
@@ -99,3 +99,4 @@ class EmotionRepositoryImpl @Inject constructor(
             if (it.meta.updatedAt >= remote.meta.updatedAt) it else remote
         } ?: remote
 }
+

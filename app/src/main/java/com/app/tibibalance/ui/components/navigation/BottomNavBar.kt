@@ -44,6 +44,13 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.* // Para remember y mutableStateOf en preview
+import androidx.compose.ui.platform.testTag
+import com.app.tibibalance.tutorial.TutorialStepData
+import com.psoffritti.taptargetcompose.TapTarget
+import com.psoffritti.taptargetcompose.TextDefinition
+import com.app.tibibalance.tutorial.rememberTutorialTarget
+import com.app.tibibalance.tutorial.TutorialViewModel // solo si usas el viewModel aquí
+import androidx.compose.ui.geometry.Rect
 
 /**
  * @brief Un [Composable] que renderiza la barra de navegación inferior de la aplicación.
@@ -67,13 +74,16 @@ import androidx.compose.runtime.* // Para remember y mutableStateOf en preview
 fun BottomNavBar(
     items: List<BottomNavItem>,
     selectedRoute: String?,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    tutorialStep: TutorialStepData? = null,
+    onTutorialTargetClick: (() -> Unit)? = null
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .navigationBarsPadding(),
+            .navigationBarsPadding()
+            .testTag("bottom_nav_bar"),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 8.dp
     ) {
@@ -87,7 +97,8 @@ fun BottomNavBar(
                 NavBarButton(
                     item = item,
                     selected = item.route == selectedRoute,
-                    onClick = { onItemClick(item.route) }
+                    onClick = { onItemClick(item.route) },
+
                 )
             }
         }

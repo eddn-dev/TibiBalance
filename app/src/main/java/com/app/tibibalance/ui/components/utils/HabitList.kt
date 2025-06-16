@@ -59,7 +59,6 @@ import com.app.tibibalance.ui.screens.habits.HabitUi
 @Composable
 internal fun HabitList(
     habits : List<HabitUi>,
-    onCheck: (HabitUi, Boolean) -> Unit,
     onEdit : (HabitUi) -> Unit,
     onAdd  : () -> Unit
 ) {
@@ -88,7 +87,6 @@ internal fun HabitList(
             Category(
                 title   = cat,                 // enum directo
                 rows    = grouped[cat.name].orEmpty(),
-                onCheck = onCheck,
                 onEdit  = onEdit
             )
         }
@@ -125,7 +123,6 @@ internal fun HabitList(
 private fun Category(
     title   : HabitCategory,
     rows  : List<HabitUi>,
-    onCheck: (HabitUi, Boolean) -> Unit,
     onEdit : (HabitUi) -> Unit
 ) {
     // No renderiza la sección si no hay hábitos en esta categoría
@@ -150,10 +147,14 @@ private fun Category(
             text = h.name,
             // Elemento al final (trailing) - Checkbox
             trailing = {
-                Checkbox(
-                    checked = h.checked, // Estado actual del hábito
-                    onCheckedChange = { isChecked -> onCheck(h, isChecked) } // Llama al callback al cambiar
-                )
+                // si el habito configChallenge != null, muestra el icono de retos (icono de fuego)
+                if (h.challenge) {
+                    Icon(
+                        imageVector = Icons.Default.LocalFireDepartment,
+                        contentDescription = "Habito en modo reto",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(24.dp))
+                }
             },
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             // Acción al hacer clic en toda la fila (excepto el checkbox)

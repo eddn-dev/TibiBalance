@@ -1,6 +1,7 @@
 package com.app.domain.entities
 
 import com.app.domain.common.SyncMeta
+import com.app.domain.enums.Emotion
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -11,7 +12,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class EmotionEntry(
-    val date     : LocalDate,
-    val emojiId  : String,
-    val meta     : SyncMeta = SyncMeta()
+    val date    : LocalDate,
+    val mood    : Emotion,
+    val meta    : SyncMeta = SyncMeta()
 )

@@ -1,5 +1,6 @@
 package com.app.tibibalance.ui.screens.habits.mapper
 
+import com.app.domain.config.ChallengeConfig
 import com.app.domain.entities.Habit
 import com.app.tibibalance.ui.screens.habits.HabitUi
 
@@ -7,5 +8,6 @@ internal fun Habit.toUi() = HabitUi(
     id       = id.value,
     name     = name,
     icon     = icon,
-    category = category.name
+    category = category.name,
+    challenge = if (challenge != null) true else false
 )

@@ -1,6 +1,7 @@
 package com.app.data.repository
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.app.data.mappers.toAuthError
 import com.app.data.mappers.toFirestoreMap
@@ -12,6 +13,7 @@ import com.app.domain.error.AuthError
 import com.app.domain.error.AuthResult
 import com.app.domain.model.UserCredentials
 import com.app.domain.repository.AuthRepository
+import com.app.domain.usecase.achievement.InitializeDefaultAchievements
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthProvider
@@ -25,22 +27,18 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toKotlinLocalDate
-import kotlinx.datetime.toLocalDateTime
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
-import org.json.JSONObject
-import android.util.Log
-import com.app.domain.usecase.user.InitializeAchievementsUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val initAchievements: InitializeAchievementsUseCase
+    private val initAchievements: InitializeDefaultAchievements
 ) : AuthRepository {
 
     /* ── Estado de sesión ───────────────────────────────────────── */
@@ -202,8 +200,10 @@ class AuthRepositoryImpl @Inject constructor(
             meta        = sync
         ).toFirestoreMap()
 
+        Log.d("AuthRepo", "New user: $newUser")
         docRef.set(newUser, SetOptions.merge()).await()
-        initAchievements(uid)
+        Log.d("AuthRepo", "New user created: $newUser")
+        initAchievements()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -242,8 +242,10 @@ class AuthRepositoryImpl @Inject constructor(
             meta        = meta
         ).toFirestoreMap()
 
+        Log.d("AuthRepo", "New user: $newUser")
         doc.set(newUser, SetOptions.merge()).await()
-        initAchievements(user.uid)
+        Log.d("AuthRepo", "New user created: $newUser")
+        initAchievements()
     }
 
     /* Función para enviar el correo desde el backend de Node.js */
@@ -295,5 +297,4 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
-
 }

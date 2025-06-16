@@ -1,36 +1,44 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.app.tibibalance.ui.screens.habits.addHabitWizard
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tibibalance.R
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
-import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.components.utils.WizardNavBar
-import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.*
+import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.BasicInfoStep
+import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.NotificationStep
+import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.SuggestionStep
+import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.TrackingStep
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
-import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.android.awaitFrame
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddHabitModal(
@@ -38,51 +46,44 @@ fun AddHabitModal(
     vm: AddHabitViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
-    val context = LocalContext.current
-    val userId = FirebaseAuth.getInstance().currentUser?.uid
 
+    /* ---------- escucha de cierre programático ---------- */
+    LaunchedEffect(Unit) {
+        vm.events.collect { ev ->
+            if (ev is WizardEvent.Dismiss) onDismiss()
+        }
+    }
 
-    /* ------------- escucha de cierre programático ------------- */
+    /* ---------- estado local ---------- */
     var showAchievement by remember { mutableStateOf<AchievementUnlocked?>(null) }
     var showSavedOk by remember { mutableStateOf(false) }
 
+    var pendingShowAchievements by remember { mutableStateOf(false) }
+
+    /* ---------- Logros desbloqueados ---------- */
     LaunchedEffect(Unit) {
-        vm.events.collect { event ->
-            when (event) {
-                is WizardEvent.Dismiss -> onDismiss()
-                is WizardEvent.ShowAchievement -> showAchievement = event.logro
+        vm.unlocked.collect { ach ->
+            if(!showSavedOk && showAchievement == null) {
+                showAchievement = ach
             }
         }
     }
 
-    LaunchedEffect(ui.savedOk) {
-        if (ui.savedOk) {
-            showSavedOk = true
+    /* cuando savedOk se pone false y había pending → muestra logros */
+    LaunchedEffect(showSavedOk) {
+        if(!showSavedOk){
+            showAchievement = vm.popNextAchievement()
         }
     }
 
-    fun handleSuccessDismiss(vm: AddHabitViewModel) {
-        val next = vm.popNextAchievement()
-        if (next != null) {
-            showAchievement = next
-            vm.consumeSaved() // esto borra ui.savedOk, pero no cierra aún
-        } else {
-            vm.acknowledgeSaved()
-        }
-    }
-
-    /* ------------- alto máximo: 85 % pantalla ------------- */
-    val maxH = LocalConfiguration.current.screenHeightDp.dp * .85f
-
-    /* ------------- contenedor base ------------- */
+    /* ---------- contenedor base ---------- */
+    val maxH = LocalWindowInfo.current.containerSize.height.dp * .85f
     ModalContainer(
         onDismissRequest = { vm.requestExit() },
         modifier = Modifier
-            .fillMaxWidth()                                       // ancho completo en móvil
-            .heightIn(max = maxH)                                 // alto limitado
+            .fillMaxWidth()
+            .heightIn(max = maxH)
     ) {
-
-        /* ---------- Pager ---------- */
         val pager = rememberPagerState(ui.currentStep) { 4 }
 
         LaunchedEffect(ui.currentStep) { pager.animateScrollToPage(ui.currentStep) }
@@ -104,9 +105,9 @@ fun AddHabitModal(
                         onSuggestion = vm::pickSuggestion,
                         onCustom    = vm::next
                     )
-                    1 -> BasicInfoStep (ui.form) { vm.updateForm(it) }
-                    2 -> TrackingStep  (ui.form) { vm.updateForm(it) }
-                    3 -> NotificationStep(ui.form) { vm.updateForm(it) }
+                    1 -> BasicInfoStep (ui.form, vm::updateForm)
+                    2 -> TrackingStep  (ui.form, vm::updateForm)
+                    3 -> NotificationStep(ui.form, vm::updateForm)
                 }
             }
 
@@ -116,7 +117,6 @@ fun AddHabitModal(
                     text = "Crear hábito personalizado",
                     onClick = vm::next
                 )
-
                 else -> WizardNavBar(
                     step      = ui.currentStep,
                     stepValid = vm.isStepValid(ui.currentStep, ui.form),
@@ -124,22 +124,19 @@ fun AddHabitModal(
                     notifyOn  = ui.form.notify,
                     onBack    = vm::back,
                     onNext    = vm::next,
-                    onSave = {
-                        vm.save()
-                    },
+                    onSave    = vm::save,
                     onCancel  = vm::requestExit
                 )
             }
         }
     }
 
-    /* ---------------- diálogos ---------------- */
-
+    /* ---------- diálogos de confirmación ---------- */
     if (ui.askExit) ConfirmDialog(
         title = "¿Salir sin guardar?",
         msg   = "Perderás la información introducida.",
-        onYes = { vm.confirmExit(true) },     // realmente cierra
-        onNo  = { vm.confirmExit(false) }     // solo oculta diálogo
+        onYes = { vm.confirmExit(true) },
+        onNo  = { vm.confirmExit(false) }
     )
 
     if (ui.askReplace) ConfirmDialog(
@@ -149,19 +146,21 @@ fun AddHabitModal(
         onNo  = { vm.confirmReplace(false) }
     )
 
+    /* ---------- diálogo “Hábito guardado” ---------- */
     if (showSavedOk) {
         ModalInfoDialog(
             visible = true,
-            icon = Icons.Default.Check,
-            title = "¡Listo!",
+            icon    = Icons.Default.Check,
+            title   = "¡Listo!",
             message = "Hábito guardado con éxito.",
             primaryButton = DialogButton("Aceptar") {
-                showSavedOk = false
-                handleSuccessDismiss(vm)
+                showSavedOk = false            // oculta modal
+                pendingShowAchievements = true // 🆕 dispara la cola cuando se desmonte
             }
         )
     }
 
+    /* ---------- Logros en cadena ---------- */
     showAchievement?.let { logro ->
         val iconRes = when (logro.id) {
             "tibio_salud"         -> R.drawable.ic_tibio_salud
@@ -172,15 +171,14 @@ fun AddHabitModal(
             else                  -> R.drawable.avatar_placeholder
         }
         ModalAchievementDialog(
-            visible = true,
-            iconResId = iconRes,
-            title = "¡Logro desbloqueado!",
-            message = "${logro.name}\n${logro.description}",
+            visible     = true,
+            iconResId   = iconRes,
+            title       = "¡Logro desbloqueado!",
+            message     = "${logro.name}\n${logro.description}",
             primaryButton = DialogButton("Aceptar") {
                 val next = vm.popNextAchievement()
-                if (next != null) {
-                    showAchievement = next
-                } else {
+                if (next != null) showAchievement = next
+                else {
                     showAchievement = null
                     vm.acknowledgeSaved()
                 }
@@ -188,6 +186,13 @@ fun AddHabitModal(
         )
     }
 
+    /* ---------- diálogo de éxito desde VM ---------- */
+    LaunchedEffect(ui.savedOk) {
+        if (ui.savedOk) {
+            showSavedOk = true        // muestra modal éxito
+            vm.consumeSaved()         // limpia flag en el VM
+        }
+    }
 }
 
 /* ---------------- barra nav para pasos 1-3 ---------------- */

@@ -96,6 +96,8 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
 
+    implementation("io.github.pseudoankit:coachmark:3.0.1")
+
     /* ── Tests ──────────────────────────────────────── */
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.junit)

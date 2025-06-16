@@ -1,7 +1,6 @@
 package com.app.tibibalance.ui.screens.auth.signup
 
 import android.os.Build
-import android.util.Log
 import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +19,6 @@ import javax.inject.Inject
 import android.util.Patterns                                         // :contentReference[oaicite:0]{index=0}
 import androidx.annotation.RequiresApi
 import com.app.domain.usecase.auth.SendVerificationEmailUseCase
-import com.app.domain.usecase.user.InitializeAchievementsUseCase
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.datetime.toKotlinLocalDate
 
@@ -29,7 +27,6 @@ class SignUpViewModel @Inject constructor(
     private val signUpUseCase : SignUpUseCase,
     private val googleUseCase : GoogleSignInUseCase,
     private val sendEmailUseCase: SendVerificationEmailUseCase,
-    private val initializeAchievementsUseCase: InitializeAchievementsUseCase
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow<SignUpUiState>(SignUpUiState.Idle)

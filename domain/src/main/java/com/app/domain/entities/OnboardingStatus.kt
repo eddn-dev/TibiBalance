@@ -17,5 +17,11 @@ data class OnboardingStatus(
     val legalAccepted     : Boolean = false,
     val permissionsAsked  : Boolean = false,
     val completedAt       : Instant? = null,
-    val meta              : SyncMeta = SyncMeta()
+    val meta              : SyncMeta = SyncMeta(),
+
+    val hasSeenTutorial_HomeScreenMain: Boolean = false,
+    val hasSeenTutorial_HabitsScreen: Boolean = false,
+    val hasSeenTutorial_EmotionsScreen: Boolean = false,
+    val hasSeenTutorial_HomeScreenStats: Boolean = false,
+    val hasSeenTutorial_SettingsScreen: Boolean = false
 )

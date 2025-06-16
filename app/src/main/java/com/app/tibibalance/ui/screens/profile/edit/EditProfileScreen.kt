@@ -9,18 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,21 +18,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -53,6 +36,7 @@ import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
+import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
@@ -61,8 +45,9 @@ import com.app.tibibalance.ui.components.inputs.InputEmail
 import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Subtitle
 import com.app.tibibalance.ui.components.texts.Title
-import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.navigation.Screen
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 import kotlinx.datetime.LocalDate
 import java.util.Calendar
 
@@ -72,53 +57,51 @@ fun EditProfileScreen(
     nav: NavHostController,
     vm : EditProfileViewModel = hiltViewModel()
 ) {
+    /* ---------------- State ---------------- */
     val ui by vm.state.collectAsState()
 
-    /* ---------------- selector imagen ---------------- */
-    var pendingCallback by remember {
-        mutableStateOf<(Uri?) -> Unit>({})
-    }
-    val picker = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        pendingCallback(uri)
-        uri?.let(vm::pickPhoto)
+    /* ---------------- Logros ---------------- */
+    var pendingAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
+    LaunchedEffect(Unit) {
+        vm.unlocked.collect { pendingAch = it }
     }
 
-    /* ---------------- diálogos ---------------- */
+    /* ---------------- Image picker ---------------- */
+    var pendingCallback by remember { mutableStateOf<(Uri?) -> Unit>({}) }
+    val picker = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri -> pendingCallback(uri); uri?.let(vm::pickPhoto) }
+
+    /* ---------------- Modales genéricos ---------------- */
     ModalInfoDialog(visible = ui.loading, loading = true)
 
     ModalInfoDialog(
         visible = ui.success,
-        icon = Icons.Default.Check,
+        icon    = Icons.Default.Check,
         message = "Cambios guardados",
         primaryButton = DialogButton("Cerrar") {
-            if (vm.shouldPopAfterSuccess()) {
-                vm.consumeSuccess()
-                nav.popBackStack()
-            } else {
-                vm.onSuccessClosed() // aquí se mostrará el modal del logro
-            }
+            vm.consumeSuccess()
+            /* Si hay logro pendiente lo mostraremos; si no, volvemos atrás */
+            if (pendingAch == null) nav.popBackStack()
         }
     )
 
     ModalInfoDialog(
         visible = ui.error != null,
-        icon = Icons.Default.Error,
+        icon    = Icons.Default.Error,
         iconColor = MaterialTheme.colorScheme.error,
         message = ui.error,
-        primaryButton = DialogButton("Cerrar") { vm.consumeError() }
+        primaryButton = DialogButton("Cerrar", vm::consumeError)
     )
 
-    /* ---------------- pantalla principal ---------------- */
+    /* ---------------- Pantalla principal ---------------- */
     ui.user?.let { user ->
         var name      by remember { mutableStateOf(user.displayName.orEmpty()) }
         var birthDate by remember { mutableStateOf(user.birthDate) }
         var photoUri  by remember { mutableStateOf<Uri?>(null) }
 
-        /* --- date-picker --- */
         val ctx = LocalContext.current
-        val pickerDlg = remember {
+        val dobPicker = remember {
             DatePickerDialog(
                 ctx,
                 { _, y, m, d -> birthDate = LocalDate(y, m + 1, d) },
@@ -130,19 +113,18 @@ fun EditProfileScreen(
         }
 
         Column(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .background(gradient())
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-
             Title("Editar información personal")
 
-            /* ---------- foto ---------- */
+            /* ---------- Foto ---------- */
             val photo = photoUri?.toString() ?: ui.photoUri ?: user.photoUrl
             if (photo != null) {
                 AsyncImage(
@@ -160,7 +142,7 @@ fun EditProfileScreen(
             } else {
                 ImageContainer(
                     resId = R.drawable.avatar_placeholder,
-                    contentDescription = "Foto",
+                    contentDescription = null,
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape)
@@ -172,7 +154,7 @@ fun EditProfileScreen(
                 )
             }
 
-            /* ---------- formulario ---------- */
+            /* ---------- Formulario ---------- */
             FormContainer(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
 
                 InputText(
@@ -182,24 +164,27 @@ fun EditProfileScreen(
                 )
 
                 Spacer(Modifier.height(12.dp))
+
                 InputDate(
-                    value = "%02d/%02d/%04d".format(
+                    value   = "%02d/%02d/%04d".format(
                         birthDate.dayOfMonth, birthDate.monthNumber, birthDate.year
                     ),
                     label   = "Fecha de nacimiento",
-                    onClick = { pickerDlg.show() }
+                    onClick = { dobPicker.show() }
                 )
 
                 Spacer(Modifier.height(12.dp))
+
                 InputEmail(
                     value         = user.email,
-                    onValueChange = {},               // sin cambio
+                    onValueChange = {},
                     readOnly      = true,
                     enabled       = false
                 )
 
                 Spacer(Modifier.height(12.dp))
                 Subtitle("Contraseña")
+
                 if (vm.canChangePassword) {
                     SettingRow("••••••••••••••") {
                         nav.navigate(Screen.ChangePassword.route)
@@ -213,42 +198,43 @@ fun EditProfileScreen(
                 }
             }
 
-            /* ---------- acciones ---------- */
+            /* ---------- Acciones ---------- */
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 PrimaryButton(
-                    text = "Guardar",
-                    onClick = { vm.save(name, birthDate, photoUri) },
+                    text     = "Guardar",
+                    onClick  = { vm.save(name, birthDate, photoUri) },
                     modifier = Modifier.weight(1f)
                 )
                 SecondaryButton(
-                    text = "Cancelar",
-                    onClick = { nav.popBackStack() },
+                    text     = "Cancelar",
+                    onClick  = { nav.popBackStack() },
                     modifier = Modifier.weight(1f)
                 )
             }
         }
     }
 
-    val logroDesbloqueado by vm.logroDesbloqueado.collectAsState()
-
-    logroDesbloqueado?.let { logro ->
+    /* ------------ Modal de logro desbloqueado -------------- */
+    pendingAch?.let { ach ->
         ModalAchievementDialog(
             visible = true,
-            iconResId = R.drawable.ic_tibio_camera, // ícono del logro (usa el que corresponda)
-            title = "¡Logro desbloqueado!",
-            message = "${logro.name}\n${logro.description}",
+            iconResId = R.drawable.ic_tibio_camera,
+            title     = "¡Logro desbloqueado!",
+            message   = "${ach.name}\n${ach.description}",
             primaryButton = DialogButton("Aceptar") {
-                vm.dismissAchievementModal()
+                pendingAch = null
                 nav.popBackStack()
             }
         )
     }
 }
 
-/* fila contraseña */
+/* ------------------------------------------------------------------ */
+/* Helper fila contraseña                                             */
+/* ------------------------------------------------------------------ */
 @Composable
 private fun SettingRow(text: String, onClick: () -> Unit) {
     Row(

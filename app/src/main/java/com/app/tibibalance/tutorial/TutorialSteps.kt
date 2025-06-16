@@ -1,68 +1,124 @@
 package com.app.tibibalance.tutorial
 
-/**
- * Provides the list of tutorial steps shown to the user.
- */
 object TutorialSteps {
-    val all = listOf(
+
+    val home = listOf(
         TutorialStepData(
             id = "intro",
-            title = "Bienvenido",
-            message = "This tutorial will guide you through the app.",
+            title = "¡Bienvenido a TibiBalance!",
+            message = "Aquí verás tu progreso diario y las actividades. Te guiaré rápidamente por las funciones principales.",
             targetId = null
-        ),
-        TutorialStepData(
-            id = "habits_tab",
-            title = "Empieza a crear hábitos",
-            message = "Open the Habits section from here.",
-            targetId = "habits_tab"
-        ),
-        TutorialStepData(
-            id = "habit_fab",
-            title = "Crea tu primer hábito",
-            message = "Tap the plus button to add a habit.",
-            targetId = "habit_fab"
         ),
         TutorialStepData(
             id = "daily_progress",
             title = "Tu progreso diario",
-            message = "Check your daily progress here.",
+            message = "Aquí verás un resumen de tu progreso diario y tus actividades pendientes. Mantente al día con tus metas.",
             targetId = "daily_progress_card"
-        ),
-        TutorialStepData(
-            id = "activity_fab",
-            title = "Registra actividades",
-            message = "Log your habit activities.",
-            targetId = "activity_fab"
         ),
         TutorialStepData(
             id = "daily_tip",
             title = "Consejo diario",
-            message = "Read helpful tips every day.",
+            message = "Obtén un consejo diario para mantener tu motivación y bienestar. ¡Un pequeño empujón cada día!",
             targetId = "daily_tip_card"
         ),
         TutorialStepData(
+            id = "navigation",
+            title = "Navegación principal",
+            message = "Utiliza esta barra de navegación para moverte entre las secciones clave de la aplicación. Te recomendamos visitar la sección de Hábitos para comenzar.",
+            targetId = "bottom_nav_bar",
+            layout = TutorialLayout.VideoDialog
+        ),
+        TutorialStepData(
+            id = "final_home",
+            title = "¡Recorrido completado!",
+            message = "Ya conoces las funciones principales de la pantalla de inicio.",
+            targetId = null
+        )
+    )
+
+    val habits = listOf(
+        TutorialStepData(
+            id = "habits_tab",
+            title = "Gestión y creación de hábitos",
+            message = "Esta es tu sección de Hábitos. Aquí puedes gestionar todos tus hábitos, crear nuevos personalizados o en 'Modo Reto' para un seguimiento más detallado.",
+            targetId = "habits_tab"
+        ),
+        TutorialStepData(
+            id = "habit_fab",
+            title = "Crea un nuevo hábito",
+            message = "Toca aquí para añadir un nuevo hábito. Para registro automático, te recomendamos crear uno en 'Modo Reto' con una cantidad definida.",
+            targetId = "habit_fab",
+            layout = TutorialLayout.VideoDialog
+        ),
+        TutorialStepData(
+            id = "final_habits",
+            title = "¡Recorrido completado!",
+            message = "Has terminado el tutorial de hábitos.",
+            targetId = null
+        )
+    )
+
+    val emotions = listOf(
+        TutorialStepData(
+            id = "emotion_calendar_day",
+            title = "Registro emocional diario",
+            message = "En este calendario emocional, puedes registrar cómo te sientes cada día. Presiona sobre el día actual para registrar tu emoción.",
+            targetId = "calendar_today"
+        ),
+        TutorialStepData(
+            id = "emotion_history",
+            title = "Historial y resumen emocional",
+            message = "Verás tu historial de emociones y, al final del mes, se identificará la emoción más frecuente. Esto te ayuda a entender mejor tu bienestar.",
+            targetId = "emotion_summary",
+            layout = TutorialLayout.VideoDialog
+        ),
+        TutorialStepData(
+            id = "final_emotions",
+            title = "¡Recorrido completado!",
+            message = "Has terminado el tutorial de emociones.",
+            targetId = null
+        )
+    )
+
+    val stats = listOf(
+        TutorialStepData(
             id = "stats",
             title = "Analiza tu progreso",
-            message = "Connect your watch and view stats.",
-            targetId = "connect_watch_card"
+            message = "Aquí podrás analizar tus hábitos y ver tu progreso a lo largo del tiempo. Las gráficas te darán una visión clara de tu rendimiento.",
+            targetId = "stats_graph"
         ),
         TutorialStepData(
-            id = "profile",
-            title = "Accede a tu perfil",
-            message = "Manage your achievements here.",
-            targetId = "profile_section"
+            id = "smartwatch",
+            title = "Conecta tu smartwatch",
+            message = "Para obtener métricas como pasos o ritmo cardíaco, puedes conectar tu smartwatch desde la sección de Ajustes.",
+            targetId = "connect_watch_card",
+            layout = TutorialLayout.VideoDialog
         ),
+        TutorialStepData(
+            id = "final_stats",
+            title = "¡Recorrido completado!",
+            message = "Has terminado el tutorial de estadísticas.",
+            targetId = null
+        )
+    )
+
+    val settings = listOf(
         TutorialStepData(
             id = "settings",
-            title = "Ajustes generales",
-            message = "Configure the app to your liking.",
+            title = "Personaliza tu experiencia",
+            message = "Desde aquí, personaliza TibiBalance para que se adapte perfectamente a ti. Tienes el control total sobre tu experiencia.",
             targetId = "settings_section"
         ),
         TutorialStepData(
-            id = "final",
-            title = "Listo",
-            message = "Tutorial completed!",
+            id = "profile",
+            title = "Tu perfil y logros",
+            message = "Gestiona tu información de perfil y explora tus logros. Cada insignia representa un hito en tu camino hacia el equilibrio.",
+            targetId = "profile_section"
+        ),
+        TutorialStepData(
+            id = "final_settings",
+            title = "¡Recorrido completado!",
+            message = "Has terminado el tutorial de ajustes.",
             targetId = null
         )
     )

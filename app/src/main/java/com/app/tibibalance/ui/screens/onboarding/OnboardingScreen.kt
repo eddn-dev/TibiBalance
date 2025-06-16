@@ -204,6 +204,7 @@ private fun PreloadedOnboardingPage(
         Text(
             text      = stringResource(page.titleRes),
             style     = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
             modifier  = Modifier.fillMaxWidth()
         )
@@ -211,10 +212,9 @@ private fun PreloadedOnboardingPage(
         Text(
             text      = stringResource(page.descRes),
             style     = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
             modifier  = Modifier.fillMaxWidth()
         )
-        // Eliminamos el Spacer.weight(1f) aquí
-        // Spacer(Modifier.weight(1f))
     }
 }

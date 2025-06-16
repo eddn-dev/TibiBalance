@@ -1,59 +1,25 @@
-/**
- * @file      HabitsScreen.kt
- * @ingroup   ui_screens_habits
- * @brief     Pantalla principal de hábitos con lista, estado vacío, carga y modal informativo.
- *
- * Este archivo define la pantalla `HabitsScreen`, la cual:
- *  - Observa el estado `uiState` proveniente de [HabitsViewModel] y muestra:
- *      • Una vista de carga si el estado es Loading.
- *      • Un mensaje de error si ocurre algún problema.
- *      • Un estado vacío con invitación a agregar hábitos si no hay datos.
- *      • La lista de hábitos cuando el estado es Loaded.
- *  - Maneja eventos de usuario para:
- *      • Agregar un nuevo hábito (despliega [AddHabitModal]).
- *      • Editar un hábito existente (despliega [EditHabitModal]).
- *  - Incluye un enlace de texto “SABER MÁS” siempre visible en la parte inferior, que
- *    despliega un modal explicativo: “Los hábitos en modo reto se identifican con un 🔥”,
- *    precedido de un ícono redondeado.
- *
- * @see HabitsViewModel
- * @see AddHabitModal
- * @see EditHabitModal
- * @see ModalContainer
- */
-
 package com.app.tibibalance.ui.screens.habits
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Whatshot
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,99 +32,101 @@ import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.EmptyState
 import com.app.tibibalance.ui.components.utils.HabitList
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.AddHabitModal
 import com.app.tibibalance.ui.screens.habits.editHabitWizard.EditHabitModal
+import com.app.tibibalance.tutorial.rememberTutorialTarget
+import com.app.tibibalance.tutorial.TutorialOverlay
+import com.app.tibibalance.tutorial.TutorialViewModel
+import kotlinx.coroutines.flow.collect
 
-/**
- * @brief Pantalla principal de hábitos.
- *
- * Observa el estado `uiState` desde el [HabitsViewModel] y muestra:
- *  - Una vista de carga si el estado es Loading.
- *  - Un mensaje de error si ocurre algún error.
- *  - Un estado vacío con invitación a agregar hábitos si no hay datos (Empty).
- *  - La lista de hábitos cuando está Loaded.
- *
- * Además:
- *  - Maneja eventos para mostrar el modal de agregar hábito ([AddHabitModal]).
- *  - Al pulsar “Editar” en un hábito, muestra el modal de edición ([EditHabitModal]).
- *  - Siempre deja un enlace de texto “SABER MÁS” en la parte inferior. Al pulsarlo,
- *    despliega un modal que explica: “Los hábitos en modo reto se identifican con un 🔥”,
- *    precedido de un ícono redondeado de fuego.
- *
- * @param vm La instancia de [HabitsViewModel] proporcionada por Hilt.
- */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HabitsScreen(
     vm: HabitsViewModel = hiltViewModel()
 ) {
-    val tutorialVm: com.app.tibibalance.tutorial.TutorialViewModel = hiltViewModel()
-    // Estado local para controlar visibilidad del modal de “Agregar hábito”
+    val tutorialVm: TutorialViewModel = hiltViewModel()
+
+    // Estados locales para modales
     var showAdd by remember { mutableStateOf(false) }
-
-    // Estado local que guarda el ID del hábito que se está editando (o null si no hay ninguno)
     var editingId by remember { mutableStateOf<HabitId?>(null) }
-
-    // Estado local para controlar visibilidad del modal informativo “SABER MÁS”
     var showInfo by remember { mutableStateOf(false) }
 
-    // Observamos el estado de la UI desde el ViewModel
+    // Estado de UI del ViewModel de hábitos
     val ui by vm.uiState.collectAsState()
 
-    // Recogemos eventos (SideEffects) enviados por el ViewModel
+    // Paso actual de tutorial y target asociado
+    val currentStep by tutorialVm.currentStep.collectAsState()
+    val currentTargetId = currentStep?.targetId
+
+    // Escucha eventos del VM de hábitos
     LaunchedEffect(Unit) {
         vm.events.collect { event ->
             when (event) {
-                HabitsEvent.AddClicked -> {
-                    // El usuario pulsó “Agregar”, abrimos el modal
-                    showAdd = true
-                }
-                is HabitsEvent.ShowDetails -> {
-                    // El usuario pulsó “Editar” en un hábito, guardamos su ID para mostrar el modal de edición
-                    editingId = HabitId(event.habitId)
-                }
+                HabitsEvent.AddClicked -> showAdd = true
+                is HabitsEvent.ShowDetails -> editingId = HabitId(event.habitId)
             }
         }
     }
 
-    // Contenedor principal: fondo degradado y contenido
+    // Inicia el tutorial si no se ha visto aún
+    LaunchedEffect(Unit) {
+        tutorialVm.startTutorialIfNeeded(Screen.Habits)
+    }
+
+    // ─── Contenido de la pantalla con los targets para el tutorial ─────────────────
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(gradient())
-    ) {
-        androidx.compose.material3.IconButton(onClick = { tutorialVm.restartTutorial() }, modifier = Modifier.align(Alignment.TopEnd)) {
-            androidx.compose.material3.Icon(Icons.Default.Help, contentDescription = "Ayuda")
-        }
-        // Mostrar contenido según el estado actual de la UI
-        when (val state = ui) {
-            HabitsUiState.Loading -> {
-                // Mostrar indicador de carga
-                Centered("Cargando…")
-            }
-            is HabitsUiState.Error -> {
-                // Mostrar mensaje de error
-                Centered(state.msg)
-            }
-            HabitsUiState.Empty -> {
-                // No hay hábitos: invitación a agregar uno nuevo
-                EmptyState(onAdd = vm::onAddClicked)
-            }
-            is HabitsUiState.Loaded -> {
-                // Mostrar lista de hábitos
-                HabitList(
-                    habits = state.data,
-                    onCheck = { habitId, checked ->
-                        // TODO: gestionar marcación de hábito completado
-                    },
-                    onEdit = vm::onHabitClicked,
-                    onAdd = vm::onAddClicked
+            // Paso 0: resaltar toda el área de la lista
+            .then(
+                rememberTutorialTarget(
+                    targetId = "habits_tab",
+                    currentTargetId = currentTargetId,
+                    onPositioned = tutorialVm::updateTargetBounds
                 )
-            }
+            )
+    ) {
+        when (val state = ui) {
+            HabitsUiState.Loading -> Centered("Cargando…")
+            is HabitsUiState.Error -> Centered(state.msg)
+            HabitsUiState.Empty -> EmptyState(onAdd = { showAdd = true })
+            is HabitsUiState.Loaded -> HabitList(
+                habits = state.data,
+                onEdit = vm::onHabitClicked,
+                onAdd = { showAdd = true }
+            )
         }
 
-        // Enlace de texto “SABER MÁS” siempre visible,
-        // alineado en la parte inferior centro con un padding
+        // Paso 1: FAB de añadir hábito, con target para el tutorial
+        FloatingActionButton(
+            onClick = { showAdd = true },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+                .then(
+                    rememberTutorialTarget(
+                        targetId = "habit_fab",
+                        currentTargetId = currentTargetId,
+                        onPositioned = tutorialVm::updateTargetBounds
+                    )
+                )
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Añadir hábito")
+        }
+
+        // Botón de ayuda: reinicia tutorial en cualquier momento
+        IconButton(
+            onClick = { tutorialVm.restartTutorial(Screen.Habits) },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        ) {
+            Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Ayuda")
+        }
+
+        // Link “SABER MÁS” siempre visible
         TextButtonLink(
             text = "SABER MÁS",
             onClick = { showInfo = true },
@@ -168,12 +136,19 @@ fun HabitsScreen(
         )
     }
 
-    // Modal para agregar un nuevo hábito (si showAdd == true)
+    // Overlay de tutorial que dibuja highlights y, en el paso 1, el mini-video Lottie
+    TutorialOverlay(viewModel = tutorialVm) {
+        // (no hace falta contenido aquí; todo está en el Box de arriba)
+    }
+
+    // ─── Modales ─────────────────────────────────────────────────────────────────
+
+    // Modal de Agregar hábito
     if (showAdd) {
         AddHabitModal(onDismiss = { showAdd = false })
     }
 
-    // Modal para editar un hábito existente (si editingId != null)
+    // Modal de Editar hábito
     editingId?.let { habitId ->
         EditHabitModal(
             habitId = habitId,
@@ -181,38 +156,34 @@ fun HabitsScreen(
         )
     }
 
-    // Modal informativo “SABER MÁS” (si showInfo == true)
+    // Modal informativo “SABER MÁS”
     if (showInfo) {
-        ModalContainer(
-            onDismissRequest = { showInfo = false }
-        ) {
+        ModalContainer(onDismissRequest = { showInfo = false }) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Ícono redondeado de fuego (flame) antes del texto
                 Box(
                     modifier = Modifier
-                        .size(72.dp) // Tamaño del contenedor circular
-                        .clip(CircleShape) // Recorta en círculo
-                        .background(MaterialTheme.colorScheme.primaryContainer), // Fondo circular
-                    contentAlignment = Alignment.Center // Centrar el icono dentro del círculo
+                        .size(72.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Whatshot,
+                        imageVector = Icons.Filled.Whatshot,
                         contentDescription = "Ícono de fuego",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(36.dp) // Tamaño del icono
+                        modifier = Modifier.size(36.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Texto explicativo sobre los hábitos en modo reto
                 Text(
-                    text = "Los hábitos en modo \n reto se identifican con un 🔥",
+                    text = "Los hábitos en Modo Reto se identifican con un 🔥",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -227,7 +198,6 @@ fun HabitsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Botón para cerrar el modal
                 Button(
                     onClick = { showInfo = false },
                     modifier = Modifier.align(Alignment.End)

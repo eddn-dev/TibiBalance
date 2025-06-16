@@ -8,48 +8,63 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.tibibalance.R
+import com.app.domain.ids.HabitId
 import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.NotificationStep
+import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ModalConfigNotification(
-    habitId: com.app.domain.ids.HabitId,
+    habitId  : HabitId,
     onDismiss: () -> Unit,
     vm: EditNotifViewModel = hiltViewModel()
 ) {
+    /* ───── carga inicial ───── */
     LaunchedEffect(habitId) { vm.load(habitId) }
 
-    val form by vm.form.collectAsState()
+    /* ───── state ───── */
+    val form   by vm.form.collectAsState()
     val saving by vm.saving.collectAsState()
-    val logro by vm.logroDesbloqueado.collectAsState()
+
+    /* ───── manejo de logros ───── */
+    var currentAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
+    LaunchedEffect(Unit) {
+        vm.unlocked.collect { ach ->
+            if (currentAch == null) currentAch = ach          // muestra el primero
+        }
+    }
 
     val scope = rememberCoroutineScope()
 
+    /* ───── contenedor modal ───── */
     ModalContainer(
         onDismissRequest = { if (!saving) onDismiss() },
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = LocalConfiguration.current.screenHeightDp.dp * .85f)
+            .heightIn(max = LocalWindowInfo.current.containerSize.height.dp * .85f)
     ) {
         Column(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
+            /* paso único: configuración de notificación */
             Box(Modifier.weight(1f)) {
-                NotificationStep(form = form, onForm = vm::onFormChanged)
+                NotificationStep(form, vm::onFormChanged)
             }
 
+            /* botones */
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -57,43 +72,45 @@ fun ModalConfigNotification(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SecondaryButton(
-                    text = "Cancelar",
-                    onClick = onDismiss,
-                    enabled = !saving,
+                    text     = "Cancelar",
+                    enabled  = !saving,
+                    onClick  = onDismiss,
                     modifier = Modifier.weight(1f)
                 )
                 PrimaryButton(
-                    text = if (saving) "Guardando…" else "Guardar",
-                    onClick = {
+                    text     = if (saving) "Guardando…" else "Guardar",
+                    enabled  = !saving && form.notify && form.notifTimes.isNotEmpty(),
+                    onClick  = {
                         scope.launch {
-                            vm.guardarYVerificarLogro()
+                            val unlocked = vm.save()   // devuelve nº logros
+                            if (unlocked == 0) onDismiss()          // nada que mostrar
                         }
                     },
-                    enabled = !saving && form.notify && form.notifTimes.isNotEmpty(),
                     modifier = Modifier.weight(1f)
                 )
             }
         }
     }
 
-    // Modal de logro desbloqueado
-    logro?.let {
+    /* ───── diálogo de logro (encadena) ───── */
+    currentAch?.let { ach ->
         ModalAchievementDialog(
-            visible = true,
+            visible   = true,
             iconResId = R.drawable.ic_tibio_reloj,
-            title = "¡Logro desbloqueado!",
-            message = "${it.name}\n${it.description}",
+            title     = "¡Logro desbloqueado!",
+            message   = "${ach.name}\n${ach.description}",
             primaryButton = DialogButton("Aceptar") {
-                vm.ocultarLogro()
-                onDismiss() // cerrar al aceptar el logro
+                val next = vm.popNextAchievement()
+                if (next != null) {
+                    currentAch = next                // siguiente de la cola
+                } else {
+                    currentAch = null                // cola vacía
+                    scope.launch {
+                        awaitFrame()                 // espera a que desaparezca la scrim
+                        onDismiss()                  // ahora sí cierra correctamente
+                    }
+                }
             }
         )
-    }
-
-    // Si no hubo logro, cerrar después de guardar
-    LaunchedEffect(logro) {
-        if (logro == null && vm.wasSaveTriggered && !saving) {
-            onDismiss()
-        }
     }
 }

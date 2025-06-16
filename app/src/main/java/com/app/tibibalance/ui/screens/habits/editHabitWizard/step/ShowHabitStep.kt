@@ -5,6 +5,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,14 +42,18 @@ fun ShowHabitStep(
         habit.meta.createdAt
             ?.toLocalDateTime(TimeZone.currentSystemDefault())
             ?.date
-            ?.toJavaLocalDate()         // ⇐ conversión a java.time.LocalDate
+            ?.toJavaLocalDate()
             ?.format(dateFmt) ?: "—"
     }
 
+    /*  Scroll state  */
+    val scrollState = rememberScrollState()
+
     /* UI ------------------------------------------------------------- */
     Column(
-        Modifier
-            .fillMaxWidth()
+        modifier = Modifier
+            .fillMaxSize()                 // ocupa todo el alto del step
+            .verticalScroll(scrollState)   // ← ¡scroll!
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -86,6 +92,7 @@ fun ShowHabitStep(
         )
     }
 }
+
 
 /* helper Repeat → texto legible ------------------------------------- */
 @RequiresApi(Build.VERSION_CODES.O)

@@ -7,6 +7,7 @@ package com.app.data.remote.firebase
 
 import com.app.domain.common.SyncMeta
 import com.app.domain.entities.EmotionEntry
+import com.app.domain.enums.Emotion                    // 🆕
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import javax.inject.Inject
@@ -29,18 +30,23 @@ class EmotionFirestoreService @Inject constructor(
         val snap = col(uid).get().await()
         return snap.documents.mapNotNull { doc ->
             val dateStr = doc.getString("date") ?: return@mapNotNull null
-            val emojiId = doc.getString("emojiId") ?: return@mapNotNull null
+
+            /* ⚠️  Compatibilidad: primero intenta “mood”, si no “emojiId” */
+            val moodStr = doc.getString("mood") ?: doc.getString("emojiId")
+            ?: return@mapNotNull null
+            val mood = runCatching { Emotion.valueOf(moodStr) }.getOrNull()
+                ?: return@mapNotNull null         // ignora registros corruptos
 
             EmotionEntry(
-                date    = LocalDate.parse(dateStr),
-                emojiId = emojiId,
+                date = LocalDate.parse(dateStr),
+                mood = mood,
                 meta = SyncMeta(
-                    createdAt  = doc.getString("createdAt")?.let(Instant::parse)
+                    createdAt   = doc.getString("createdAt")?.let(Instant::parse)
                         ?: Instant.DISTANT_PAST,
-                    updatedAt  = doc.getString("updatedAt")?.let(Instant::parse)
+                    updatedAt   = doc.getString("updatedAt")?.let(Instant::parse)
                         ?: Instant.DISTANT_PAST,
-                    deletedAt  = doc.getString("deletedAt")?.let(Instant::parse),
-                    pendingSync = false          // viene de Firestore → ya sincronizado
+                    deletedAt   = doc.getString("deletedAt")?.let(Instant::parse),
+                    pendingSync = false            // viene de Firestore
                 )
             )
         }
@@ -48,17 +54,20 @@ class EmotionFirestoreService @Inject constructor(
 
     /* ───── escrituras ────────────────────────── */
 
-    /** Sube/actualiza un registro emocional. */
+    /** Sube/actualiza un registro emocional (idempotente). */
     suspend fun push(uid: String, entry: EmotionEntry) {
         val payload = mapOf(
             "date"      to entry.date.toString(),
-            "emojiId"   to entry.emojiId,
+            "mood"      to entry.mood.name,        // ← enum → String
+            // Campo legado para apps antiguas (opcional; elimina si no lo necesitas)
+            "emojiId"   to entry.mood.name,
             "createdAt" to entry.meta.createdAt.toString(),
             "updatedAt" to entry.meta.updatedAt.toString(),
             "deletedAt" to entry.meta.deletedAt?.toString()
         )
+
         col(uid).document(entry.date.toString())
-            .set(payload, SetOptions.merge())           // merge evita pisar campos futuros
+            .set(payload, SetOptions.merge())      // merge evita pisar campos futuros
             .await()
     }
 }
