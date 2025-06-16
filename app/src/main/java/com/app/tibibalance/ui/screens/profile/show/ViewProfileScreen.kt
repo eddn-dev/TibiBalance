@@ -4,16 +4,7 @@ package com.app.tibibalance.ui.screens.profile.show
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -23,26 +14,39 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.app.tibibalance.R
+import com.app.tibibalance.ui.components.buttons.AchievementAccessItem
 import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
 import com.app.tibibalance.ui.components.containers.ProfileContainer
-import com.app.tibibalance.ui.components.buttons.AchievementAccessItem
-import androidx.compose.ui.platform.testTag
-
-import com.app.tibibalance.ui.components.inputs.InputText
 import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.texts.Subtitle
-import com.app.tibibalance.ui.navigation.Screen
 import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.navigation.Screen
 import kotlinx.datetime.toJavaLocalDate
 import java.time.format.DateTimeFormatter
 
+/* ---------- Nuevo composable reutilizable ----------- */
+@Composable
+private fun InfoItem(
+    label : String,
+    value : String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier.fillMaxWidth()) {
+        Subtitle(text = label)
+        Spacer(Modifier.height(4.dp))
+        Description(text = value)
+    }
+}
+
+/* ---------------- Pantalla principal ---------------- */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ViewProfileScreen(
@@ -58,11 +62,9 @@ fun ViewProfileScreen(
     ) {
         when {
             ui.loading -> Centered("Cargando…")
-
             ui.error != null -> Centered(ui.error!!)
-
-            ui.user?.displayName.isNullOrBlank() || ui.user?.email.isNullOrBlank() -> Centered("Cargando perfil…")
-
+            ui.user?.displayName.isNullOrBlank() || ui.user?.email.isNullOrBlank() ->
+                Centered("Cargando perfil…")
             ui.user != null -> ProfileContent(
                 user = ui.user!!,
                 onEdit = { navController.navigate(Screen.EditProfile.route) },
@@ -81,6 +83,9 @@ private fun ProfileContent(
     onSignOut    : () -> Unit,
     navController: NavHostController
 ) {
+    val dateFmt   = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val birthDate = user.birthDate.toJavaLocalDate().format(dateFmt)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,6 +98,7 @@ private fun ProfileContent(
 
         FormContainer {
 
+            /* ---- Foto de perfil ---- */
             if (user.photoUrl != null) {
                 AsyncImage(
                     model = user.photoUrl,
@@ -101,8 +107,7 @@ private fun ProfileContent(
                         .size(120.dp)
                         .clip(CircleShape),
                 )
-            }
-            else {
+            } else {
                 ProfileContainer(
                     imageResId = R.drawable.avatar_placeholder,
                     size = 120.dp,
@@ -110,53 +115,31 @@ private fun ProfileContent(
                         .size(120.dp)
                         .clip(CircleShape),
                 )
-                Spacer(Modifier.height(10.dp))
             }
 
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(12.dp))
 
-            /* ---- nombre ---- */
+            /* ---- Nombre ---- */
             Subtitle(text = user.displayName ?: "Sin nombre")
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
-            /* ---- fecha nacimiento ---- */
-            Subtitle(text = "Fecha de nacimiento:")
-            val dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            InputText(
-                value         = user.birthDate.toJavaLocalDate().format(dateFmt),
-                onValueChange = {},            // sólo lectura
-                modifier      = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            )
+            /* ---- Datos básicos (etiqueta + valor) ---- */
+            InfoItem(label = "Fecha de nacimiento:", value = birthDate)
+            Spacer(Modifier.height(16.dp))
+            InfoItem(label = "Correo electrónico:",   value = user.email)
 
-            Spacer(Modifier.height(10.dp))
-
-            /* ---- correo ---- */
-            Subtitle(text = "Correo electrónico:")
-            InputText(
-                value         = user.email,
-                onValueChange = {},
-                modifier      = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            )
-
-            Spacer(Modifier.height(22.dp))
-
+            Spacer(Modifier.height(28.dp))
 
             AchievementAccessItem(
-                resId = R.drawable.ic_tibio_champion, // ← tu recurso en drawable
+                resId = R.drawable.ic_tibio_champion,
                 label = "Ver logros",
-                onClick = {navController.navigate(Screen.Achievements.route)}
+                onClick = { navController.navigate(Screen.Achievements.route) }
             )
 
+            Spacer(Modifier.height(28.dp))
 
-            Spacer(Modifier.height(22.dp))
-
-
-            /* ---- botones ---- */
+            /* ---- Botones ---- */
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -170,8 +153,7 @@ private fun ProfileContent(
                 ImageContainer(
                     resId = R.drawable.ic_viewprofile,
                     contentDescription = "Cerrar sesión",
-                    modifier = Modifier
-                        .size(120.dp)
+                    modifier = Modifier.size(120.dp)
                 )
             }
         }

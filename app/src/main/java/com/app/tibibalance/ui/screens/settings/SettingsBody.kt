@@ -59,7 +59,6 @@ fun SettingsBody(
     /* Preferencias */
     onChangeTheme      : (ThemeMode) -> Unit,
     onToggleGlobalNotif: (Boolean) -> Unit,
-    onToggleTTS        : (Boolean) -> Unit,
     onSyncAccount      : () -> Unit,
     /* Sesión */
     onSignOut          : () -> Unit,
@@ -141,7 +140,7 @@ fun SettingsBody(
             )
             SettingItem(
                 leadingIcon = { Icon24(Icons.Filled.Watch) },
-                text        = "Administrar dispositivos de monitoreo",
+                text        = "Conexión con el reloj",
                 onClick     = onDevices
             )
             SettingItem(
@@ -184,15 +183,6 @@ fun SettingsBody(
                 onCheckedChange  = {
                     notifGlob = it
                     onToggleGlobalNotif(it)
-                }
-            )
-            SwitchSettingItem(
-                leadingIcon      = { Icon24(Icons.Default.RecordVoiceOver) },
-                text             = "Texto a voz (TTS)",
-                checked          = tts,
-                onCheckedChange  = {
-                    tts = it
-                    onToggleTTS(it)
                 }
             )
         }

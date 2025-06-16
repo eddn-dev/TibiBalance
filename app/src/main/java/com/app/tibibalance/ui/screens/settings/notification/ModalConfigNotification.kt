@@ -5,6 +5,8 @@ package com.app.tibibalance.ui.screens.settings.notification
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -18,6 +20,7 @@ import com.app.tibibalance.ui.components.buttons.SecondaryButton
 import com.app.tibibalance.ui.components.containers.ModalContainer
 import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
+import com.app.tibibalance.ui.components.dialogs.ModalInfoDialog
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.NotificationStep
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
 import kotlinx.coroutines.android.awaitFrame
@@ -26,28 +29,26 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ModalConfigNotification(
-    habitId  : HabitId,
+    habitId : HabitId,
     onDismiss: () -> Unit,
     vm: EditNotifViewModel = hiltViewModel()
 ) {
-    /* ───── carga inicial ───── */
+    /* -------- carga -------- */
     LaunchedEffect(habitId) { vm.load(habitId) }
 
-    /* ───── state ───── */
-    val form   by vm.form.collectAsState()
-    val saving by vm.saving.collectAsState()
+    val form    by vm.form.collectAsState()
+    val saving  by vm.saving.collectAsState()
+    val savedOk by vm.savedOk.collectAsState()      // 🆕
 
-    /* ───── manejo de logros ───── */
+    /* -------- cola de logros -------- */
     var currentAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
     LaunchedEffect(Unit) {
-        vm.unlocked.collect { ach ->
-            if (currentAch == null) currentAch = ach          // muestra el primero
-        }
+        vm.unlocked.collect { ach -> if (currentAch == null) currentAch = ach }
     }
 
     val scope = rememberCoroutineScope()
 
-    /* ───── contenedor modal ───── */
+    /* -------- bottom-sheet -------- */
     ModalContainer(
         onDismissRequest = { if (!saving) onDismiss() },
         modifier = Modifier
@@ -59,40 +60,52 @@ fun ModalConfigNotification(
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
         ) {
-            /* paso único: configuración de notificación */
             Box(Modifier.weight(1f)) {
                 NotificationStep(form, vm::onFormChanged)
             }
 
-            /* botones */
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                Modifier.fillMaxWidth().padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SecondaryButton(
                     text     = "Cancelar",
-                    enabled  = !saving,
                     onClick  = onDismiss,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enabled  = !saving
                 )
                 PrimaryButton(
-                    text     = if (saving) "Guardando…" else "Guardar",
-                    enabled  = !saving && form.notify && form.notifTimes.isNotEmpty(),
-                    onClick  = {
-                        scope.launch {
-                            val unlocked = vm.save()   // devuelve nº logros
-                            if (unlocked == 0) onDismiss()          // nada que mostrar
-                        }
-                    },
-                    modifier = Modifier.weight(1f)
+                    text      = if (saving) "Guardando…" else "Guardar",
+                    onClick   = { scope.launch { vm.save() } },
+                    modifier  = Modifier.weight(1f),
+                    enabled   = !saving && form.notify && form.notifTimes.isNotEmpty(),
+                    isLoading = saving
                 )
             }
         }
     }
 
-    /* ───── diálogo de logro (encadena) ───── */
+    /* -------- modal de éxito -------- */
+    if (savedOk) {
+        ModalInfoDialog(
+            visible = true,
+            icon    = Icons.Default.Check,
+            title   = "¡Cambios guardados!",
+            message = "La configuración de notificaciones se actualizó correctamente.",
+            primaryButton = DialogButton("Aceptar") {
+                vm.consumeSaved()             // oculta este modal
+                currentAch = vm.popNextAchievement() // muestra 1er logro si lo hay
+                if (currentAch == null) {     // no hay logros → cerrar hoja
+                    scope.launch {
+                        awaitFrame()
+                        onDismiss()
+                    }
+                }
+            }
+        )
+    }
+
+    /* -------- diálogo-logro en cadena -------- */
     currentAch?.let { ach ->
         ModalAchievementDialog(
             visible   = true,
@@ -102,12 +115,12 @@ fun ModalConfigNotification(
             primaryButton = DialogButton("Aceptar") {
                 val next = vm.popNextAchievement()
                 if (next != null) {
-                    currentAch = next                // siguiente de la cola
-                } else {
-                    currentAch = null                // cola vacía
+                    currentAch = next          // siguiente de la cola
+                } else {                       // cola vacía
+                    currentAch = null
                     scope.launch {
-                        awaitFrame()                 // espera a que desaparezca la scrim
-                        onDismiss()                  // ahora sí cierra correctamente
+                        awaitFrame()
+                        onDismiss()
                     }
                 }
             }

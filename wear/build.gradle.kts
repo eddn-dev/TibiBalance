@@ -16,7 +16,7 @@ plugins {
 
 android {
     namespace   = "com.app.wear"
-    compileSdk  = 35
+    compileSdk  = 36
 
     defaultConfig {
         applicationId    = "com.app.wear"
@@ -56,48 +56,38 @@ android {
 }
 
 dependencies {
-    /* ── Core & Lifecycle ───────────────────────────── */
+    implementation(platform(libs.compose.bom))
+
+    /* Core + lifecycle */
     implementation(libs.androidx.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
 
-    /* ── Jetpack Compose for Wear OS ────────────────── */
-    implementation(platform(libs.compose.bom))            // sigues usando el BOM
-    // Wear-specific APIs ↓
-    implementation(libs.wear.compose.foundation)          // androidx.wear.compose:compose-foundation:1.4.1
-    implementation(libs.wear.compose.material)            // androidx.wear.compose:compose-material:1.4.1
-    implementation(libs.wear.compose.navigation)          // androidx.wear.compose:compose-navigation:1.4.1
-    debugImplementation(libs.wear.compose.ui.tooling)     // ui-tooling para Wear
+    /* Compose Wear */
+    implementation(libs.wear.compose.foundation)
+    implementation(libs.wear.compose.material)
+    implementation(libs.wear.compose.navigation)
     implementation(libs.wear.compose.material3)
+    debugImplementation(libs.wear.compose.ui.tooling)
 
+    /* Health Services 1.1.0 */
+    implementation(libs.health.services.client)
+    implementation(libs.androidx.activity.ktx)
+    /* Data Layer */
+    implementation(libs.google.play.services.wearable)
 
-    /* ── Health Services ─────────────────────────────── */
-    implementation(libs.health.services.client)           // androidx.health:health-services-client:1.0.0
+    /* Coroutines */
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.guava)
 
-    /* ── Firebase (sin cambios) ─────────────────────── */
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.auth.ktx)
+    /* kotlinx-datetime & serialization */
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinxSerializationJson)
 
-    /* ── Hilt ────────────────────────────────────────── */
+    /* Hilt */
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation)
-
-    /* ── Corrutinas ─────────────────────────────────── */
-    implementation(libs.kotlinx.coroutines.core)          // 1.10.2
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.10.2")
-
-    /* ── Wear Data Layer ────────────────────────────── */
-    implementation(libs.google.play.services.wearable)
-    implementation(libs.health.services.client)   // estable
-    implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.guava)
-
-
-    /* ── Serialización JSON ─────────────────────────── */
-    implementation(libs.kotlinxSerializationJson)
-
-    /* ── ViewModel Compose ──────────────────────────── */
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     /* ── Tests (sin cambios) ────────────────────────── */
     testImplementation(libs.junit4)
@@ -105,6 +95,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
+
 
     implementation("io.github.pseudoankit:coachmark:3.0.1")
 }

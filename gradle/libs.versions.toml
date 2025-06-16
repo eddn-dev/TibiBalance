@@ -2,7 +2,7 @@
 # Version catalog • TibiBalance 2025
 ####################################
 [versions]
-agp                   = "8.8.2"
+agp                   = "8.9.1"
 androidDatabaseSqlcipher = "4.5.4"
 json = "20231013"
 kotlin                = "2.0.21"
@@ -40,8 +40,10 @@ accompanist           = "0.37.3"
 spinwheel             = "1.1.1"
 tapTargetCompose      = "1.2.1"
 playServicesWearable  = "19.0.0"
-healthServices        = "1.0.0"
+healthServices        = "1.1.0-alpha05"
 wearCompose           = "1.4.1"
+activity              = "1.8.2"
+
 
 # --------------------------------------------------------
 # Plugins (👈 añadidos los que faltaban)
@@ -79,7 +81,7 @@ lifecycle-runtime-ktx    = { group = "androidx.lifecycle",         name = "lifec
 kotlinx-datetime         = { group = "org.jetbrains.kotlinx",      name = "kotlinx-datetime",         version.ref = "kotlinxDatetime" }
 kotlinx-coroutines-core  = { group = "org.jetbrains.kotlinx",      name = "kotlinx-coroutines-core",  version.ref = "kotlinxCoroutines" }
 kotlinxSerializationJson = { group = "org.jetbrains.kotlinx",      name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 compose-bom                = { group = "androidx.compose",             name = "compose-bom",             version.ref = "composeBom" }
 activity-compose           = { group = "androidx.activity",            name = "activity-compose",        version.ref = "activityCompose" }
 compose-material3          = { group = "androidx.compose.material3",   name = "material3" }
@@ -127,7 +129,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 hilt-work        = { group = "androidx.hilt", name = "hilt-work",         version = "1.2.0" }
-
+health-connect-client = { group = "androidx.health.connect", name = "connect-client", version = "1.1.0-rc02" }
 [bundles]
 compose = [
     "compose-bom",

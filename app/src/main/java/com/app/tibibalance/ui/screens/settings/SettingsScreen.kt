@@ -103,7 +103,6 @@ private fun SettingsContent(
 ) {
     val tutorialVm: TutorialViewModel = hiltViewModel()
     val step by tutorialVm.currentStep.collectAsState()
-    val currentTargetId = step?.targetId
 
     // Inicia el tutorial si es necesario
     LaunchedEffect(Unit) {
@@ -135,7 +134,6 @@ private fun SettingsContent(
             onConfigureNotis = onConfigureNotis,
             onChangeTheme = onChangeTheme,
             onToggleGlobalNotif = onToggleGlobalNotif,
-            onToggleTTS = onToggleTTS,
             onSignOut = onSignOut,
             signingOut = signingOut,
             onDeleteAccount = vm::reauthenticateAndDelete,

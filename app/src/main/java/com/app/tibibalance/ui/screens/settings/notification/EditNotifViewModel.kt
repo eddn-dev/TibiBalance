@@ -34,7 +34,7 @@ class EditNotifViewModel @Inject constructor(
     private val auth            : AuthRepository
 ) : ViewModel() {
 
-    /* ---------- carga del hábito ---------- */
+    /* ---------- flujo del hábito ---------- */
     private val habitId = MutableStateFlow<HabitId?>(null)
     private val habit   = habitId.filterNotNull().flatMapLatest { getHabit(it) }
 
@@ -42,35 +42,35 @@ class EditNotifViewModel @Inject constructor(
     private val _form = MutableStateFlow(HabitForm())
     val   form : StateFlow<HabitForm> = _form
 
-    /* ---------- flags ---------- */
-    private val _saving = MutableStateFlow(false)
-    val   saving: StateFlow<Boolean>  = _saving
+    /* ---------- estados UI ---------- */
+    private val _saving   = MutableStateFlow(false)
+    val   saving  : StateFlow<Boolean> = _saving
+
+    private val _savedOk = MutableStateFlow(false)   // 🆕
+    val   savedOk: StateFlow<Boolean> = _savedOk
+    fun consumeSaved() { _savedOk.value = false }
 
     /* ---------- cola de logros ---------- */
-    private val pending = mutableListOf<AchievementUnlocked>()
-    private val _unlocked = MutableSharedFlow<AchievementUnlocked>(extraBufferCapacity = 1)
+    private val pending    = mutableListOf<AchievementUnlocked>()
+    private val _unlocked  = MutableSharedFlow<AchievementUnlocked>(extraBufferCapacity = 1)
     val   unlocked: SharedFlow<AchievementUnlocked> = _unlocked
 
-    fun hasPendingAchievements() : Boolean = pending.isNotEmpty()
-
-    /* ---------- API ---------- */
+    /* ---------- helpers ---------- */
     fun load(id: HabitId) = viewModelScope.launch {
         habitId.value = id
         habit.filterNotNull().first().let { _form.value = it.toForm() }
     }
-
     fun onFormChanged(f: HabitForm) { _form.value = f }
-
     fun popNextAchievement(): AchievementUnlocked? = pending.removeFirstOrNull()
 
-    suspend  fun save() : Int {
-        val original = habit.first() ?: return 0
+    /* ---------- guardar ---------- */
+    suspend fun save() {
+        val original = habit.first() ?: return
         _saving.value = true
 
         val updated = _form.value
             .toHabit(original.id, now = Clock.System.now())
             .copy(
-                /* bloqueamos todo salvo notifConfig */
                 name        = original.name,
                 description = original.description,
                 category    = original.category,
@@ -86,18 +86,17 @@ class EditNotifViewModel @Inject constructor(
             )
 
         updateHabit(updated)
-        var unlocked = 0
-        /* --- motor de logros --- */
+
         if (updated.notifConfig.enabled && updated.notifConfig.times.isNotEmpty()) {
             checkAchievement(AchievementEvent.NotifCustomized).forEach { ach ->
                 val uiAch = ach.toUi()
                 pending += uiAch
                 _unlocked.emit(uiAch)
-                unlocked++
             }
         }
+
         _saving.value = false
-        return unlocked
+        _savedOk.value = true                // 🆕 dispara modal de éxito
     }
 
     private fun Achievement.toUi() =
