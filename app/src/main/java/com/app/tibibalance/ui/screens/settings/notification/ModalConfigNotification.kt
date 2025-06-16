@@ -20,6 +20,7 @@ import com.app.tibibalance.ui.components.dialogs.DialogButton
 import com.app.tibibalance.ui.components.dialogs.ModalAchievementDialog
 import com.app.tibibalance.ui.screens.habits.addHabitWizard.step.NotificationStep
 import com.app.tibibalance.ui.screens.settings.achievements.AchievementUnlocked
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,41 +30,45 @@ fun ModalConfigNotification(
     onDismiss: () -> Unit,
     vm: EditNotifViewModel = hiltViewModel()
 ) {
-    /* --- carga --- */
+    /* ───── carga inicial ───── */
     LaunchedEffect(habitId) { vm.load(habitId) }
 
-    /* --- estados --- */
+    /* ───── state ───── */
     val form   by vm.form.collectAsState()
     val saving by vm.saving.collectAsState()
 
-    /* --- logro actual a mostrar --- */
+    /* ───── manejo de logros ───── */
     var currentAch by remember { mutableStateOf<AchievementUnlocked?>(null) }
     LaunchedEffect(Unit) {
         vm.unlocked.collect { ach ->
-            if (currentAch == null) currentAch = ach
+            if (currentAch == null) currentAch = ach          // muestra el primero
         }
     }
 
-    /* --- flag para cierre automático cuando NO hay logro --- */
-    var savePressed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    /* ───── contenedor modal ───── */
     ModalContainer(
         onDismissRequest = { if (!saving) onDismiss() },
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(max = LocalWindowInfo.current.containerSize.height.dp * .85f)
     ) {
-        Column(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-
-            /* Paso notificaciones */
+        Column(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
+            /* paso único: configuración de notificación */
             Box(Modifier.weight(1f)) {
                 NotificationStep(form, vm::onFormChanged)
             }
 
-            /* Botones */
+            /* botones */
             Row(
-                Modifier.fillMaxWidth().padding(8.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SecondaryButton(
@@ -76,8 +81,10 @@ fun ModalConfigNotification(
                     text     = if (saving) "Guardando…" else "Guardar",
                     enabled  = !saving && form.notify && form.notifTimes.isNotEmpty(),
                     onClick  = {
-                        savePressed = true
-                        scope.launch { vm.save() }
+                        scope.launch {
+                            val unlocked = vm.save()   // devuelve nº logros
+                            if (unlocked == 0) onDismiss()          // nada que mostrar
+                        }
                     },
                     modifier = Modifier.weight(1f)
                 )
@@ -85,32 +92,25 @@ fun ModalConfigNotification(
         }
     }
 
-    /* --- diálogo logro (cadena) --- */
+    /* ───── diálogo de logro (encadena) ───── */
     currentAch?.let { ach ->
         ModalAchievementDialog(
-            visible      = true,
-            iconResId    = R.drawable.ic_tibio_reloj,
-            title        = "¡Logro desbloqueado!",
-            message      = "${ach.name}\n${ach.description}",
+            visible   = true,
+            iconResId = R.drawable.ic_tibio_reloj,
+            title     = "¡Logro desbloqueado!",
+            message   = "${ach.name}\n${ach.description}",
             primaryButton = DialogButton("Aceptar") {
                 val next = vm.popNextAchievement()
-                if (next != null) currentAch = next
-                else {
-                    currentAch = null
-                    onDismiss()     // sin logros pendientes → cerrar modal
+                if (next != null) {
+                    currentAch = next                // siguiente de la cola
+                } else {
+                    currentAch = null                // cola vacía
+                    scope.launch {
+                        awaitFrame()                 // espera a que desaparezca la scrim
+                        onDismiss()                  // ahora sí cierra correctamente
+                    }
                 }
             }
         )
-    }
-
-    /* --- cierre automático si NO hubo logro --- */
-    LaunchedEffect(saving, currentAch, savePressed) {
-        if (savePressed && !saving &&
-            currentAch == null &&
-            !vm.hasPendingAchievements()
-        ) {
-            savePressed = false
-            onDismiss()
-        }
     }
 }

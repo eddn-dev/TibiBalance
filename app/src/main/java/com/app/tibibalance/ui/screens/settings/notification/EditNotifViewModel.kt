@@ -3,6 +3,7 @@
 package com.app.tibibalance.ui.screens.settings.notification
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -62,8 +63,8 @@ class EditNotifViewModel @Inject constructor(
 
     fun popNextAchievement(): AchievementUnlocked? = pending.removeFirstOrNull()
 
-    fun save() = viewModelScope.launch {
-        val original = habit.first() ?: return@launch
+    suspend  fun save() : Int {
+        val original = habit.first() ?: return 0
         _saving.value = true
 
         val updated = _form.value
@@ -85,16 +86,18 @@ class EditNotifViewModel @Inject constructor(
             )
 
         updateHabit(updated)
-
+        var unlocked = 0
         /* --- motor de logros --- */
         if (updated.notifConfig.enabled && updated.notifConfig.times.isNotEmpty()) {
             checkAchievement(AchievementEvent.NotifCustomized).forEach { ach ->
                 val uiAch = ach.toUi()
                 pending += uiAch
-                _unlocked.emit(uiAch)          // emite el primero (o siguientes)
+                _unlocked.emit(uiAch)
+                unlocked++
             }
         }
         _saving.value = false
+        return unlocked
     }
 
     private fun Achievement.toUi() =
