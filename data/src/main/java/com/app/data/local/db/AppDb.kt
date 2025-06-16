@@ -31,11 +31,13 @@ import com.app.domain.entities.Achievement
         UserEntity::class, EmotionEntryEntity::class,
         DailyMetricsEntity::class, OnboardingStatusEntity::class,
         DailyTipEntity::class,
+        com.app.data.metrics.local.UserMetricsEntity::class,    // ← nueva entidad
         AchievementEntity::class,
     ],
-    version = 4,
+    version = 5,    // bump de 4 → 5
     exportSchema = true
 )
+
 @TypeConverters(
     DateTimeConverters::class, EnumConverters::class,
     IdConverters::class, RepeatConverters::class
@@ -48,6 +50,7 @@ abstract class AppDb : RoomDatabase() {
     abstract fun metricsDao()       : DailyMetricsDao
     abstract fun onboardingDao()    : OnboardingStatusDao
     abstract fun dailyTipDao()      : DailyTipDao
+    abstract fun userMetricsDao(): com.app.data.metrics.local.UserMetricsDao
     abstract fun achievementDao()   : AchievementDao
 }
 
