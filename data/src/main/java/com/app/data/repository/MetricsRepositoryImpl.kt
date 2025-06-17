@@ -24,9 +24,16 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toKotlinInstant
 import kotlinx.datetime.todayIn
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -74,19 +81,32 @@ class MetricsRepositoryImpl @Inject constructor(
         }
 
         /** Helper: última muestra de FC (≤30 s atrás) */
-        suspend fun latestHr(): Pair<Int?, Long> = withContext(io) {
-            val now = Clock.System.now()
-            val resp = hcClient.readRecords(
+        /* ───── última muestra de frecuencia cardíaca (< 30 s) ──────────── */
+        suspend fun latestHr(
+            hcClient: HealthConnectClient,
+            io: kotlin.coroutines.CoroutineContext = Dispatchers.IO
+        ): Pair<Int?, Long> = withContext(io) {
+            val now        = Clock.System.now()
+            val startJava  = now.minus(30.seconds).toJavaInstant()          // kotlin → java
+            val range      = TimeRangeFilter.after(startJava)               // :contentReference[oaicite:5]{index=5}
+
+            val rec = hcClient.readRecords(
                 ReadRecordsRequest(
                     recordType      = HeartRateRecord::class,
-                    timeRangeFilter = TimeRangeFilter.after(now.minus(30.seconds)),
+                    timeRangeFilter = range,
                     pageSize        = 1
                 )
-            )                                                                 // :contentReference[oaicite:8]{index=8}
-            val rec  = resp.records.firstOrNull()
-            val bpm  = rec?.samples?.lastOrNull()?.beatsPerMinute?.roundToInt()
-            val age  = rec?.samples?.lastOrNull()?.time?.let { now - it }?.inWholeMilliseconds
-            bpm to (age ?: Long.MAX_VALUE)
+            ).records.firstOrNull()                                         // :contentReference[oaicite:6]{index=6}
+
+            val sample    = rec?.samples?.lastOrNull()
+            val bpm: Int? = sample?.beatsPerMinute?.toInt()                 // Long → Int :contentReference[oaicite:7]{index=7}
+            val ageMs     = sample?.time
+                ?.toKotlinInstant()                                         // java → kotlin
+                ?.let { now - it }
+                ?.inWholeMilliseconds
+                ?: Long.MAX_VALUE
+
+            bpm to ageMs
         }
 
         /* ① Primer snapshot inmediato */
