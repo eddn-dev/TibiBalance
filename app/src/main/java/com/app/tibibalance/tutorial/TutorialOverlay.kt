@@ -325,6 +325,7 @@ fun TutorialOverlay(
                         modifier = Modifier
                             .wrapContentSize()
                             .align(Alignment.Center)
+                            .padding(24.dp)
                     ) {
                         Column(
                             Modifier.padding(24.dp),
