@@ -361,44 +361,5 @@ fun TutorialOverlay(
                     }
                 }
             }
-       // }
-
-        // 5) Video modal
-        /*if (showVideo) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-                    .align(Alignment.Center)
-            ) {
-                Column(
-                    Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LottieAnimation(
-                        composition = composition,
-                        progress = progress,
-                        modifier = Modifier.size(300.dp)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    Button(
-                        onClick = {
-                            showVideo = false
-                            viewModel.finishTutorial()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text("Cerrar")
-                    }
-                }
-            }
-        }*/
     }
 }
