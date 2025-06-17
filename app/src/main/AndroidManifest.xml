@@ -6,6 +6,14 @@
 
     <!-- notificaciones – Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Health Connect – permisos de lectura -->
+    <uses-permission android:name="android.permission.health.READ_STEPS"/>
+    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"/>
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
+    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY"/>
+    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND"/>
+
     <application
         android:name=".TibiBalanceApp"
         android:allowBackup="true"
@@ -34,8 +42,9 @@
             android:theme="@style/Theme.TibiBalance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS"/>
             </intent-filter>
         </activity>
     </application>
