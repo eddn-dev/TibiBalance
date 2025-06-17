@@ -168,6 +168,10 @@ class TutorialViewModel @Inject constructor(
         Log.d("TutorialVM", "  EmotionsScreen = ${status.hasSeenTutorial_EmotionsScreen}")
         Log.d("TutorialVM", "  SettingsScreen = ${status.hasSeenTutorial_SettingsScreen}")
     }
+
+    fun hasNextStep(): Boolean {
+        return stepIndex + 1 < steps.size
+    }
 }
 
 /**

@@ -1,10 +1,13 @@
 /* ui/screens/settings/SettingsScreen.kt */
 package com.app.tibibalance.ui.screens.settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Help
@@ -17,12 +20,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.domain.entities.User
 import com.app.domain.enums.ThemeMode
+import com.app.tibibalance.R
 import com.app.tibibalance.tutorial.TutorialOverlay
 import com.app.tibibalance.tutorial.TutorialViewModel
 import com.app.tibibalance.ui.components.buttons.SwitchToggle
@@ -32,6 +38,7 @@ import com.app.tibibalance.ui.components.texts.Description
 import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.components.utils.gradient
 import com.app.tibibalance.ui.navigation.Screen
+import androidx.compose.ui.graphics.Brush
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 
@@ -117,13 +124,6 @@ private fun SettingsContent(
             .fillMaxSize()
             .background(gradient())
     ) {
-        IconButton(
-            onClick = { tutorialVm.restartTutorial(Screen.Emotions) },
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Icon(Icons.Default.Help, contentDescription = "Ayuda")
-        }
-
         SettingsBody(
             ui = ui,
             vm = vm,
@@ -153,7 +153,28 @@ private fun SettingsContent(
         )
 
         // Aquí va el tutorial overlay
-        TutorialOverlay(viewModel = tutorialVm) {}
+        TutorialOverlay(viewModel = tutorialVm) {
+            IconButton(
+                onClick = { tutorialVm.restartTutorial(Screen.Settings) },
+                modifier = Modifier
+                    .padding(top = 16.dp, end = 16.dp)
+                    .align(Alignment.TopEnd)
+                    .background(brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF00DFF7),
+                            Color(0xFF008EFF)
+                        )
+                    ),
+                        shape = CircleShape
+                    )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_tibio_tutorial),
+                    contentDescription = "Ayuda",
+                    modifier = Modifier.size(90.dp)
+                )
+            }
+        }
     }
 }
 
