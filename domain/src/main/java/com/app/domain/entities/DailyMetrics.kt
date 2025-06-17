@@ -6,5 +6,5 @@ import kotlinx.datetime.LocalDate
 data class DailyMetrics(
     val date       : LocalDate,   // 2025-06-17
     val steps      : Int,         // e.g. 8 540
-    val kcal       : Double                 // e.g. 350 kcal
+    val kcal       : Int                 // e.g. 350 kcal
 )

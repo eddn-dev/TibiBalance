@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class DailyMetricsDto(
     val date   : String,  // “2025-06-17”; ISO-8601 for easy queries
     val steps  : Int,
-    val kcal   : Double
+    val kcal   : Int
 )

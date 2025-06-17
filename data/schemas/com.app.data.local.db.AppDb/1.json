@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8c90fbf5e070dab7fb7235272509d8f2",
+    "identityHash": "559f13f513f66a23e29311f04c5e663e",
     "entities": [
       {
         "tableName": "habits",
@@ -387,7 +387,7 @@
       },
       {
         "tableName": "daily_metrics",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `kcal` REAL NOT NULL, PRIMARY KEY(`date`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `kcal` INTEGER NOT NULL, PRIMARY KEY(`date`))",
         "fields": [
           {
             "fieldPath": "date",
@@ -404,7 +404,7 @@
           {
             "fieldPath": "kcal",
             "columnName": "kcal",
-            "affinity": "REAL",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -641,7 +641,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8c90fbf5e070dab7fb7235272509d8f2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '559f13f513f66a23e29311f04c5e663e')"
     ]
   }
 }

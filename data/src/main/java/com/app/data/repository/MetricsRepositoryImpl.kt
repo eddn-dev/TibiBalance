@@ -51,6 +51,7 @@ class MetricsRepositoryImpl @Inject constructor(
 
     /* ───── Dashboard live ──────────────────────────────────────── */
 
+    @OptIn(ObsoleteCoroutinesApi::class)
     override fun observeDashboard(): Flow<DashboardSnapshot> = channelFlow {
         val tz    = TimeZone.currentSystemDefault()
         val scope = this
@@ -112,7 +113,10 @@ class MetricsRepositoryImpl @Inject constructor(
         /* ① Primer snapshot inmediato */
         launch {
             val (s, k) = todayAgg()
-            val hr     = latestHr()
+            val hr     = latestHr(
+                hcClient,
+                io
+            )
             send(DashboardSnapshot(s, k, hr.first, hr.second))
         }
 
@@ -120,7 +124,10 @@ class MetricsRepositoryImpl @Inject constructor(
         val ticker = ticker(30.seconds.inWholeMilliseconds)
         for (tick in ticker) {
             val (s, k) = todayAgg()
-            val hr     = latestHr()
+            val hr     = latestHr(
+                hcClient,
+                io
+            )
             send(DashboardSnapshot(s, k, hr.first, hr.second))
         }
         awaitClose { ticker.cancel() }
@@ -146,18 +153,28 @@ class MetricsRepositoryImpl @Inject constructor(
             val yest = Clock.System.todayIn(tz).minus(DatePeriod(days = 1))
 
             /* Aggregate ayer */
-            val start = yest.atStartOfDayIn(tz)
-            val end   = start.plus(1, DateTimeUnit.DAY, tz)
+            val startKt = yest.atStartOfDayIn(tz)                    // kotlinx Instant
+            val endKt   = startKt.plus(1, DateTimeUnit.DAY, tz)
+
+            /* CONVIERTE a java.time.Instant */
+            val start = startKt.toJavaInstant()
+            val end   = endKt.toJavaInstant()
+
             val req = AggregateRequest(
-                metrics         = setOf(
+                metrics = setOf(
                     StepsRecord.COUNT_TOTAL,
                     ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL
                 ),
-                timeRangeFilter = TimeRangeFilter.between(start, end)
+                timeRangeFilter = TimeRangeFilter.between(start, end)   // ✅ tipos correctos
             )
+
             val agg = hcClient.aggregate(req)                                 // :contentReference[oaicite:9]{index=9}
-            val steps = agg[StepsRecord.COUNT_TOTAL] ?: 0
-            val kcal  = agg[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL] ?: 0
+            val steps = (agg[StepsRecord.COUNT_TOTAL] ?: 0L).toInt()
+            val energy: Energy? = agg[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]
+
+            val kcal = energy?.inKilocalories
+                ?.roundToInt() ?: 0
+
             val daily = DailyMetrics(yest, steps, kcal)
 
             /* Upsert Room & push Firestore */

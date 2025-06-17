@@ -11,5 +11,5 @@ import com.app.data.local.converters.DateTimeConverters
 data class DailyMetricsEntity(
     @PrimaryKey val date: kotlinx.datetime.LocalDate,
     val steps: Int,
-    val kcal : Double
+    val kcal : Int
 )
