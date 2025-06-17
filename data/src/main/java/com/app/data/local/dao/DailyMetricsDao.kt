@@ -1,27 +1,29 @@
+/* :data/src/main/kotlin/com/app/data/local/dao/DailyMetricsDao.kt */
 package com.app.data.local.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Upsert
 import com.app.data.local.entities.DailyMetricsEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDate
 
-/**
- * @file    DailyMetricsDao.kt
- * @ingroup data_local_dao
- */
 @Dao
 interface DailyMetricsDao {
 
-    @Query("""
-        SELECT * FROM daily_metrics
-        WHERE date BETWEEN :from AND :to
-        ORDER BY date ASC
-    """)
-    fun observeRange(from: String, to: String): Flow<List<DailyMetricsEntity>>
-
     @Upsert
-    suspend fun upsertAll(metrics: List<DailyMetricsEntity>)
+    suspend fun upsert(entity: DailyMetricsEntity)
 
-    //Borra todos los registros de la tabla
-    @Query("DELETE FROM daily_metrics")
-    suspend fun clear()
+    /** Stream one row; UI stays reactive. */
+    @Query(
+        "SELECT * FROM daily_metrics WHERE date = :date LIMIT 1"
+    )
+    fun observeByDate(date: LocalDate): Flow<DailyMetricsEntity?>
+
+    @Query("SELECT * FROM daily_metrics WHERE date BETWEEN :start AND :end")
+    fun observeRange(start: LocalDate, end: LocalDate): Flow<List<DailyMetricsEntity>>
+
+    @Query("DELETE FROM daily_metrics WHERE date < :cutoff")
+    suspend fun deleteOlderThan(cutoff: LocalDate)
+
 }

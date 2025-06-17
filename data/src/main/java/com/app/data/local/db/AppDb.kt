@@ -23,7 +23,6 @@ import com.app.data.local.entities.HabitActivityEntity
 import com.app.data.local.entities.HabitEntity
 import com.app.data.local.entities.OnboardingStatusEntity
 import com.app.data.local.entities.UserEntity
-import com.app.domain.entities.Achievement
 
 @Database(
     entities = [
@@ -31,10 +30,9 @@ import com.app.domain.entities.Achievement
         UserEntity::class, EmotionEntryEntity::class,
         DailyMetricsEntity::class, OnboardingStatusEntity::class,
         DailyTipEntity::class,
-        com.app.data.metrics.local.UserMetricsEntity::class,    // ← nueva entidad
-        AchievementEntity::class,
+        AchievementEntity::class
     ],
-    version = 5,    // bump de 4 → 5
+    version = 1,
     exportSchema = true
 )
 
@@ -50,7 +48,6 @@ abstract class AppDb : RoomDatabase() {
     abstract fun metricsDao()       : DailyMetricsDao
     abstract fun onboardingDao()    : OnboardingStatusDao
     abstract fun dailyTipDao()      : DailyTipDao
-    abstract fun userMetricsDao(): com.app.data.metrics.local.UserMetricsDao
     abstract fun achievementDao()   : AchievementDao
 }
 

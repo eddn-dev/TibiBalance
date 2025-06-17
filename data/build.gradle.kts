@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace  = "com.app.data"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -69,6 +69,10 @@ dependencies {
 
     /* ─── Utilidades AndroidX mínimas ──────────────────────────────────── */
     implementation(libs.androidx.core.ktx)
+
+    /* Health Connect */
+    implementation(libs.health.connect.client)
+    implementation(libs.activity.compose)
 
     /* ─── Tests ────────────────────────────────────────────────────────── */
     testImplementation(libs.junit4)

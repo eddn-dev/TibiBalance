@@ -1,22 +1,10 @@
 package com.app.domain.entities
 
-import com.app.domain.common.SyncMeta
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.Serializable
 
-/**
- * @file    DailyMetrics.kt
- * @ingroup domain_entities
- * @brief   Métricas biométricas importadas (`metrics/{date}`).
- */
-@Serializable
+/** Aggregate of steps & kcal for a single civil day (user’s TZ). */
 data class DailyMetrics(
-    val date       : LocalDate, // PK
-    val steps      : Int,
-    val avgHeart   : Int?       = null,
-    val calories   : Int?       = null,
-    val source     : String,
-    val importedAt : Instant    = Instant.DISTANT_PAST,
-    val meta       : SyncMeta   = SyncMeta()
+    val date       : LocalDate,   // 2025-06-17
+    val steps      : Int,         // e.g. 8 540
+    val kcal       : Double                 // e.g. 350 kcal
 )

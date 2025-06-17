@@ -1,19 +1,15 @@
+/* :data/src/main/kotlin/com/app/data/local/entities/DailyMetricsEntity.kt */
 package com.app.data.local.entities
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.app.data.local.converters.DateTimeConverters
-import com.app.domain.common.SyncMeta
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 
 @Entity(tableName = "daily_metrics")
 @TypeConverters(DateTimeConverters::class)
 data class DailyMetricsEntity(
-    @PrimaryKey                     val date: LocalDate,
-    val steps                       : Int,
-    val avgHeart                    : Int?,
-    val calories                    : Int?,
-    val source                      : String,
-    val importedAt                  : Instant,
-    @Embedded(prefix = "meta_")     val meta: SyncMeta
+    @PrimaryKey val date: kotlinx.datetime.LocalDate,
+    val steps: Int,
+    val kcal : Double
 )
