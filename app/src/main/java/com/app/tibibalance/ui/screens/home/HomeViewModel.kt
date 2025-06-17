@@ -118,7 +118,7 @@ class HomeViewModel @Inject constructor(
     fun onPermissionsResult(granted: Boolean) {
         _healthPermsGranted.value = granted
         if (granted) {
-            // Aquí más adelante arrancarás ObserveDashboard  (fase 7)
+
         }
     }
 }

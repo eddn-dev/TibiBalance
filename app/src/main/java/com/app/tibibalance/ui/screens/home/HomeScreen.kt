@@ -43,12 +43,10 @@ import com.app.tibibalance.ui.components.containers.DailyTip as DailyTipContaine
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
-
-
 ) {
 
     val context = LocalContext.current
-    val hcClient = remember { HealthConnectClient.getOrCreate(context) }      // se cae al impl def.  :contentReference[oaicite:3]{index=3}
+    val hcClient = remember { HealthConnectClient.getOrCreate(context) }
 
     val launcher = rememberHealthPermissionLauncher(hcClient) { granted ->
         viewModel.onPermissionsResult(granted)
