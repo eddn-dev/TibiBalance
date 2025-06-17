@@ -29,6 +29,3 @@ rootProject.name = "TibiBalance"
 include(":app")
 include(":data")
 include(":domain")
-include(":core")
-include(":wear")
-include(":core:lib")

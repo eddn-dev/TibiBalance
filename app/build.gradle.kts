@@ -35,7 +35,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEa
 
 dependencies {
     // Inyeccion de dependencias internas de la aplicacion
-    implementation(project(":core"))
     implementation(project(":domain"))
     implementation(project(":data"))
 

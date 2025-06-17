@@ -7,7 +7,6 @@ plugins {
 kotlin { jvmToolchain(17) }
 
 dependencies {
-    implementation(project(":core"))
     implementation(libs.kotlinxSerializationJson)
     implementation(libs.kotlinx.datetime)
 

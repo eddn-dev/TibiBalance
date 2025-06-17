@@ -39,7 +39,6 @@ ksp {
 dependencies {
     /* ─── Flecha Clean Arch ─────────────────────────────────────────────── */
     implementation(project(":domain"))
-    implementation(project(":core"))
 
     /* ─── Inyección de dependencias ────────────────────────────────────── */
     implementation(libs.hilt.android)
