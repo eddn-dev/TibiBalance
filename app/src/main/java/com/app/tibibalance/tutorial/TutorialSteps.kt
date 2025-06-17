@@ -34,7 +34,7 @@ object TutorialSteps {
         TutorialStepData(
             id = "final_home",
             title = "¡Recorrido completado!",
-            message = "Ya conoces las funciones principales de la pantalla de inicio.",
+            message = "Puedes seguir explorando la aplicación y encontrar más tutoriales.\nSi en algún momento deseas repasar estos tutoriales, puedes oprimir el botón de ayuda que aparece en cada sección.",
             targetId = null,
             layout = TutorialLayout.FinalMessage
         )
@@ -54,13 +54,6 @@ object TutorialSteps {
             message = "Toca aquí para añadir un nuevo hábito.\nPara registro automático, te recomendamos crear uno en 'Modo Reto' con una cantidad definida.",
             targetId = "habit_fab",
             layout = TutorialLayout.VideoDialog
-        ),
-        TutorialStepData(
-            id = "final_habits",
-            title = "¡Recorrido completado!",
-            message = "Has terminado el tutorial de hábitos.",
-            targetId = null,
-            layout = TutorialLayout.FinalMessage
         )
     )
 
@@ -78,13 +71,6 @@ object TutorialSteps {
             message = "Verás tu historial de emociones y, al final del mes, se identificará la emoción más frecuente.\nEsto te ayuda a entender mejor tu bienestar.",
             targetId = "emotion_summary",
             layout = TutorialLayout.VideoDialog
-        ),
-        TutorialStepData(
-            id = "final_emotions",
-            title = "¡Recorrido completado!",
-            message = "Has terminado el tutorial de emociones.",
-            targetId = null,
-            layout = TutorialLayout.FinalMessage
         )
     )
 
@@ -102,13 +88,6 @@ object TutorialSteps {
             message = "Para obtener métricas como pasos o ritmo cardíaco, puedes conectar tu smartwatch desde la sección de Ajustes.",
             targetId = "connect_watch_card",
             layout = TutorialLayout.VideoDialog
-        ),
-        TutorialStepData(
-            id = "final_stats",
-            title = "¡Recorrido completado!",
-            message = "Has terminado el tutorial de estadísticas.",
-            targetId = null,
-            layout = TutorialLayout.FinalMessage
         )
     )
 
@@ -126,13 +105,6 @@ object TutorialSteps {
             message = "Gestiona tu información de perfil y explora tus logros.\nCada insignia representa un hito en tu camino hacia el equilibrio.",
             targetId = "profile_section",
             layout = TutorialLayout.BottomRight
-        ),
-        TutorialStepData(
-            id = "final_settings",
-            title = "¡Recorrido completado!",
-            message = "Has terminado el tutorial de ajustes.",
-            targetId = null,
-            layout = TutorialLayout.FinalMessage
         )
     )
 }
