@@ -34,7 +34,7 @@ object TutorialSteps {
         TutorialStepData(
             id = "final_home",
             title = "¡Recorrido completado!",
-            message = "Puedes seguir explorando la aplicación y encontrar más tutoriales.\nSi en algún momento deseas repasar estos tutoriales, puedes oprimir el botón de ayuda que aparece en cada sección.",
+            message = "Puedes seguir explorando la aplicación y encontrar más tutoriales.\nSi en algún momento deseas repasar estos tutoriales, puedes hacer uso del botón de ayuda.",
             targetId = null,
             layout = TutorialLayout.FinalMessage
         )

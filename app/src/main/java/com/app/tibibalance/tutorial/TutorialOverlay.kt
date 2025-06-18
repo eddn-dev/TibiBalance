@@ -3,22 +3,26 @@ package com.app.tibibalance.tutorial
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.*
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.airbnb.lottie.compose.*
 import androidx.compose.ui.unit.sp
+import com.app.tibibalance.R
 
 /**
  * Modifier to mark a composable as a tutorial target.
@@ -340,12 +344,54 @@ fun TutorialOverlay(
 
                             Spacer(Modifier.height(12.dp))
 
-                            Text(
-                                text = step.message,
-                                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center
-                            )
+                            if (step.id == "final_home") {
+                                Text(
+                                    text = "Puedes seguir explorando la aplicación\ny  encontrar más tutoriales.",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(Modifier.height(16.dp))
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .background(
+                                            brush = Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color(0xFF00DFF7),
+                                                    Color(0xFF008EFF)
+                                                )
+                                            ),
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_tibio_tutorial),
+                                        contentDescription = "Ayuda",
+                                        modifier = Modifier.size(64.dp),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+
+                                Spacer(Modifier.height(16.dp))
+
+                                Text(
+                                    text = "Si en algún momento deseas repasar\nestos tutoriales, puedes hacer uso\ndel botón de ayuda.",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            } else {
+                                Text(
+                                    text = step.message,
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
 
                             Spacer(Modifier.height(16.dp))
 
