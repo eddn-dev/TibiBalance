@@ -41,6 +41,7 @@ import com.app.tibibalance.ui.screens.habits.editHabitWizard.EditHabitModal
 import com.app.tibibalance.tutorial.rememberTutorialTarget
 import com.app.tibibalance.tutorial.TutorialOverlay
 import com.app.tibibalance.tutorial.TutorialViewModel
+import com.app.tibibalance.ui.components.buttons.PrimaryButton
 import kotlinx.coroutines.flow.collect
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -100,23 +101,6 @@ fun HabitsScreen(
                 onEdit = vm::onHabitClicked,
                 onAdd = { showAdd = true }
             )
-        }
-
-        // Paso 1: FAB de añadir hábito, con target para el tutorial
-        FloatingActionButton(
-            onClick = { showAdd = true },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-                .then(
-                    rememberTutorialTarget(
-                        targetId = "habit_fab",
-                        currentTargetId = currentTargetId,
-                        onPositioned = tutorialVm::updateTargetBounds
-                    )
-                )
-        ) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = "Añadir hábito")
         }
 
         // Botón de ayuda: reinicia tutorial en cualquier momento
@@ -213,12 +197,11 @@ fun HabitsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
+                PrimaryButton(
                     onClick = { showInfo = false },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Entendido")
-                }
+                    modifier = Modifier.align(Alignment.End),
+                    text = "Entendido"
+                )
             }
         }
     }

@@ -13,6 +13,7 @@ import com.app.domain.usecase.auth.SyncAccount
 import com.app.domain.usecase.user.ObserveUser
 import com.app.domain.usecase.user.UpdateUserSettings
 import com.app.tibibalance.ui.theme.ThemeController
+import com.app.tibibalance.utils.HealthConnectAvailability
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -43,6 +44,8 @@ class SettingsViewModel @Inject constructor(
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val syncAccount: SyncAccount
 ) : ViewModel() {
+
+
 
     /* ---------- UI ---------- */
     data class UiState(

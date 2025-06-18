@@ -11,11 +11,11 @@ plugins {
 
 android {
     namespace   = "com.app.tibibalance"
-    compileSdk  = 35
+    compileSdk  = 36
 
     defaultConfig {
         applicationId         = "com.app.tibibalance"
-        minSdk                = 24
+        minSdk                = 26
         targetSdk             = 35
         versionCode           = 1
         versionName           = "0.2.0"
@@ -86,6 +86,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.collections.immutable)
 
+    /* Health */
+    implementation(libs.health.connect.client)
+    implementation(libs.activity.compose)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation(libs.json)  // Última versión disponible hasta 2024
 

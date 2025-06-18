@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "134d9e8b3617499f55f91a86509a4dec",
+    "identityHash": "559f13f513f66a23e29311f04c5e663e",
     "entities": [
       {
         "tableName": "habits",
@@ -215,13 +215,15 @@
         },
         "indices": [
           {
-            "name": "index_activities_habitId",
-            "unique": false,
+            "name": "index_activities_habitId_activityDate_scheduledTime",
+            "unique": true,
             "columnNames": [
-              "habitId"
+              "habitId",
+              "activityDate",
+              "scheduledTime"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_activities_habitId` ON `${TABLE_NAME}` (`habitId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_activities_habitId_activityDate_scheduledTime` ON `${TABLE_NAME}` (`habitId`, `activityDate`, `scheduledTime`)"
           }
         ],
         "foreignKeys": [
@@ -240,7 +242,7 @@
       },
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `email` TEXT NOT NULL, `displayName` TEXT, `photoUrl` TEXT, `birthDate` TEXT NOT NULL, `settings_theme` TEXT NOT NULL, `settings_notif` INTEGER NOT NULL, `settings_lang` TEXT NOT NULL, `settings_tts` INTEGER NOT NULL, `settings_emotion` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `email` TEXT NOT NULL, `displayName` TEXT, `photoUrl` TEXT, `birthDate` TEXT NOT NULL, `settings_theme` TEXT NOT NULL, `settings_notif` INTEGER NOT NULL, `settings_lang` TEXT NOT NULL, `settings_tts` INTEGER NOT NULL, `settings_emotion` INTEGER NOT NULL, `settings_emotion_time` TEXT, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "uid",
@@ -301,6 +303,11 @@
             "notNull": true
           },
           {
+            "fieldPath": "settingsEmotionTime",
+            "columnName": "settings_emotion_time",
+            "affinity": "TEXT"
+          },
+          {
             "fieldPath": "meta.createdAt",
             "columnName": "meta_createdAt",
             "affinity": "INTEGER",
@@ -333,7 +340,7 @@
       },
       {
         "tableName": "emotions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `emojiId` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `mood` TEXT NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
         "fields": [
           {
             "fieldPath": "date",
@@ -342,8 +349,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "emojiId",
-            "columnName": "emojiId",
+            "fieldPath": "mood",
+            "columnName": "mood",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -380,7 +387,7 @@
       },
       {
         "tableName": "daily_metrics",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `avgHeart` INTEGER, `calories` INTEGER, `source` TEXT NOT NULL, `importedAt` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `kcal` INTEGER NOT NULL, PRIMARY KEY(`date`))",
         "fields": [
           {
             "fieldPath": "date",
@@ -395,47 +402,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "avgHeart",
-            "columnName": "avgHeart",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "calories",
-            "columnName": "calories",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "source",
-            "columnName": "source",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "importedAt",
-            "columnName": "importedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meta.createdAt",
-            "columnName": "meta_createdAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meta.updatedAt",
-            "columnName": "meta_updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meta.deletedAt",
-            "columnName": "meta_deletedAt",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "meta.pendingSync",
-            "columnName": "meta_pendingSync",
+            "fieldPath": "kcal",
+            "columnName": "kcal",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -449,12 +417,18 @@
       },
       {
         "tableName": "onboarding_status",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `hasCompletedTutorial` INTEGER NOT NULL, `tutorialCompleted` INTEGER NOT NULL, `legalAccepted` INTEGER NOT NULL, `permissionsAsked` INTEGER NOT NULL, `completedAt` INTEGER, `hasSeenTutorial_HomeScreenMain` INTEGER NOT NULL, `hasSeenTutorial_HomeScreenStats` INTEGER NOT NULL, `hasSeenTutorial_HabitsScreen` INTEGER NOT NULL, `hasSeenTutorial_EmotionsScreen` INTEGER NOT NULL, `hasSeenTutorial_SettingsScreen` INTEGER NOT NULL, `m_createdAt` INTEGER NOT NULL, `m_updatedAt` INTEGER NOT NULL, `m_deletedAt` INTEGER, `m_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
         "fields": [
           {
             "fieldPath": "uid",
             "columnName": "uid",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasCompletedTutorial",
+            "columnName": "hasCompletedTutorial",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -479,6 +453,36 @@
             "fieldPath": "completedAt",
             "columnName": "completedAt",
             "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "hasSeenTutorial_HomeScreenMain",
+            "columnName": "hasSeenTutorial_HomeScreenMain",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_HomeScreenStats",
+            "columnName": "hasSeenTutorial_HomeScreenStats",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_HabitsScreen",
+            "columnName": "hasSeenTutorial_HabitsScreen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_EmotionsScreen",
+            "columnName": "hasSeenTutorial_EmotionsScreen",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasSeenTutorial_SettingsScreen",
+            "columnName": "hasSeenTutorial_SettingsScreen",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "meta.createdAt",
@@ -563,11 +567,81 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "achievements",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `progress` INTEGER NOT NULL, `unlocked` INTEGER NOT NULL, `unlockDate` INTEGER, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unlocked",
+            "columnName": "unlocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unlockDate",
+            "columnName": "unlockDate",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.createdAt",
+            "columnName": "meta_createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.updatedAt",
+            "columnName": "meta_updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "meta.deletedAt",
+            "columnName": "meta_deletedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "meta.pendingSync",
+            "columnName": "meta_pendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '134d9e8b3617499f55f91a86509a4dec')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '559f13f513f66a23e29311f04c5e663e')"
     ]
   }
 }

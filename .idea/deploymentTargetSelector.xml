@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="TibiBalance.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-06-16T07:58:47.967809900Z">
+        <DropdownSelection timestamp="2025-06-17T06:13:06.015311600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Eduardo Alonso\.android\avd\Wear_OS_Square.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=10ADC62UEC000LP" />
             </handle>
           </Target>
         </DropdownSelection>

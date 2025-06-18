@@ -7,6 +7,7 @@ import com.app.domain.config.Repeat
 import com.app.domain.entities.DailyTipItem
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -57,4 +58,14 @@ object DateTimeConverters {
     @TypeConverter
     fun stringToList(value: String?): List<DailyTipItem>? =
         value?.let { json.decodeFromString(it) }
+
+    /* kotlinx.datetime.LocalDateTime ⇄ String ------------------------------ */
+    @TypeConverter
+    fun localDateTimeToString(value: LocalDateTime?): String? =
+        value?.toString()           // ISO-8601: “2025-06-18T14:00”
+
+    @TypeConverter
+    fun stringToLocalDateTime(value: String?): LocalDateTime? =
+        value?.let(LocalDateTime::parse)
+
 }

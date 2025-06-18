@@ -195,8 +195,6 @@ private fun mapToNotif(raw: Map<String,Any>?): NotifConfig {
         }
     }.orEmpty()
 
-    val pattern = mapToRepeat(raw["pattern"] as? Map<String,Any>)
-
     val starts  = (raw["startsAt"]  as? String)?.let { LocalDate.parse(it) }
     val expires = (raw["expiresAt"] as? String)?.let { LocalDate.parse(it) }
 

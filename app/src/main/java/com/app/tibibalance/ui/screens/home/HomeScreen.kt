@@ -7,6 +7,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,22 +20,36 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.net.Uri
+import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.app.domain.entities.DailyTip
-import com.app.tibibalance.ui.components.containers.ConnectWatchCard
-import com.app.tibibalance.ui.components.containers.DailyTip as DailyTipContainer
+import com.app.domain.entities.DashboardSnapshot
+import com.app.tibibalance.tutorial.TutorialOverlay
+import com.app.tibibalance.tutorial.TutorialViewModel
+import com.app.tibibalance.tutorial.rememberTutorialTarget
+import com.app.tibibalance.ui.components.containers.HealthPermissionsCard
+import com.app.tibibalance.ui.components.dashboard.DashboardMetrics
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.PagerIndicator
-import com.app.tibibalance.ui.components.utils.gradient
+import com.app.tibibalance.ui.permissions.HEALTH_CONNECT_READ_PERMISSIONS
+import com.app.tibibalance.ui.permissions.rememberHealthPermissionLauncher
 import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
 import com.app.tibibalance.tutorial.rememberTutorialTarget
@@ -40,15 +60,32 @@ import com.app.tibibalance.ui.navigation.Screen
 import kotlinx.coroutines.delay
 
 private const val PAGES = 2
+import com.app.tibibalance.ui.components.containers.DailyTip as DailyTipContainer
+import androidx.core.net.toUri
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
+    val hcClient = viewModel.healthConnectClient
+
+    val launcher = hcClient?.let { client ->
+        rememberHealthPermissionLauncher(client) { granted ->
+            viewModel.onPermissionsResult(granted)
+        }
+    }
     val tutorialVm: TutorialViewModel = hiltViewModel()
     val state by viewModel.ui.collectAsState()
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { PAGES })
+
+    // Flags de conveniencia
+    val metricsEnabled  = state.hcAvailable
+    val needsPerms      = metricsEnabled && !state.healthPermsGranted
+
+    // Páginas dinámicas: Si no hay HC => 1 página, si sí => 2
+    val pageCount = if (metricsEnabled) 2 else 1
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { pageCount })
 
     // Tutorial de Home principal (Main section)
     LaunchedEffect(Unit) {
@@ -63,6 +100,14 @@ fun HomeScreen(
             statsTutorialLaunched = true
         }
     }
+
+    // Corrige scroll si el numero de páginas cambia
+    LaunchedEffect(pageCount) {
+        if(pagerState.currentPage >= pageCount) pagerState.animateScrollToPage(0)
+    }
+
+    // Al entrar, refresca permisos (por si el usuario vuelve de ajustes)
+    LaunchedEffect(Unit) { viewModel.refreshHealthPermissions() }
 
     // Paso actual del tutorial
     val currentStep by tutorialVm.currentStep.collectAsState()
@@ -109,65 +154,29 @@ fun HomeScreen(
 
             // Paginador: Tip del día ↔ Métricas
             HorizontalPager(
-                state = pagerState,
+                state       = pagerState,
                 pageSpacing = 16.dp,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                modifier    = Modifier.weight(1f).fillMaxWidth()
             ) { page ->
                 when (page) {
-                    0 -> {
-                        state.dailyTip?.let { tip ->
-                            DailyTipContainer(
-                                tip = tip,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag("daily_tip_card")
-                                    .then(
-                                        rememberTutorialTarget(
-                                            targetId = "daily_tip_card",
-                                            currentTargetId = currentTarget,
-                                            onPositioned = tutorialVm::updateTargetBounds
-                                        )
-                                    )
-                            )
-                        } ?: Centered("Sin tip disponible")
-                    }
-                    1 -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(top = 8.dp)
-                                .then(
-                                    rememberTutorialTarget(
-                                        targetId = "stats_graph",
-                                        currentTargetId = currentTarget,
-                                        onPositioned = tutorialVm::updateTargetBounds
-                                    )
-                                ),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Title("Métricas")
-                            ConnectWatchCard(
-                                onClick = { /* TODO: navegar al flujo de smartwatch */ },
-                                modifier = Modifier.then(
-                                    rememberTutorialTarget(
-                                        targetId = "connect_watch_card",
-                                        currentTargetId = currentTarget,
-                                        onPositioned = tutorialVm::updateTargetBounds
-                                    )
-                                )
-                            )
-                        }
-                    }
+                    0 -> DailyTipPage(state, tutorialVm, currentTarget)
+                    1 -> MetricsPage(
+                        hasPermissions = state.healthPermsGranted,
+                        snapshot       = state.dashboardSnapshot,
+                        onGrantPerms   = {
+                            launcher?.launch(HEALTH_CONNECT_READ_PERMISSIONS) ?: openHealthConnectInPlayStore(context)
+                        },
+                        onInstallHc    = { openHealthConnectInPlayStore(context) },
+                        tutorialVm     = tutorialVm,
+                        currentTarget  = currentTarget
+                    )
                 }
             }
 
-            // Indicador de páginas
             PagerIndicator(
-                pagerState = pagerState,
-                pageCount = PAGES,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                pagerState  = pagerState,
+                pageCount   = pageCount,
+                modifier    = Modifier.align(Alignment.CenterHorizontally)
             )
 
             // Feed de actividades (Paso 0 en Home Main)
@@ -195,4 +204,74 @@ fun HomeScreen(
             }
         }
     }
+}
+
+@Composable
+private fun DailyTipPage(
+    state: HomeUi,
+    tutorialVm: TutorialViewModel,
+    currentTarget: String?,
+) {
+    state.dailyTip?.let { tip ->
+        DailyTipContainer(
+            tip      = tip,
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("daily_tip_card")
+                .then(
+                    rememberTutorialTarget(
+                        targetId       = "daily_tip_card",
+                        currentTargetId = currentTarget,
+                        onPositioned   = tutorialVm::updateTargetBounds
+                    )
+                )
+        )
+    } ?: Centered("Sin tip disponible")
+}
+
+@Composable
+private fun MetricsPage(
+    hasPermissions: Boolean,
+    snapshot: DashboardSnapshot?,
+    onGrantPerms: () -> Unit,
+    onInstallHc: () -> Unit,
+    tutorialVm: TutorialViewModel,
+    currentTarget: String?
+) {
+
+    Column(
+        modifier = Modifier.fillMaxSize().padding(top = 8.dp)
+            .then(
+                rememberTutorialTarget(
+                    targetId        = "stats_graph",
+                    currentTargetId = currentTarget,
+                    onPositioned    = tutorialVm::updateTargetBounds
+                )
+            ),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Title("Métricas")
+
+        when {
+            !hasPermissions ->
+                HealthPermissionsCard(
+                    onGrantClick = onGrantPerms,
+                    modifier     = Modifier.fillMaxWidth()
+                )
+
+            snapshot == null ->                // Permiso ok pero sin datos (cargando)
+                Centered("Cargando métricas…")
+            else ->                            // Datos disponibles
+                DashboardMetrics(
+                    snapshot = snapshot,
+                    modifier = Modifier.fillMaxWidth()
+                )
+        }
+    }
+}
+
+private fun openHealthConnectInPlayStore(context: Context) {
+    val uri =
+        "https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata".toUri()
+    context.startActivity(Intent(Intent.ACTION_VIEW, uri))
 }

@@ -11,8 +11,10 @@ import com.app.data.remote.datasource.FirebaseAchievementRemoteDataSource
 import com.app.data.remote.datasource.FirebaseDailyTipsRemoteDataSource
 import com.app.data.remote.datasource.FirebaseHabitActivityRemoteDataSource
 import com.app.data.remote.datasource.FirebaseHabitRemoteDataSource
+import com.app.data.remote.datasource.FirebaseMetricsRemoteDataSource
 import com.app.data.remote.datasource.HabitActivityRemoteDataSource
 import com.app.data.remote.datasource.HabitRemoteDataSource
+import com.app.data.remote.datasource.MetricsRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -42,4 +44,11 @@ abstract class RemoteModule {
     abstract fun bindAchievementRemoteDataSource(
         impl: FirebaseAchievementRemoteDataSource
     ): AchievementRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindMetricsRemoteDataSource(
+        impl: FirebaseMetricsRemoteDataSource
+    ): MetricsRemoteDataSource
+
 }

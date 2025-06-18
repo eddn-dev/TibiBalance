@@ -18,12 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.domain.entities.User
@@ -39,6 +42,9 @@ import com.app.tibibalance.ui.components.utils.SettingItem
 import com.app.tibibalance.ui.components.utils.gradient
 import com.app.tibibalance.ui.navigation.Screen
 import androidx.compose.ui.graphics.Brush
+import com.app.tibibalance.ui.permissions.HEALTH_CONNECT_READ_PERMISSIONS
+import com.app.tibibalance.ui.permissions.rememberHealthPermissionLauncher
+import com.app.tibibalance.utils.openHealthConnectSettings
 
 /* ─────────────────────────  Entry  ─────────────────────────── */
 
@@ -51,6 +57,8 @@ fun SettingsScreen(
     val tutorialVm: TutorialViewModel = hiltViewModel()
     val step by tutorialVm.currentStep.collectAsState()
     val currentTarget = step?.targetId
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         tutorialVm.startTutorialIfNeeded(Screen.Settings)
@@ -80,12 +88,13 @@ fun SettingsScreen(
             user = ui.user!!,
             navController = navController,
             signingOut = ui.signingOut,
-            syncing = ui.syncing,          // 👈 NUEVO
+            syncing = ui.syncing,
+            onDevices = { context.openHealthConnectSettings() },
             onChangeTheme = vm::changeTheme,
             onToggleGlobalNotif = vm::toggleGlobalNotif,
             onToggleTTS = vm::toggleTTS,
             onSignOut = vm::signOut,
-            onSyncAccount = vm::syncNow,   // 👈 NUEVO
+            onSyncAccount = vm::syncNow,
             vm = vm,
             ui = ui
         )
@@ -101,6 +110,7 @@ private fun SettingsContent(
     signingOut: Boolean,
     syncing: Boolean,
     onChangeTheme: (ThemeMode) -> Unit,
+    onDevices: () -> Unit,
     onToggleGlobalNotif: (Boolean) -> Unit,
     onToggleTTS: (Boolean) -> Unit,
     onSignOut: () -> Unit,
@@ -129,7 +139,7 @@ private fun SettingsContent(
             vm = vm,
             user = user,
             onEditPersonal = onEditPersonal,
-            onDevices = { /* TODO */ },
+            onDevices = onDevices,
             onAchievements = { navController.navigate(Screen.Achievements.route) },
             onConfigureNotis = onConfigureNotis,
             onChangeTheme = onChangeTheme,

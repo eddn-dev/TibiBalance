@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "4beddc2aa313dba17134b76ccc80faf0",
+    "identityHash": "559f13f513f66a23e29311f04c5e663e",
     "entities": [
       {
         "tableName": "habits",
@@ -387,7 +387,7 @@
       },
       {
         "tableName": "daily_metrics",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `avgHeart` INTEGER, `calories` INTEGER, `source` TEXT NOT NULL, `importedAt` INTEGER NOT NULL, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `kcal` INTEGER NOT NULL, PRIMARY KEY(`date`))",
         "fields": [
           {
             "fieldPath": "date",
@@ -402,47 +402,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "avgHeart",
-            "columnName": "avgHeart",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "calories",
-            "columnName": "calories",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "source",
-            "columnName": "source",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "importedAt",
-            "columnName": "importedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meta.createdAt",
-            "columnName": "meta_createdAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meta.updatedAt",
-            "columnName": "meta_updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "meta.deletedAt",
-            "columnName": "meta_deletedAt",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "meta.pendingSync",
-            "columnName": "meta_pendingSync",
+            "fieldPath": "kcal",
+            "columnName": "kcal",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -608,58 +569,6 @@
         }
       },
       {
-        "tableName": "user_metrics",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `heartRateAvg` INTEGER, `calories` INTEGER, PRIMARY KEY(`userId`, `date`))",
-        "fields": [
-          {
-            "fieldPath": "userId",
-            "columnName": "userId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "date",
-            "columnName": "date",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps",
-            "columnName": "steps",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "heartRateAvg",
-            "columnName": "heartRateAvg",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "calories",
-            "columnName": "calories",
-            "affinity": "INTEGER"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "userId",
-            "date"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_user_metrics_date",
-            "unique": false,
-            "columnNames": [
-              "date"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_metrics_date` ON `${TABLE_NAME}` (`date`)"
-          }
-        ]
-      },
-      {
         "tableName": "achievements",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `progress` INTEGER NOT NULL, `unlocked` INTEGER NOT NULL, `unlockDate` INTEGER, `meta_createdAt` INTEGER NOT NULL, `meta_updatedAt` INTEGER NOT NULL, `meta_deletedAt` INTEGER, `meta_pendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
@@ -732,7 +641,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4beddc2aa313dba17134b76ccc80faf0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '559f13f513f66a23e29311f04c5e663e')"
     ]
   }
 }
