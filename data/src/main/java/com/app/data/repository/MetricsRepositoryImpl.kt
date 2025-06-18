@@ -46,7 +46,7 @@ class MetricsRepositoryImpl @Inject constructor(
     private val dailyDao    : DailyMetricsDao,
     private val remote      : MetricsRemoteDataSource,
     private val uidProvider : AuthUidProvider,
-    private val io          : CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher private val io          : CoroutineDispatcher = Dispatchers.IO
 ) : MetricsRepository {
 
     /* ───── Dashboard live ──────────────────────────────────────── */

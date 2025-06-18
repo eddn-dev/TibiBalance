@@ -26,11 +26,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.domain.entities.DashboardSnapshot
 import com.app.tibibalance.tutorial.TutorialOverlay
 import com.app.tibibalance.tutorial.TutorialViewModel
 import com.app.tibibalance.tutorial.rememberTutorialTarget
-import com.app.tibibalance.ui.components.containers.ConnectWatchCard
 import com.app.tibibalance.ui.components.containers.HealthPermissionsCard
+import com.app.tibibalance.ui.components.dashboard.DashboardMetrics
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.Centered
 import com.app.tibibalance.ui.components.utils.PagerIndicator
@@ -125,6 +126,7 @@ fun HomeScreen(
                     0 -> DailyTipPage(state, tutorialVm, currentTarget)
                     1 -> MetricsPage(
                         hasPermissions = state.healthPermsGranted,
+                        snapshot       = state.dashboardSnapshot,
                         onGrantPerms   = { launcher.launch(HEALTH_CONNECT_READ_PERMISSIONS) },
                         onInstallHc    = { /* ir a Play Store */ },
                         tutorialVm     = tutorialVm,
@@ -192,6 +194,7 @@ private fun DailyTipPage(
 @Composable
 private fun MetricsPage(
     hasPermissions: Boolean,
+    snapshot: DashboardSnapshot?,
     onGrantPerms: () -> Unit,
     onInstallHc: () -> Unit,
     tutorialVm: TutorialViewModel,
@@ -217,19 +220,14 @@ private fun MetricsPage(
                     onGrantClick = onGrantPerms,
                     modifier     = Modifier.fillMaxWidth()
                 )
-            else -> {
-                // Aquí irá tu Dashboard real
-                ConnectWatchCard(
-                    onClick  = { /* TODO */ },
-                    modifier = Modifier.then(
-                        rememberTutorialTarget(
-                            targetId        = "connect_watch_card",
-                            currentTargetId = currentTarget,
-                            onPositioned    = tutorialVm::updateTargetBounds
-                        )
-                    )
+
+            snapshot == null ->                // Permiso ok pero sin datos (cargando)
+                Centered("Cargando métricas…")
+            else ->                            // Datos disponibles
+                DashboardMetrics(
+                    snapshot = snapshot,
+                    modifier = Modifier.fillMaxWidth()
                 )
-            }
         }
     }
 }
