@@ -1,23 +1,28 @@
 package com.app.tibibalance.tutorial
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.*
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.airbnb.lottie.compose.*
+import androidx.compose.ui.unit.sp
+import com.app.tibibalance.R
 
 /**
  * Modifier to mark a composable as a tutorial target.
@@ -53,8 +58,6 @@ fun TutorialOverlay(
     content: @Composable () -> Unit
 ) {
     val stepData by viewModel.currentStep.collectAsState()
-    val targetBounds by viewModel.targetBounds
-    var showVideo by remember { mutableStateOf(false) }
 
     // If no tutorial step is active, just render the content
     if (stepData == null) {
@@ -76,6 +79,7 @@ fun TutorialOverlay(
         "emotion_history" -> com.app.tibibalance.R.raw.emotions
         "smartwatch"      -> com.app.tibibalance.R.raw.home
         "navigation"      -> com.app.tibibalance.R.raw.nav
+        "intro"           -> com.app.tibibalance.R.raw.tibio_welcome
         else              -> com.app.tibibalance.R.raw.habits
     }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(lottieRes))
@@ -93,10 +97,15 @@ fun TutorialOverlay(
             Modifier
                 .fillMaxSize()
                 .background(scrimColor)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent()
+                        }
+                    }
+                }
         )
 
-        // 4) Tutorial dialog (before video modal)
-        if (!showVideo) {
             when (step.layout) {
                 TutorialLayout.CenteredIntro -> {
                     Surface(
@@ -114,17 +123,31 @@ fun TutorialOverlay(
                         ) {
                             Text(
                                 text = step.title,
-                                style = MaterialTheme.typography.headlineMedium,
+                                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(Modifier.height(12.dp))
+
+                            Spacer(Modifier.height(16.dp))
+
+                            LottieAnimation(
+                                composition = rememberLottieComposition(LottieCompositionSpec.RawRes(com.app.tibibalance.R.raw.tibio_welcome)).value,
+                                progress = animateLottieCompositionAsState(
+                                    rememberLottieComposition(LottieCompositionSpec.RawRes(com.app.tibibalance.R.raw.tibio_welcome)).value,
+                                    iterations = LottieConstants.IterateForever
+                                ).value,
+                                modifier = Modifier.size(220.dp)
+                            )
+
+                            Spacer(Modifier.height(16.dp))
+
                             Text(
                                 text = step.message,
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
+
                             Spacer(Modifier.height(24.dp))
                             Row {
                                 Button(
@@ -149,35 +172,6 @@ fun TutorialOverlay(
                         }
                     }
                 }
-                TutorialLayout.BottomSheet -> {
-                    Surface(
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        tonalElevation = 8.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                    ) {
-                        Column(
-                            Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(step.title, style = MaterialTheme.typography.titleMedium)
-                            Spacer(Modifier.height(8.dp))
-                            Text(step.message)
-                            Spacer(Modifier.height(16.dp))
-                            Button(
-                                onClick = { viewModel.proceedToNextStep() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            ) {
-                                Text("Siguiente")
-                            }
-                        }
-                    }
-                }
                 TutorialLayout.BottomRight -> {
                     Surface(
                         shape = RoundedCornerShape(16.dp),
@@ -192,40 +186,24 @@ fun TutorialOverlay(
                             Modifier.padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(step.title, style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                text = step.title,
+                                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+
                             Spacer(Modifier.height(8.dp))
-                            Text(step.message)
+
+                            Text(
+                                text = step.message,
+                                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+
                             Spacer(Modifier.height(12.dp))
-                            Button(
-                                onClick = { viewModel.proceedToNextStep() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            ) {
-                                Text("Siguiente")
-                            }
-                        }
-                    }
-                }
-                TutorialLayout.TopBanner -> {
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        tonalElevation = 8.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.TopCenter)
-                            .padding(top = 48.dp)
-                    ) {
-                        Column(
-                            Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(step.title, style = MaterialTheme.typography.titleMedium)
-                            Spacer(Modifier.height(8.dp))
-                            Text(step.message)
-                            Spacer(Modifier.height(12.dp))
+
                             Button(
                                 onClick = { viewModel.proceedToNextStep() },
                                 colors = ButtonDefaults.buttonColors(
@@ -245,16 +223,31 @@ fun TutorialOverlay(
                         tonalElevation = 8.dp,
                         modifier = Modifier
                             .wrapContentSize()
+                            .padding(24.dp)
                             .align(Alignment.Center)
                     ) {
                         Column(
                             Modifier.padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(step.title, style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                text = step.title,
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+
                             Spacer(Modifier.height(8.dp))
-                            Text(step.message)
+
+                            Text(
+                                text = step.message,
+                                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+
                             Spacer(Modifier.height(12.dp))
+
                             Button(
                                 onClick = { viewModel.proceedToNextStep() },
                                 colors = ButtonDefaults.buttonColors(
@@ -285,46 +278,45 @@ fun TutorialOverlay(
                         ) {
                             Text(
                                 step.title,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(Modifier.height(12.dp))
+
+                            Spacer(Modifier.height(16.dp))
+
+                            LottieAnimation(
+                                composition = composition,
+                                progress = progress,
+                                modifier = Modifier.size(220.dp)
+                            )
+
+                            Spacer(Modifier.height(16.dp))
+
                             Text(
-                                step.message,
-                                style = MaterialTheme.typography.bodyMedium,
+                                text = step.message,
+                                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
-                            Spacer(Modifier.height(24.dp))
-
-                            val actionText = when (step.id) {
-                                "habit_fab"       -> "Explorar Tipos de Hábito"
-                                "emotion_history" -> "Ver Ejemplo de Registro"
-                                "smartwatch"      -> "Más Información sobre Smartwatch"
-                                "navigation"      -> "Ver Uso de la Barra de Navegación"
-                                else              -> "Ver Ejemplo"
-                            }
-                            TextButton(
-                                onClick = { showVideo = true },
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                Text(actionText)
-                            }
 
                             Spacer(Modifier.height(24.dp))
 
                             Button(
-                                onClick = { viewModel.finishTutorial() },
+                                onClick = {
+                                    if (viewModel.hasNextStep()) {
+                                        viewModel.proceedToNextStep()
+                                    } else {
+                                        viewModel.finishTutorial()
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary,
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 )
                             ) {
-                                Text("Entendido")
+                                Text(if (viewModel.hasNextStep()) "Siguiente" else "Entendido")
                             }
                         }
                     }
@@ -337,15 +329,72 @@ fun TutorialOverlay(
                         modifier = Modifier
                             .wrapContentSize()
                             .align(Alignment.Center)
+                            .padding(24.dp)
                     ) {
                         Column(
                             Modifier.padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(step.title, style = MaterialTheme.typography.headlineSmall)
+                            Text(
+                                text = step.title,
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+
                             Spacer(Modifier.height(12.dp))
-                            Text(step.message)
+
+                            if (step.id == "final_home") {
+                                Text(
+                                    text = "Puedes seguir explorando la aplicación\ny  encontrar más tutoriales.",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(Modifier.height(16.dp))
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .background(
+                                            brush = Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color(0xFF00DFF7),
+                                                    Color(0xFF008EFF)
+                                                )
+                                            ),
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_tibio_tutorial),
+                                        contentDescription = "Ayuda",
+                                        modifier = Modifier.size(64.dp),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+
+                                Spacer(Modifier.height(16.dp))
+
+                                Text(
+                                    text = "Si en algún momento deseas repasar\nestos tutoriales, puedes hacer uso\ndel botón de ayuda.",
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            } else {
+                                Text(
+                                    text = step.message,
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+
                             Spacer(Modifier.height(16.dp))
+
                             Button(
                                 onClick = { viewModel.finishTutorial() },
                                 colors = ButtonDefaults.buttonColors(
@@ -359,44 +408,5 @@ fun TutorialOverlay(
                     }
                 }
             }
-        }
-
-        // 5) Video modal
-        if (showVideo) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-                    .align(Alignment.Center)
-            ) {
-                Column(
-                    Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LottieAnimation(
-                        composition = composition,
-                        progress = progress,
-                        modifier = Modifier.size(300.dp)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    Button(
-                        onClick = {
-                            showVideo = false
-                            viewModel.finishTutorial()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text("Cerrar")
-                    }
-                }
-            }
-        }
     }
 }

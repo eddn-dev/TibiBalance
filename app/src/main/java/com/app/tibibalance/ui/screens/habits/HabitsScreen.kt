@@ -2,6 +2,7 @@ package com.app.tibibalance.ui.screens.habits
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,7 +20,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -104,10 +107,22 @@ fun HabitsScreen(
         IconButton(
             onClick = { tutorialVm.restartTutorial(Screen.Habits) },
             modifier = Modifier
+                .padding(top = 16.dp, end = 16.dp)
                 .align(Alignment.TopEnd)
-                .padding(8.dp)
+                .background(brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF00DFF7),
+                        Color(0xFF008EFF)
+                    )
+                ),
+                    shape = CircleShape
+                )
         ) {
-            Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Ayuda")
+            Image(
+                painter = painterResource(id = R.drawable.ic_tibio_tutorial),
+                contentDescription = "Ayuda",
+                modifier = Modifier.size(90.dp)
+            )
         }
 
         // Link “SABER MÁS” siempre visible

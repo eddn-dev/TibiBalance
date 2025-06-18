@@ -1,6 +1,12 @@
 /* ui/screens/home/HomeScreen.kt */
 package com.app.tibibalance.ui.screens.home
 
+import android.media.Image
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material3.Icon
@@ -22,8 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import android.content.Intent
 import android.net.Uri
@@ -42,6 +52,14 @@ import com.app.tibibalance.ui.permissions.HEALTH_CONNECT_READ_PERMISSIONS
 import com.app.tibibalance.ui.permissions.rememberHealthPermissionLauncher
 import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
+import com.app.tibibalance.tutorial.rememberTutorialTarget
+import com.app.tibibalance.tutorial.TutorialOverlay
+import com.app.tibibalance.tutorial.TutorialViewModel
+import com.app.tibibalance.R
+import com.app.tibibalance.ui.navigation.Screen
+import kotlinx.coroutines.delay
+
+private const val PAGES = 2
 import com.app.tibibalance.ui.components.containers.DailyTip as DailyTipContainer
 import androidx.core.net.toUri
 
@@ -69,14 +87,15 @@ fun HomeScreen(
     val pageCount = if (metricsEnabled) 2 else 1
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { pageCount })
 
-    // 1️⃣ Tutorial de Home principal (Main section)
+    // Tutorial de Home principal (Main section)
     LaunchedEffect(Unit) {
         tutorialVm.startHomeTutorialIfNeeded(TutorialViewModel.HomeTutorialSection.Main)
     }
-    // 2️⃣ Tutorial de Métricas al cambiar a la página 1 (una sola vez)
+    // Tutorial de Métricas al cambiar a la página 1 (una sola vez)
     var statsTutorialLaunched by remember { mutableStateOf(false) }
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage == 1 && !statsTutorialLaunched) {
+            delay(300L)
             tutorialVm.startHomeTutorialIfNeeded(TutorialViewModel.HomeTutorialSection.Stats)
             statsTutorialLaunched = true
         }
@@ -111,11 +130,22 @@ fun HomeScreen(
                     else
                         tutorialVm.restartHomeTutorial(TutorialViewModel.HomeTutorialSection.Main)
                 },
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier
+                    .padding(top = 16.dp, end = 16.dp)
+                    .align(Alignment.End)
+                    .background(brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF00DFF7),
+                            Color(0xFF008EFF)
+                        )
+                    ),
+                        shape = CircleShape
+                    )
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Help,
-                    contentDescription = "Ayuda"
+                Image(
+                    painter = painterResource(id = R.drawable.ic_tibio_tutorial),
+                    contentDescription = "Ayuda",
+                    modifier = Modifier.size(90.dp)
                 )
             }
 
