@@ -1,24 +1,19 @@
 /* ui/screens/home/HomeScreen.kt */
 package com.app.tibibalance.ui.screens.home
 
-import android.media.Image
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,11 +30,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import android.content.Intent
-import android.net.Uri
-import androidx.health.connect.client.HealthConnectClient
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.domain.entities.DashboardSnapshot
+import com.app.tibibalance.R
 import com.app.tibibalance.tutorial.TutorialOverlay
 import com.app.tibibalance.tutorial.TutorialViewModel
 import com.app.tibibalance.tutorial.rememberTutorialTarget
@@ -52,16 +46,8 @@ import com.app.tibibalance.ui.permissions.HEALTH_CONNECT_READ_PERMISSIONS
 import com.app.tibibalance.ui.permissions.rememberHealthPermissionLauncher
 import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
-import com.app.tibibalance.tutorial.rememberTutorialTarget
-import com.app.tibibalance.tutorial.TutorialOverlay
-import com.app.tibibalance.tutorial.TutorialViewModel
-import com.app.tibibalance.R
-import com.app.tibibalance.ui.navigation.Screen
 import kotlinx.coroutines.delay
-
-private const val PAGES = 2
 import com.app.tibibalance.ui.components.containers.DailyTip as DailyTipContainer
-import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
