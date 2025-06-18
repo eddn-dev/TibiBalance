@@ -41,16 +41,11 @@ class SettingsViewModel @Inject constructor(
     private val update : UpdateUserSettings,
     private val theme  : ThemeController,
     private val signOutUseCase: SignOutUseCase,
-    hcAvailability          : HealthConnectAvailability,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val syncAccount: SyncAccount
 ) : ViewModel() {
 
-    private val _hcAvailable = MutableStateFlow(hcAvailability.isHealthConnectReady())
-    val hcAvailable: StateFlow<Boolean> = _hcAvailable
 
-    private val _healthPermsGranted = MutableStateFlow<Boolean?>(null)
-    val healthPermsGranted: StateFlow<Boolean?> = _healthPermsGranted
 
     /* ---------- UI ---------- */
     data class UiState(
@@ -232,12 +227,5 @@ class SettingsViewModel @Inject constructor(
 
     fun setError(message: String) {
         _ui.update { it.copy(error = message) }
-    }
-
-    fun onPermissionsResult(granted: Boolean) {
-        _healthPermsGranted.value = granted
-        if (granted) {
-
-        }
     }
 }

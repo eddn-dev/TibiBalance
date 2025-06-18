@@ -12,5 +12,5 @@ import javax.inject.Inject
 class ObserveDashboard @Inject constructor(
     private val repo: MetricsRepository
 ) {
-    operator fun invoke(): Flow<DashboardSnapshot> = repo.observeDashboard()
+    operator fun invoke(): Flow<DashboardSnapshot?> = repo.observeDashboard()
 }

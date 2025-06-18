@@ -3,6 +3,7 @@ package com.app.tibibalance.di
 
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
+import com.app.tibibalance.utils.HealthConnectAvailability
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,10 +15,19 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object HealthConnectModule {
 
-    /** Instancia real para producción */
-    @Provides
-    @Singleton
-    fun provideHealthConnectClient(
+    @Provides @Singleton
+    fun provideHealthConnectAvailability(
         @ApplicationContext context: Context
-    ): HealthConnectClient = HealthConnectClient.getOrCreate(context)
+    ): HealthConnectAvailability = HealthConnectAvailability(context)
+
+    /** Devuelve null cuando HC no está listo. */
+    @Provides
+    fun provideHealthConnectClient(
+        @ApplicationContext context: Context,
+        availability: HealthConnectAvailability
+    ): HealthConnectClient? =
+        if (availability.isHealthConnectReady())
+            HealthConnectClient.getOrCreate(context)
+        else
+            null
 }

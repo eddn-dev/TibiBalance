@@ -1,6 +1,7 @@
 /* ui/screens/home/HomeScreen.kt */
 package com.app.tibibalance.ui.screens.home
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.net.Uri
 import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.domain.entities.DashboardSnapshot
@@ -40,6 +43,7 @@ import com.app.tibibalance.ui.permissions.rememberHealthPermissionLauncher
 import com.app.tibibalance.ui.screens.home.activities.ActivityFeed
 import com.app.tibibalance.ui.screens.home.activities.ActivityLogDialog
 import com.app.tibibalance.ui.components.containers.DailyTip as DailyTipContainer
+import androidx.core.net.toUri
 
 @Composable
 fun HomeScreen(
@@ -47,10 +51,12 @@ fun HomeScreen(
 ) {
 
     val context = LocalContext.current
-    val hcClient = remember { HealthConnectClient.getOrCreate(context) }
+    val hcClient = viewModel.healthConnectClient
 
-    val launcher = rememberHealthPermissionLauncher(hcClient) { granted ->
-        viewModel.onPermissionsResult(granted)
+    val launcher = hcClient?.let { client ->
+        rememberHealthPermissionLauncher(client) { granted ->
+            viewModel.onPermissionsResult(granted)
+        }
     }
     val tutorialVm: TutorialViewModel = hiltViewModel()
     val state by viewModel.ui.collectAsState()
@@ -127,8 +133,10 @@ fun HomeScreen(
                     1 -> MetricsPage(
                         hasPermissions = state.healthPermsGranted,
                         snapshot       = state.dashboardSnapshot,
-                        onGrantPerms   = { launcher.launch(HEALTH_CONNECT_READ_PERMISSIONS) },
-                        onInstallHc    = { /* ir a Play Store */ },
+                        onGrantPerms   = {
+                            launcher?.launch(HEALTH_CONNECT_READ_PERMISSIONS) ?: openHealthConnectInPlayStore(context)
+                        },
+                        onInstallHc    = { openHealthConnectInPlayStore(context) },
                         tutorialVm     = tutorialVm,
                         currentTarget  = currentTarget
                     )
@@ -230,4 +238,10 @@ private fun MetricsPage(
                 )
         }
     }
+}
+
+private fun openHealthConnectInPlayStore(context: Context) {
+    val uri =
+        "https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata".toUri()
+    context.startActivity(Intent(Intent.ACTION_VIEW, uri))
 }

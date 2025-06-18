@@ -16,7 +16,7 @@ interface MetricsRepository {
     /* ─── Reactive streams ───────────────────────────────────────── */
 
     /** Emits whenever steps/kcal or last heart-rate change (Home screen). */
-    fun observeDashboard(): Flow<DashboardSnapshot>
+    fun observeDashboard(): Flow<DashboardSnapshot?>
 
     /**
      * Emits cached daily aggregates for an inclusive date range

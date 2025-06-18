@@ -46,12 +46,10 @@ class HealthConnectAvailability @Inject constructor(
         annotation class SdkStatus
     }
 
-    /** Devuelve **true** sólo si el SDK está listo para usarse sin crashes. */
-    fun isHealthConnectReady(): Boolean = when (getStatus()) {
-        HealthConnectClient.SDK_AVAILABLE -> true              // 🎉 listo
-        // En Android 14+ viene preinstalado, así que damos por hecho que existe
-        else -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-    }
+    /** Devuelve true sólo si el SDK está listo para usarse sin crashear. */
+    fun isHealthConnectReady(): Boolean =
+        getStatus() == HealthConnectClient.SDK_AVAILABLE
+
 
     /** Devuelve el estado bruto que expone `HealthConnectClient#getSdkStatus()`. */
     @SdkStatus
