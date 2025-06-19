@@ -32,14 +32,14 @@ class HabitSyncWorker @AssistedInject constructor(
     }
 
     companion object {
-        private const val TAG = "HabitSync"
+        private const val TAG = "ActivitySync"
 
         fun periodicRequest() = PeriodicWorkRequestBuilder<HabitSyncWorker>(
-            15, TimeUnit.MINUTES
+            30, TimeUnit.MINUTES          // ≥ 15 min
         )
             .setBackoffCriteria(
                 BackoffPolicy.EXPONENTIAL,
-                10, TimeUnit.SECONDS
+                30, TimeUnit.SECONDS
             )
             .addTag(TAG)
             .build()

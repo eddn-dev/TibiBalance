@@ -19,18 +19,16 @@ import com.app.tibibalance.ui.components.buttons.SecondaryButton
 
 @Composable
 fun DeleteAccountDialog(
-    visible: Boolean,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (!visible) return
 
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Dialog(
-        onDismissRequest = {},
+        onDismissRequest = onDismiss,
         properties = DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = true

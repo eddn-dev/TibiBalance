@@ -12,20 +12,20 @@ package com.app.tibibalance.sync
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.CoroutineWorker
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkerParameters
 import com.app.data.repository.IoDispatcher
 import com.app.domain.repository.HabitActivityRepository
 import com.app.domain.usecase.activity.EnsureActivitiesForDate
-import com.app.domain.usecase.activity.GenerateDailyActivities
 import com.app.domain.usecase.activity.RefreshActivitiesStatusForDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import java.util.concurrent.TimeUnit
 

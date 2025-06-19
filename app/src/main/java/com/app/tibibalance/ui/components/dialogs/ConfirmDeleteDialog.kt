@@ -18,11 +18,9 @@ import com.app.tibibalance.ui.components.buttons.SecondaryButton
 
 @Composable
 fun ConfirmDeleteDialog(
-    visible: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    if (!visible) return
 
     Dialog(
         onDismissRequest = onDismiss,

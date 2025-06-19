@@ -1,6 +1,7 @@
 package com.app.tibibalance.sync
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.PeriodicWorkRequestBuilder
@@ -35,6 +36,7 @@ class NotificationScheduleWorker @AssistedInject constructor(
 ) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result = withContext(io) {
+        Log.w("Workers", "Ejecutando NotificationScheduleWorker")
         val tz     = TimeZone.currentSystemDefault()
         val today  = Clock.System.todayIn(tz)
 
@@ -62,7 +64,7 @@ class NotificationScheduleWorker @AssistedInject constructor(
 
     companion object {
         fun periodicRequest() = PeriodicWorkRequestBuilder<NotificationScheduleWorker>(
-            1, TimeUnit.DAYS       // ejecuta una vez al día; cambia si lo prefieres
+            30, TimeUnit.MINUTES       // ejecuta una vez al día; cambia si lo prefieres
         ).setInitialDelay(10, TimeUnit.MINUTES) // arranca 10 min tras boot
             .addTag("notif_schedule")
             .build()

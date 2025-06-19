@@ -55,7 +55,8 @@ class SettingsViewModel @Inject constructor(
         val signingOut: Boolean = false,
         val syncing     : Boolean = false,
         val syncDone    : Boolean = false,
-        val navigatingToGoodbye: Boolean = false
+        val navigatingToGoodbye: Boolean = false,
+        val mainProviderId: String? = null,
     )
 
     /* logout one-shot */
@@ -74,19 +75,16 @@ class SettingsViewModel @Inject constructor(
                 } else observeUser(uid)
             }
             .onEach { usr ->
-                _ui.update { prev ->                 //  🟢  conserva flags previos
-                    when (usr) {
-                        null -> prev.copy(
-                            loading = false,
-                            user    = null,
-                            error   = "Sin sesión"
-                        )
-                        else  -> prev.copy(
-                            loading = false,
-                            user    = usr,
-                            error   = null
-                        )
-                    }
+                _ui.update { prev ->
+                    prev.copy(
+                        loading = false,
+                        user = usr,
+                        mainProviderId = FirebaseAuth.getInstance()
+                            .currentUser
+                            ?.providerData
+                            ?.firstOrNull { it.providerId != "firebase" }
+                            ?.providerId
+                    )
                 }
             }
             .catch { e -> _ui.update { it.copy(loading = false, error = e.message) } }
@@ -174,13 +172,16 @@ class SettingsViewModel @Inject constructor(
             return@launch
         }
 
-        val providerId = user.providerData.getOrNull(1)?.providerId
-        Log.d(tag, "LAYTON Proveedor de autenticación: $providerId")
+        val mainProviderId = user.providerData
+            .firstOrNull { it.providerId != "firebase" }  // toma el primero real
+            ?.providerId
+
+        Log.d(tag, "LAYTON Proveedor de autenticación: $mainProviderId")
 
         try {
             Log.d("DeleteAccount", "LAYTON Entrando a reauthenticateAndDelete: password=${password != null}, token=${googleIdToken != null}")
-            when (providerId) {
-                "password" -> {
+            when (mainProviderId) {
+                EmailAuthProvider.PROVIDER_ID -> {
                     val email = user.email
                     if (email == null || password.isNullOrBlank()) {
                         Log.e(tag, "LAYTON Email o contraseña faltante. email=$email, password vacío=${password.isNullOrBlank()}")
@@ -192,7 +193,7 @@ class SettingsViewModel @Inject constructor(
                     user.reauthenticate(credential).await()
                 }
 
-                "google.com" -> {
+                GoogleAuthProvider.PROVIDER_ID -> {
                     if (googleIdToken.isNullOrBlank()) {
                         Log.e(tag, "LAYTON idToken de Google es null o vacío.")
                         _ui.update { it.copy(error = "Token de Google inválido.") }
@@ -204,7 +205,7 @@ class SettingsViewModel @Inject constructor(
                 }
 
                 else -> {
-                    Log.e(tag, "LAYTON Proveedor no soportado: $providerId")
+                    Log.e(tag, "LAYTON Proveedor no soportado: $mainProviderId")
                     _ui.update { it.copy(error = "Proveedor no soportado para eliminar cuenta.") }
                     return@launch
                 }

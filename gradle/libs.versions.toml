@@ -4,6 +4,7 @@
 [versions]
 agp                   = "8.9.1"
 androidDatabaseSqlcipher = "4.5.4"
+hiltCompiler = "1.2.0"
 json = "20231013"
 kotlin                = "2.0.21"
 kotlinxCollectionsImmutable = "0.3.5"
@@ -65,6 +66,7 @@ dokka                 = { id = "org.jetbrains.dokka",                 version.re
 # Libraries (sin cambios salvo las que ya habías añadido)
 # --------------------------------------------------------
 [libraries]
+androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
 json = { module = "org.json:json", version.ref = "json" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
@@ -95,6 +97,7 @@ room-compiler            = { group = "androidx.room",             name = "room-c
 
 hilt-android             = { group = "com.google.dagger",         name = "hilt-android",              version.ref = "hilt" }
 hilt-compiler            = { group = "com.google.dagger",         name = "hilt-compiler",             version.ref = "hilt" }
+
 hilt-navigation          = { group = "androidx.hilt",             name = "hilt-navigation-compose",   version = "1.2.0" }
 
 firebase-bom               = { group = "com.google.firebase",      name = "firebase-bom",              version.ref = "firebaseBom" }

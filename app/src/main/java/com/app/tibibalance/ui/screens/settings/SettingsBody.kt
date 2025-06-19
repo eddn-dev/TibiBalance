@@ -30,14 +30,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.credentials.CredentialManager
 import com.app.domain.entities.User
 import com.app.domain.enums.ThemeMode
 import com.app.tibibalance.R
+import com.app.tibibalance.auth.GoogleOneTapHelper
 import com.app.tibibalance.ui.components.buttons.DangerButton
 import com.app.tibibalance.ui.components.containers.FormContainer
 import com.app.tibibalance.ui.components.containers.ImageContainer
@@ -45,6 +49,11 @@ import com.app.tibibalance.ui.components.dialogs.ConfirmDeleteDialog
 import com.app.tibibalance.ui.components.dialogs.DeleteAccountDialog
 import com.app.tibibalance.ui.components.texts.Title
 import com.app.tibibalance.ui.components.utils.SettingItem
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.BuildConfig
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsBody(
@@ -64,7 +73,8 @@ fun SettingsBody(
     onSignOut          : () -> Unit,
     signingOut         : Boolean,
     syncing            : Boolean,
-    onDeleteAccount: (String) -> Unit
+    // SettingsBody – callback hacia el VM
+    onDeleteAccount: (password: String?, googleIdToken: String?) -> Unit
 ) {
     /* diálogos */
     val snackbar = remember { SnackbarHostState() }
@@ -73,25 +83,41 @@ fun SettingsBody(
     var showErrorDialog by remember { mutableStateOf(false) }
     val errorMessage = ui.error
 
-    if (showDeleteDialog) {
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showPwdDialog     by remember { mutableStateOf(false) }
+    var showGoogleDialog  by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirm) {
         ConfirmDeleteDialog(
-            visible = showDeleteDialog,
-            onDismiss = { showDeleteDialog = false },
+            onDismiss = { showDeleteConfirm = false },
             onConfirm = {
-                showDeleteDialog = false
-                showPasswordDialog = true
+                showDeleteConfirm = false
+                when (ui.mainProviderId) {
+                    EmailAuthProvider.PROVIDER_ID  -> showPwdDialog    = true
+                    GoogleAuthProvider.PROVIDER_ID -> showGoogleDialog = true
+                    else -> vm.setError("Proveedor no soportado")
+                }
             }
         )
     }
 
-    if (showPasswordDialog) {
+    if (showGoogleDialog) {
+        GoogleReauthDialog(
+            onDismiss = { showGoogleDialog = false },
+            onSuccess = { idToken ->
+                onDeleteAccount(null, idToken)   // ⬅️ solo token
+                showGoogleDialog = false
+            }
+        )
+    }
+
+
+    if (showPwdDialog) {
         DeleteAccountDialog(
-            visible = showPasswordDialog,
-            onDismiss = { showPasswordDialog = false },
-            onConfirm = {
-                onDeleteAccount(it)
-                showPasswordDialog = false
-                showErrorDialog = true  // ← activa el modal de error si lo hay
+            onDismiss = { showPwdDialog = false },
+            onConfirm = { pwd ->
+                onDeleteAccount(pwd, null)
+                showPwdDialog = false
             }
         )
         if (showErrorDialog && errorMessage != null) {
@@ -202,7 +228,7 @@ fun SettingsBody(
             )
             DangerButton(
                 text     = "Eliminar cuenta",
-                onClick  = { showDeleteDialog = true },
+                onClick  = { showDeleteConfirm = true },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -223,3 +249,54 @@ fun SettingsBody(
         )
     }
 }
+
+@Composable
+fun GoogleReauthDialog(
+    onSuccess: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val credentialManager = remember { CredentialManager.create(context) }
+    val scope = rememberCoroutineScope()          // ✅ scope ligado al composable
+    var loading by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                enabled = !loading,
+                onClick = {
+                    loading = true
+
+                    // 1. Petición con tu helper
+                    val request = GoogleOneTapHelper.buildRequest(
+                        serverClientId =
+                            "467927540157-tvu0re0msga2o01tsj9t1r1o6kqvek3j.apps.googleusercontent.com",
+                        authorizedOnly = true
+                    )
+
+                    // 2. Lanza Credential Manager dentro del scope
+                    scope.launch {
+                        try {
+                            val result = credentialManager.getCredential(
+                                context = context,          // parámetro primero
+                                request = request
+                            )                               // flow doc. :contentReference[oaicite:3]{index=3}
+                            val googleCred =
+                                result.credential as GoogleIdTokenCredential
+                            onSuccess(googleCred.idToken)  // ⇢ ViewModel
+                        } catch (e: Exception) {
+                            // maneja error (opcional: mostrar snackbar)
+                        } finally {
+                            loading = false
+                        }
+                    }
+                }
+            ) { Text("Continuar con Google") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } },
+        title = { Text("Verifica tu identidad") },
+        text  = { Text("Selecciona tu cuenta Google para confirmar la eliminación.") }
+    )
+}
+

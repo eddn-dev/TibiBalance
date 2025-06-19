@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.navigation.compose)
 
     /* ── Firebase (plataforma BoM) ──────────────────── */
@@ -90,7 +91,7 @@ dependencies {
     implementation(libs.health.connect.client)
     implementation(libs.activity.compose)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation(libs.json)  // Última versión disponible hasta 2024
+    implementation(libs.json)
 
     /* ── Coroutines ─────────────────────────────────── */
     implementation(libs.kotlinx.coroutines.core)

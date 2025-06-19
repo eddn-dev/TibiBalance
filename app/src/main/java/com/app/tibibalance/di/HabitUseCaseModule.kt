@@ -11,8 +11,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-
-@Module @InstallIn(ViewModelComponent::class)
+import dagger.hilt.components.SingletonComponent
+/*
+@Module
+@InstallIn(SingletonComponent::class)
 object HabitUseCaseModule {
 
     @Provides fun provideGetHabitsFlow(repo: HabitRepository)     = GetHabitsFlow(repo)
@@ -23,3 +25,4 @@ object HabitUseCaseModule {
     )
     @Provides fun provideDeleteHabit(repo: HabitRepository)       = DeleteHabit(repo)
 }
+*/
