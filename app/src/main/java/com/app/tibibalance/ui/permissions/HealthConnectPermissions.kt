@@ -4,6 +4,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 
 /**
  * Permisos runtime que se solicitan a través de Health Connect.
@@ -12,5 +13,6 @@ import androidx.health.connect.client.records.HeartRateRecord
 val HEALTH_CONNECT_READ_PERMISSIONS: Set<String> = setOf(
     HealthPermission.getReadPermission(StepsRecord::class),
     HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+    HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
     HealthPermission.getReadPermission(HeartRateRecord::class)
 )

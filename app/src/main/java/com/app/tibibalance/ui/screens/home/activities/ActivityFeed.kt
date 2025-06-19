@@ -38,7 +38,6 @@ data class ActivityUi(
 
 /* ─────────────  Feed principal  ───────────── */
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActivityFeed(
     modifier   : Modifier = Modifier,
@@ -61,7 +60,6 @@ fun ActivityFeed(
 
 /* ─────────────  Sección con título  ───────────── */
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun LazyListScope.section(
     title     : String,
     items     : List<ActivityUi>,
@@ -82,7 +80,6 @@ private fun LazyListScope.section(
 
 /* ─────────────  Tarjeta individual  ───────────── */
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun ActivityCard(
     ui        : ActivityUi,
@@ -156,7 +153,6 @@ private fun ActivityUi.bucket(now: Instant): Bucket = when (act.status) {
 
 /* ─────────────  Formato HH:mm  ───────────── */
 
-@RequiresApi(Build.VERSION_CODES.O)
 private fun LocalTime.timeFmt(): String =
     DateTimeFormatter.ofPattern("HH:mm")
         .format(java.time.LocalTime.of(hour, minute))

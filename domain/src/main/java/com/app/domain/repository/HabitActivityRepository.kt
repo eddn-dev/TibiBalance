@@ -5,6 +5,8 @@ import com.app.domain.enums.ActivityStatus
 import com.app.domain.ids.ActivityId
 import com.app.domain.ids.HabitId
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 
 /**
@@ -49,7 +51,11 @@ interface HabitActivityRepository {
         loggedAtUtc: kotlinx.datetime.Instant
     )
 
+    /** Este helper ayuda a determinar huecos existentes para la fecha **/
     suspend fun countByHabitAndDate(habitId: HabitId, date: LocalDate): Int
+
+    /** Recalcula y actualiza status de todas las actividades de una fecha. */
+    suspend fun refreshStatusesForDate(date: LocalDate, now: Instant = Clock.System.now())
 
     /* ---------- limpieza ---------- */
 

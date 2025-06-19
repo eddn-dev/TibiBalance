@@ -37,6 +37,7 @@ class GenerateDailyActivities @Inject constructor(
             .filter { it.challenge != null && it.repeat.matches(date) }
 
         val batch = habits.flatMap { generateForHabit(it, date, genAt) }
+        // Log que muestra todas las actividades que se generan.
         actRepo.insertAll(batch)                           // IGNORE duplicates
     }
 
@@ -45,18 +46,28 @@ class GenerateDailyActivities @Inject constructor(
     internal fun generateForHabit(
         habit: Habit,
         date : LocalDate,
-        genAt: Instant
+        genAt: Instant,
+        cutoff: Instant? = null
     ): List<HabitActivity> {
 
         val tz        = TimeZone.currentSystemDefault()
         val advance   = habit.notifConfig.advanceMin.minutes
         val duration  = habit.session.qty?.toDuration(habit.session.unit) ?: Duration.ZERO
-        val buffer    = 6.hours                                   // ventana extra
+        val buffer    = 6.hours
 
         val slots: List<LocalTime?> =
             if (habit.notifConfig.times.isEmpty()) listOf(null) else habit.notifConfig.times
 
-        return slots.map { lt ->
+        val validSlots = slots.filter { lt ->
+            if(lt == null) return@filter true
+
+            if(cutoff == null) return@filter true
+
+            val schedInstant = date.atTime(lt).toInstant(tz)
+            schedInstant >= cutoff
+        }
+
+        return validSlots.map { lt ->
 
             /* ── cálculo de ventanas ── */
             val schedLt     = lt ?: LocalTime(0, 0)               // “cualquier hora” ⇒ 00:00

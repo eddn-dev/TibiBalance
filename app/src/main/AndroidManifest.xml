@@ -9,7 +9,9 @@
 
     <!-- Health Connect – permisos de lectura -->
     <uses-permission android:name="android.permission.health.READ_STEPS"/>
+    <!-- Health Connect (Android 14+ framework) -->
     <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"/>
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
     <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY"/>
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND"/>

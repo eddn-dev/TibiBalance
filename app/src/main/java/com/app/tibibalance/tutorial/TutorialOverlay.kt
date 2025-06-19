@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.toSize
 import com.airbnb.lottie.compose.*
 import androidx.compose.ui.unit.sp
 import com.app.tibibalance.R
+import com.app.tibibalance.ui.components.buttons.PrimaryButton
 
 /**
  * Modifier to mark a composable as a tutorial target.
@@ -150,15 +151,9 @@ fun TutorialOverlay(
 
                             Spacer(Modifier.height(24.dp))
                             Row {
-                                Button(
+                                PrimaryButton(
                                     onClick = { viewModel.proceedToNextStep() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                ) {
-                                    Text("Comenzar")
-                                }
+                                    text = "Comenzar")
                                 Spacer(Modifier.width(16.dp))
                                 TextButton(
                                     onClick = { viewModel.finishTutorial() },

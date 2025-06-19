@@ -2,6 +2,7 @@ package com.app.tibibalance.ui.screens.habits.addHabitWizard
 
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.app.domain.repository.AuthRepository
 import com.app.domain.service.AlertManager
 import com.app.domain.usecase.achievement.CheckUnlockAchievement
 import com.app.domain.usecase.activity.GenerateActivitiesForHabit
+import com.app.domain.usecase.activity.ObserveHabitActivities
 import com.app.domain.usecase.habit.CreateHabit
 import com.app.domain.usecase.habit.GetHabitsFlow
 import com.app.domain.usecase.habit.GetSuggestedHabits
@@ -46,8 +48,7 @@ class AddHabitViewModel @Inject constructor(
     private val createHabit : CreateHabit,
     getSuggested           : GetSuggestedHabits,
     private val checkAchievement: CheckUnlockAchievement,
-    private val auth: AuthRepository,
-    private val getHabitsFlow: GetHabitsFlow,
+    private val activities : ObserveHabitActivities,
     private val genForHabit: GenerateActivitiesForHabit,
     private val alertMgr: AlertManager
 ) : ViewModel() {
@@ -69,7 +70,6 @@ class AddHabitViewModel @Inject constructor(
     private fun resetState() { _ui.value = AddHabitUiState() }
 
     /* ---------- navegación ---------- */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun next() = _ui.update {
         if (isStepValid(it.currentStep, it.form))
             it.copy(currentStep = (it.currentStep + 1).coerceAtMost(3))
@@ -99,17 +99,14 @@ class AddHabitViewModel @Inject constructor(
     }
 
     /* ---------- plantillas ---------- */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun pickSuggestion(habit: Habit) = _ui.update {
         if (it.hasChanges) it.copy(askReplace = true, tempTpl = habit)
         else it.applyTemplate(habit)
     }
-    @RequiresApi(Build.VERSION_CODES.O)
     fun confirmReplace(confirm: Boolean) = _ui.update {
         if (confirm && it.tempTpl != null) it.applyTemplate(it.tempTpl!!)
         else it.copy(askReplace = false, tempTpl = null)
     }
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun AddHabitUiState.applyTemplate(h: Habit) = copy(
         askReplace = false,
         tempTpl    = null,
@@ -118,12 +115,10 @@ class AddHabitViewModel @Inject constructor(
         currentStep = 1
     )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun save() = viewModelScope.launch {
         /* 1️⃣  Spinner ON */
         _ui.update { it.copy(saving = true) }
 
-        val uid   = auth.authState().firstOrNull()           // puede ser null
         val habit = _ui.value.form.toHabit()
 
         try {
@@ -159,6 +154,11 @@ class AddHabitViewModel @Inject constructor(
                 }
             }
 
+            // Obtener las actividades de hoy
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+            val activities = activities(habit.id).firstOrNull()
+            Log.w("ActividadesGeneradas", "Actividades generadas: $activities para el hábito ${habit.name} el día $today")
+
         } catch (ex: Exception) {
             _ui.update { it.copy(
                 saving   = false,
@@ -168,7 +168,6 @@ class AddHabitViewModel @Inject constructor(
     }
 
     /* ---------- validaciones ---------- */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun isStepValid(step: Int, f: HabitForm): Boolean =
         HabitFormValidator.isStepValid(step, f)
 

@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
 
 @Singleton
 class HabitActivityRepositoryImpl @Inject constructor(
@@ -74,6 +75,45 @@ class HabitActivityRepositoryImpl @Inject constructor(
     ): Int = withContext(io) {
         dao.countByHabitAndDate(habitId.raw, date)
     }
+
+    /* HabitActivityRepositoryImpl.kt */
+    override suspend fun refreshStatusesForDate(date: LocalDate, now: Instant) =
+        withContext(io) {
+            val list = dao.listByDate(date)                 // ① obtiene día completo
+            val updates = list.mapNotNull { ent ->          // ② decide nuevo estado
+                val newStatus = when (ent.status) {
+                    ActivityStatus.COMPLETED,
+                    ActivityStatus.PARTIALLY_COMPLETED -> ent.status   // se respeta
+                    else -> {
+                        val opens   = ent.opensAt
+                        val expires = ent.expiresAt
+                        when {
+                            // aún no abre la ventana
+                            opens != null && now < opens -> ActivityStatus.PENDING
+                            // dentro de la ventana
+                            (opens == null || now >= opens) &&
+                                    (expires == null || now <= expires)        ->
+                                ActivityStatus.AVAILABLE_FOR_LOGGING
+                            // ventana venció sin registro
+                            else -> ActivityStatus.MISSED
+                        }
+                    }
+                }
+                if (newStatus != ent.status)                          // ③ solo cambia si es necesario
+                    ent.copy(
+                        status = newStatus,
+                        meta   = ent.meta.copy(
+                            updatedAt   = now,
+                            pendingSync = true
+                        )
+                    )
+                else null
+            }
+
+            // ④ guarda sólo los modificados (REPLACE ↓)
+            updates.forEach { dao.upsert(it) }
+        }
+
 
     /* ───────────────   limpieza   ──────────────── */
 

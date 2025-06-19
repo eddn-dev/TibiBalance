@@ -2,6 +2,7 @@
 package com.app.data.repository
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
@@ -38,6 +39,7 @@ import kotlinx.datetime.todayIn
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 /* :data/repository/MetricsRepositoryImpl.kt */
@@ -76,14 +78,16 @@ class MetricsRepositoryImpl @Inject constructor(
                 )
 
                 val steps  = (agg[StepsRecord.COUNT_TOTAL] ?: 0L).toInt()
+                Log.w("Metrics", "$steps")
                 val kcal   = agg[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]
                     ?.inKilocalories?.roundToInt() ?: 0
+                Log.w("Metrics", "$kcal")
                 steps to kcal
             }
 
             suspend fun latestHr(): Pair<Int?, Long> = withContext(io) {
                 val now       = Clock.System.now()
-                val startJava = now.minus(30.seconds).toJavaInstant()
+                val startJava = now.minus(15.minutes).toJavaInstant()
 
                 val rec = hcClient.readRecords(
                     ReadRecordsRequest(
@@ -97,6 +101,7 @@ class MetricsRepositoryImpl @Inject constructor(
                 val bpm    = sample?.beatsPerMinute?.toInt()
                 val ageMs  = sample?.time?.toKotlinInstant()?.let { now - it }?.inWholeMilliseconds
                     ?: Long.MAX_VALUE
+                Log.w("Metrics", "BPM: $bpm, ageMs: $ageMs")
                 bpm to ageMs
             }
 

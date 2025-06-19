@@ -142,7 +142,7 @@ fun HomeScreen(
             HorizontalPager(
                 state       = pagerState,
                 pageSpacing = 16.dp,
-                modifier    = Modifier.weight(1f).fillMaxWidth()
+                modifier    = Modifier.weight(3f).fillMaxWidth()
             ) { page ->
                 when (page) {
                     0 -> DailyTipPage(state, tutorialVm, currentTarget)
@@ -173,7 +173,7 @@ fun HomeScreen(
             )
             ActivityFeed(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(2f)
                     .fillMaxWidth()
                     .then(dailyProgressModifier),
                 activities = state.activities,

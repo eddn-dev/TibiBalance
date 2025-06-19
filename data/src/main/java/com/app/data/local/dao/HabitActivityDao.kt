@@ -53,6 +53,11 @@ interface HabitActivityDao {
     )
     fun observeByDate(date: LocalDate): Flow<List<HabitActivityEntity>>
 
+    /* HabitActivityDao.kt */
+    @Query("SELECT * FROM activities WHERE activityDate = :date")
+    suspend fun listByDate(date: LocalDate): List<HabitActivityEntity>
+
+
     /* ────────────── CRUD ────────────── */
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
