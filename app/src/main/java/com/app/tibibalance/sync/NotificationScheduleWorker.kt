@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 
 /* :app/sync/NotificationScheduleWorker.kt */
 @HiltWorker
-class NotificationScheduleWorker @AssistedInject constructor(
+class AppWorker @AssistedInject constructor(
     @Assisted ctx: Context,
     @Assisted params: WorkerParameters,
     private val getHabitsFlow  : GetHabitsFlow,
@@ -69,9 +69,9 @@ class NotificationScheduleWorker @AssistedInject constructor(
     }
 
     companion object {
-        fun periodicRequest() = PeriodicWorkRequestBuilder<NotificationScheduleWorker>(
-            30, TimeUnit.MINUTES       // ejecuta una vez al día; cambia si lo prefieres
-        ).setInitialDelay(10, TimeUnit.MINUTES) // arranca 10 min tras boot
+        fun periodicRequest() = PeriodicWorkRequestBuilder<AppWorker>(
+            30, TimeUnit.MINUTES
+        ).setInitialDelay(1, TimeUnit.MINUTES)
             .addTag("notif_schedule")
             .build()
     }

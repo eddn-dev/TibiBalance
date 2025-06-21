@@ -166,7 +166,7 @@ fun SettingsBody(
             )
             SettingItem(
                 leadingIcon = { Icon24(Icons.Filled.Watch) },
-                text        = "Conexión con el reloj",
+                text        = "Permisos de monitoreo",
                 onClick     = onDevices
             )
             SettingItem(
