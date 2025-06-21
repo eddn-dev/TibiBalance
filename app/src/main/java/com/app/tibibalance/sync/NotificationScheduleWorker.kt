@@ -7,9 +7,11 @@ import androidx.work.CoroutineWorker
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.app.data.repository.IoDispatcher
+import com.app.domain.repository.HabitActivityRepository
 import com.app.domain.service.AlertManager
 import com.app.domain.usecase.activity.EnsureActivitiesForDate
 import com.app.domain.usecase.activity.GenerateDailyActivities
+import com.app.domain.usecase.activity.RefreshActivitiesStatusForDate
 import com.app.domain.usecase.habit.GetHabitsFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -31,7 +33,8 @@ class NotificationScheduleWorker @AssistedInject constructor(
     private val getHabitsFlow  : GetHabitsFlow,
     private val alertMgr       : AlertManager,
     private val ensureToday    : EnsureActivitiesForDate,
-    private val dailyGen       : GenerateDailyActivities,
+    private val refreshStatus  : RefreshActivitiesStatusForDate,
+    private val actRepo        : HabitActivityRepository,
     @IoDispatcher private val io: CoroutineDispatcher
 ) : CoroutineWorker(ctx, params) {
 
@@ -43,6 +46,7 @@ class NotificationScheduleWorker @AssistedInject constructor(
         // 1️⃣  leer hábitos (Room)
         val habits = getHabitsFlow().first()
 
+        Log.w("Workers", "Habitos: $habits")
         habits.forEach { habit ->
             alertMgr.cancel(habit.id)                 // limpia siempre
 
@@ -57,7 +61,9 @@ class NotificationScheduleWorker @AssistedInject constructor(
 
         // 2️⃣  generar/asegurar actividades de retos (opcional)
         ensureToday(today)
-        dailyGen(today.plus(DatePeriod(days = 1)))
+        Log.w("Workers", "Actividades de hoy generadas")
+        refreshStatus(today)
+        actRepo.syncNow().getOrThrow()
 
         Result.success()
     }
