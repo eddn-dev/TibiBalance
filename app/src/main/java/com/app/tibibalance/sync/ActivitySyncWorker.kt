@@ -44,9 +44,9 @@ class ActivitySyncWorker @AssistedInject constructor(
         val today  = Clock.System.todayIn(tz)
         val result = runCatching {
             Log.w(TAG, "Ejecutando ActivitySyncWorker")
-            ensureToday(today)                              // 🟢 huecos de hoy
-            refreshStatus(today)                            // 🟢 actualiza estados)
-            actRepo.syncNow().getOrThrow()                 // 🟢 push/pull
+            ensureToday(today)
+            refreshStatus(today)
+            actRepo.syncNow().getOrThrow()
         }
         if (result.isSuccess) Result.success() else Result.retry()
 

@@ -3,6 +3,8 @@ package com.app.tibibalance.di
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.Operation
 import androidx.work.WorkManager
+import com.app.tibibalance.sync.ActivitySyncWorker
+import com.app.tibibalance.sync.HabitSyncWorker
 import com.app.tibibalance.sync.NotificationScheduleWorker
 import dagger.Module
 import dagger.Provides
@@ -20,5 +22,21 @@ object WorkerModule {
             "notif_schedule",
             ExistingPeriodicWorkPolicy.KEEP,
             NotificationScheduleWorker.periodicRequest()
+        )
+
+    @Provides @Singleton
+    fun initActivitySync(workerMgr: WorkManager): Operation =
+        workerMgr.enqueueUniquePeriodicWork(
+            "activity_sync",
+            ExistingPeriodicWorkPolicy.KEEP,
+            ActivitySyncWorker.periodicRequest()
+        )
+
+    @Provides @Singleton
+    fun initHabitSync(workerMgr: WorkManager): Operation =
+        workerMgr.enqueueUniquePeriodicWork(
+            "habit_sync",
+            ExistingPeriodicWorkPolicy.KEEP,
+            HabitSyncWorker.periodicRequest()
         )
 }

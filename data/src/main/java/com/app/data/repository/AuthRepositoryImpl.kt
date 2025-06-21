@@ -172,7 +172,7 @@ class AuthRepositoryImpl @Inject constructor(
         val uid = user.uid
         val docRef = collection("users").document(uid)
         val snap   = docRef.get().await()
-        if (snap.exists()) return                    // ya registrado ✅
+        if (snap.exists()) return
 
         val dob = java.time.LocalDate.now().minusYears(18).toKotlinLocalDate()
 
