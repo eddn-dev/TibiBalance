@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.app.data.repository.IoDispatcher
@@ -12,6 +14,7 @@ import com.app.domain.service.AlertManager
 import com.app.domain.usecase.activity.EnsureActivitiesForDate
 import com.app.domain.usecase.activity.GenerateDailyActivities
 import com.app.domain.usecase.activity.RefreshActivitiesStatusForDate
+import com.app.domain.usecase.auth.SyncAccount
 import com.app.domain.usecase.habit.GetHabitsFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -34,19 +37,19 @@ class AppWorker @AssistedInject constructor(
     private val alertMgr       : AlertManager,
     private val ensureToday    : EnsureActivitiesForDate,
     private val refreshStatus  : RefreshActivitiesStatusForDate,
-    private val actRepo        : HabitActivityRepository,
+    private val sync           : SyncAccount,
     @IoDispatcher private val io: CoroutineDispatcher
 ) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result = withContext(io) {
-        Log.w("Workers", "Ejecutando NotificationScheduleWorker")
+        Log.w("work", "Ejecutando NotificationScheduleWorker")
         val tz     = TimeZone.currentSystemDefault()
         val today  = Clock.System.todayIn(tz)
 
         // 1️⃣  leer hábitos (Room)
         val habits = getHabitsFlow().first()
 
-        Log.w("Workers", "Habitos: $habits")
+        Log.w("work", "Habitos: $habits")
         habits.forEach { habit ->
             alertMgr.cancel(habit.id)                 // limpia siempre
 
@@ -59,20 +62,24 @@ class AppWorker @AssistedInject constructor(
             }
         }
 
-        // 2️⃣  generar/asegurar actividades de retos (opcional)
         ensureToday(today)
-        Log.w("Workers", "Actividades de hoy generadas")
+        Log.w("work", "Actividades de hoy generadas")
         refreshStatus(today)
-        actRepo.syncNow().getOrThrow()
-
+        sync()
         Result.success()
     }
 
     companion object {
+        const val UNIQUE_NAME = "APP_WORKER_PERIODIC"
         fun periodicRequest() = PeriodicWorkRequestBuilder<AppWorker>(
             30, TimeUnit.MINUTES
         ).setInitialDelay(1, TimeUnit.MINUTES)
-            .addTag("notif_schedule")
+            .addTag("APP_WORKER")
+            .build()
+
+        fun oneShotRequest() = OneTimeWorkRequestBuilder<AppWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .addTag("APP_WORKER")
             .build()
     }
 }

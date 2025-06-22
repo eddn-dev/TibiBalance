@@ -65,6 +65,7 @@ fun SuggestionStep(
             ) {
                 items(suggestions, key = { it.id.raw }) { tpl ->
                     SettingItem(
+                        onClick = { onSuggestion(tpl) },
                         leadingIcon = { Icon(painter = rememberVectorPainter(iconByName(tpl.icon)), contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                         text = tpl.name,
                         trailing = { RoundedIconButton(icon = Icons.Default.Add, onClick = { onSuggestion(tpl) }, modifier = Modifier.size(32.dp)) },

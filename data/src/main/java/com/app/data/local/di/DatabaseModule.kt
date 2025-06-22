@@ -32,9 +32,8 @@ object DatabaseModule {
         @ApplicationContext ctx: Context,
         factory: SupportFactory
     ): AppDb =
-        Room.databaseBuilder(ctx, AppDb::class.java, "tibi.db")
+        Room.databaseBuilder(ctx, AppDb::class.java, "AppDb.db")
             .openHelperFactory(factory)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 
 

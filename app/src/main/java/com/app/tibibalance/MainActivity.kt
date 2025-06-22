@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
         if (!granted) Log.d("NotifPerm", "POST_NOTIFICATIONS denegado")
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

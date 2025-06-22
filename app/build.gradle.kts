@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.google.services)    // Firebase Gradle Plugin
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.ksp)         // Hilt & Room via KSP
+    id("kotlin-kapt")
 }
 
 android {
@@ -68,9 +69,9 @@ dependencies {
 
     /* ── Hilt DI ────────────────────────────────────── */
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation)
-    ksp(libs.androidx.hilt.compiler)
+    kapt(libs.androidx.hilt.compiler)
     implementation(libs.navigation.compose)
 
     /* ── Firebase (plataforma BoM) ──────────────────── */
@@ -86,6 +87,7 @@ dependencies {
     /* ── Coroutines Play Svc helpers ────────────────── */
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.collections.immutable)
+    implementation("androidx.hilt:hilt-work:1.2.0")
 
     /* Health */
     implementation(libs.health.connect.client)
@@ -96,7 +98,6 @@ dependencies {
     /* ── Coroutines ─────────────────────────────────── */
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlinx.coroutines.test)
-    implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
 
     implementation("io.github.pseudoankit:coachmark:3.0.1")
@@ -108,5 +109,4 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
-    kspAndroidTest(libs.hilt.compiler)
 }
